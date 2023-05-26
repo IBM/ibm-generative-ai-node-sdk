@@ -100,7 +100,7 @@ describe('client', () => {
 
       const generatePromise = client.generate(
         {
-          model_id: 'bigscience/bloom',
+          model_id: 'google/flan-ul2',
           input: 'Hello, World',
         },
         { signal: controller.signal },
@@ -123,7 +123,7 @@ describe('client', () => {
 
       await expect(
         client.generate(
-          { model_id: 'bigscience/bloom', input: 'Hello, World' },
+          { model_id: 'google/flan-ul2', input: 'Hello, World' },
           { timeout: 1, retries: 1 },
         ),
       ).rejects.toEqual(

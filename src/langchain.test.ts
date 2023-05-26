@@ -20,7 +20,7 @@ describe('Langchain', () => {
 
   describe('tokenization', () => {
     it('should correctly calculate tokens', async () => {
-      const client = makeClient('bigscience/bloom');
+      const client = makeClient('google/flan-ul2');
       const tokensCount = await client.getNumTokens(
         'What is the biggest building on this planet?',
       );
@@ -38,14 +38,14 @@ describe('Langchain', () => {
     }, 15_000);
 
     test('should return correct response for a single input', async () => {
-      const client = makeClient('bigscience/bloom');
+      const client = makeClient('google/flan-ul2');
 
       const data = await client.call('Hello, World');
       expectIsString(data);
     }, 15_000);
 
     test('should return correct response for each input', async () => {
-      const client = makeClient('bigscience/bloom');
+      const client = makeClient('google/flan-ul2');
 
       const inputs = ['Hello, World', 'Hello again'];
 
@@ -68,7 +68,7 @@ describe('Langchain', () => {
     }, 20_000);
 
     test('should reject with ERR_CANCELED when aborted', async () => {
-      const model = makeClient('bigscience/bloom');
+      const model = makeClient('google/flan-ul2');
 
       const controller = new AbortController();
       const generatePromise = model.generate(['Hello, World'], {
@@ -88,7 +88,7 @@ describe('Langchain', () => {
     });
 
     test('should reject with ETIMEDOUT when timed out', async () => {
-      const model = makeClient('bigscience/bloom');
+      const model = makeClient('google/flan-ul2');
 
       await expect(
         model.call('Hello, World', { timeout: 10 }),

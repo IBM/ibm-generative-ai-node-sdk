@@ -81,6 +81,7 @@ describe('client', () => {
             model_id: 'google/ul2',
             input: 'Hello, World',
             parameters: {
+              min_new_tokens: 5,
               max_new_tokens: 10,
             },
           },

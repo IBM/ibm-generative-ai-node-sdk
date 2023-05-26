@@ -14,7 +14,7 @@ describe('client', () => {
   describe('generate', () => {
     test('should return correct response for a single input', async () => {
       const data = await client.generate({
-        model_id: 'bigscience/bloom',
+        model_id: 'google/flan-ul2',
         input: 'Hello, World',
       });
 
@@ -29,11 +29,11 @@ describe('client', () => {
     test('should return correct response for each input', async () => {
       const inputs = [
         {
-          model_id: 'bigscience/bloom',
+          model_id: 'google/flan-ul2',
           input: 'Hello, World',
         },
         {
-          model_id: 'bigscience/bloom',
+          model_id: 'google/flan-ul2',
           input: 'Hello again',
         },
       ];
@@ -52,7 +52,7 @@ describe('client', () => {
 
     test('should handle concurrency limits', async () => {
       const inputs = [...Array(20).keys()].map(() => ({
-        model_id: 'bigscience/bloom',
+        model_id: 'google/flan-ul2',
         input: 'Hello, World',
       }));
 

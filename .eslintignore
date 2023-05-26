@@ -1,0 +1,4 @@
+/node_modules/**/*
+/dist/**/*
+.eslintrc.cjs
+tsup.config.ts

@@ -1,0 +1,33 @@
+name: Publish on Release
+
+on:
+  release:
+    types: [created]
+
+env:
+  GENAI_DEFAULT_ENDPOINT: ${{ vars.GENAI_DEFAULT_ENDPOINT }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
+
+  publish-npm:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org/
+      - run: yarn npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.npm_token}}

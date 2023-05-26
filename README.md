@@ -29,7 +29,6 @@ The SDK supports both TypeScript and JavaScript as well as ESM and CommonJS.
 - ⏩ Requests are always returned in the respective order
 - 🙏 Support both promises and callbacks
 - Integrations
-  - 💬 Slack application - configure your default parameters and model in either place
   - ⛓️ LangChain - build applications with LLMs through composability
 
 ![-----------------------------------------------------](./docs/img/rainbow.png)

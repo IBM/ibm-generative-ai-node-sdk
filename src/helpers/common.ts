@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import type { Callback } from '../client.js';
+import { callbackify } from 'node:util';
 
 export type FalsyValues = false | '' | 0 | null | undefined;
 export type Truthy<T> = T extends FalsyValues ? never : T;
@@ -38,3 +40,20 @@ export function safeParseJson<T = any>(value: unknown): T | null {
 }
 
 export type Unwrap<T> = T extends Array<infer P> ? P : T;
+
+export function respond<T>(executor: () => Promise<T>, cb?: Callback<T>) {
+  return cb ? callbackify(executor)(cb) : executor();
+}
+
+export function parseFunctionOverloads<A, C extends AnyFn>(
+  optionsOrCallback?: A | C,
+  callback?: C,
+) {
+  const opts = isFunction(optionsOrCallback) ? undefined : optionsOrCallback;
+  const cb = isFunction(optionsOrCallback) ? optionsOrCallback : callback;
+
+  return {
+    opts: opts as Exclude<A, AnyFn>,
+    cb: cb as Exclude<C, Exclude<A, C>>,
+  };
+}

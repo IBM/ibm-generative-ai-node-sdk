@@ -3,7 +3,7 @@ import { PromptTemplate } from 'langchain/prompts';
 import { LLMChain } from 'langchain/chains';
 
 describe('Langchain', () => {
-  const makeClient = (modelId: string, stream?: boolean) =>
+  const makeClient = (modelId?: string, stream?: boolean) =>
     new GenAIModel({
       modelId,
       stream,
@@ -34,9 +34,9 @@ describe('Langchain', () => {
   });
 
   describe('generate', () => {
-    // TODO: enable once the client/API will support passing empty model
+    // TODO: enable once we will set default model for the test account
     test.skip('should handle empty modelId', async () => {
-      const client = makeClient('');
+      const client = makeClient();
 
       const data = await client.call('Who are you?');
       expectIsString(data);

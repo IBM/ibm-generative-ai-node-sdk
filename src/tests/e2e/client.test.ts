@@ -37,6 +37,20 @@ describe('client', () => {
       }
     }, 200_000);
 
+    // TODO: enable once we will set default model for the test account
+    test.skip('should fallback to default model', async () => {
+      const data = await client.generate({
+        input: `What's the name of highest building?`,
+      });
+
+      expect(data).toMatchObject({
+        generated_text: expect.any(String),
+        generated_token_count: expect.any(Number),
+        input_token_count: expect.any(Number),
+        stop_reason: expect.any(String),
+      });
+    }, 15_000);
+
     describe('streaming', () => {
       const makeValidStream = () =>
         client.generate(

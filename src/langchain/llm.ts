@@ -1,13 +1,13 @@
 import { BaseLLM, BaseLLMParams } from 'langchain/llms/base';
 import { Client, Configuration } from '../client.js';
 import { CallbackManagerForLLMRun } from 'langchain/callbacks';
-import { isNotEmptyArray, concatUnique } from '../helpers/common.js';
+import { isNotEmptyArray, concatUnique, isNullish } from '../helpers/common.js';
 import type { LLMResult, Generation } from 'langchain/schema';
 import type { GenerateOutput } from '../client-types.js';
 import { GenerateInput } from '../client-types.js';
 
 export interface GenAIModelOptions {
-  modelId: string;
+  modelId?: string | null;
   stream?: boolean;
   parameters?: Record<string, any>;
   timeout?: number;
@@ -17,7 +17,7 @@ export interface GenAIModelOptions {
 export class GenAIModel extends BaseLLM {
   #client: Client;
 
-  protected modelId: string;
+  protected modelId?: string | null;
   protected stream: boolean;
   protected timeout: number | undefined;
   protected parameters: Record<string, any>;
@@ -46,7 +46,9 @@ export class GenAIModel extends BaseLLM {
     const stopSequences = concatUnique(this.parameters.stop, options.stop);
 
     return prompts.map((input) => ({
-      model_id: this.modelId,
+      ...(!isNullish(this.modelId) && {
+        model_id: this.modelId,
+      }),
       input,
       parameters: {
         ...this.parameters,
@@ -141,7 +143,9 @@ export class GenAIModel extends BaseLLM {
 
   async getNumTokens(input: string): Promise<number> {
     const result = await this.#client.tokenize({
-      model_id: this.modelId,
+      ...(!isNullish(this.modelId) && {
+        model_id: this.modelId,
+      }),
       input,
       parameters: {
         return_tokens: false,
@@ -152,7 +156,7 @@ export class GenAIModel extends BaseLLM {
   }
 
   _modelType(): string {
-    return this.modelId;
+    return this.modelId ?? 'default';
   }
 
   _llmType(): string {

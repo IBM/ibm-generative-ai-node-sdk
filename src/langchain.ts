@@ -91,7 +91,9 @@ export class GenAIModel extends BaseLLM {
 
         for await (const chunk of stream) {
           output.generated_text += chunk.generated_text;
-          output.stop_reason += output.stop_reason;
+          if (chunk.stop_reason) {
+            output.stop_reason = chunk.stop_reason;
+          }
           output.input_token_count += chunk.input_token_count;
           output.generated_token_count += chunk.generated_token_count;
 

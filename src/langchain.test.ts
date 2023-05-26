@@ -11,6 +11,11 @@ describe('Langchain', () => {
         endpoint: process.env.ENDPOINT,
         apiKey: process.env.API_KEY,
       },
+      parameters: {
+        top_k: 1,
+        max_new_tokens: 5,
+        min_new_tokens: 2,
+      },
     });
 
   const expectIsString = (value?: unknown) => {

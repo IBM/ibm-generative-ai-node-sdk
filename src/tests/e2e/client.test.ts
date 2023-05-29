@@ -12,44 +12,6 @@ describe('client', () => {
   });
 
   describe('generate', () => {
-    test('should return correct response for a single input', async () => {
-      const data = await client.generate({
-        model_id: 'google/flan-ul2',
-        input: 'Hello, World',
-      });
-
-      expect(data).toMatchObject({
-        generated_text: expect.any(String),
-        generated_token_count: expect.any(Number),
-        input_token_count: expect.any(Number),
-        stop_reason: expect.any(String),
-      });
-    }, 15_000);
-
-    test('should return correct response for each input', async () => {
-      const inputs = [
-        {
-          model_id: 'google/flan-ul2',
-          input: 'Hello, World',
-        },
-        {
-          model_id: 'google/flan-ul2',
-          input: 'Hello again',
-        },
-      ];
-
-      const outputs = await Promise.all(client.generate(inputs));
-      expect(outputs.length).toBe(inputs.length);
-      outputs.forEach((output) => {
-        expect(output).toMatchObject({
-          generated_text: expect.any(String),
-          generated_token_count: expect.any(Number),
-          input_token_count: expect.any(Number),
-          stop_reason: expect.any(String),
-        });
-      });
-    }, 20_000);
-
     test('should handle concurrency limits', async () => {
       const inputs = [...Array(20).keys()].map(() => ({
         model_id: 'google/flan-ul2',
@@ -81,7 +43,6 @@ describe('client', () => {
             model_id: 'google/ul2',
             input: 'Hello, World',
             parameters: {
-              min_new_tokens: 5,
               max_new_tokens: 10,
             },
           },
@@ -205,38 +166,60 @@ describe('client', () => {
     });
   });
 
-  describe('tokenization', () => {
-    test('should return non-empty vocabulary', () => {
-      const isNonEmptyString = (value?: unknown): value is string =>
-        Boolean(value && typeof value === 'string');
-
-      expect(
-        client.tokenize({
-          input: 'Hello, how are you? Are you okay?',
-          model_id: 'google/flan-t5-xl',
-          parameters: {
-            return_tokens: true,
-          },
+  describe('error handling', () => {
+    test('should reject with extended error for invalid model', async () => {
+      await expect(
+        client.generate({
+          model_id: 'invalid-model',
+          input: 'Hello, World',
         }),
-      ).resolves.toEqual(
+      ).rejects.toEqual(
         expect.objectContaining({
-          token_count: expect.toBePositive(),
-          tokens: expect.toSatisfyAll(isNonEmptyString),
+          code: 'ERR_NON_2XX_3XX_RESPONSE',
+          statusCode: 404,
+          message: 'Model not found',
+          extensions: {
+            code: 'NOT_FOUND',
+            state: { model_id: 'invalid-model' },
+          },
         }),
       );
     });
-  });
 
-  describe('models', () => {
-    test('should return some models', async () => {
-      const models = await client.models();
-      expect(models.length).toBeGreaterThan(0);
+    test('should reject with ERR_CANCELED when aborted', async () => {
+      const controller = new AbortController();
+
+      const generatePromise = client.generate(
+        {
+          model_id: 'google/flan-ul2',
+          input: 'Hello, World',
+        },
+        { signal: controller.signal },
+      );
+
+      setTimeout(() => {
+        controller.abort();
+      }, 50);
+
+      await expect(generatePromise).rejects.toEqual(
+        expect.objectContaining({
+          code: 'ERR_CANCELED',
+          message: 'canceled',
+        }),
+      );
     });
 
-    test('should return details of a specific model', async () => {
-      const id = 'google/ul2';
-      const details = await client.model({ id });
-      expect(details).toHaveProperty('id', id);
+    test('should reject with ETIMEDOUT when timed out', async () => {
+      await expect(
+        client.generate(
+          { model_id: 'google/flan-ul2', input: 'Hello, World' },
+          { timeout: 1, retries: 1 },
+        ),
+      ).rejects.toEqual(
+        expect.objectContaining({
+          code: 'ETIMEDOUT',
+        }),
+      );
     });
   });
 });

@@ -195,7 +195,7 @@ export interface ModelOutput {
       short_description?: string;
       description?: string;
     };
-    schema_generate: ModelSchema[];
-    schema_tokenize: ModelSchema[];
+    schema_generate: ModelSchema;
+    schema_tokenize: ModelSchema;
   };
 }

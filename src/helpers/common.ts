@@ -41,19 +41,62 @@ export function safeParseJson<T = any>(value: unknown): T | null {
 
 export type Unwrap<T> = T extends Array<infer P> ? P : T;
 
-export function respond<T>(executor: () => Promise<T>, cb?: Callback<T>) {
-  return cb ? callbackify(executor)(cb) : executor();
-}
-
-export function parseFunctionOverloads<A, C extends AnyFn>(
-  optionsOrCallback?: A | C,
+export function parseFunctionOverloads<A, B, C extends AnyFn>(
+  inputOrOptionsOrCallback?: A | B | C,
+  optionsOrCallback?: B | C,
   callback?: C,
-) {
-  const opts = isFunction(optionsOrCallback) ? undefined : optionsOrCallback;
+): {
+  input?: Exclude<A, B | C>;
+  options?: Exclude<B, C>;
+  callback?: C;
+} {
+  if (isFunction(inputOrOptionsOrCallback)) {
+    return { callback: inputOrOptionsOrCallback };
+  }
+
+  const input = inputOrOptionsOrCallback as A;
+  const options = isFunction(optionsOrCallback) ? undefined : optionsOrCallback;
   const cb = isFunction(optionsOrCallback) ? optionsOrCallback : callback;
 
   return {
-    opts: opts as Exclude<A, AnyFn>,
-    cb: cb as Exclude<C, Exclude<A, C>>,
+    input: input as Exclude<A, B | C>,
+    options: options as Exclude<B, C>,
+    callback: cb as C,
   };
+}
+
+export function handle<A, B, C extends AnyFn, R>(
+  params: {
+    inputOrOptionsOrCallback?: A | B | C;
+    optionsOrCallback?: B | C;
+    callback?: C;
+  },
+  executor: (params: {
+    input?: Exclude<A, B | C>;
+    options?: Exclude<B, C>;
+  }) => Promise<R>,
+) {
+  const { input, options, callback } = parseFunctionOverloads<A, B, C>(
+    params.inputOrOptionsOrCallback,
+    params.optionsOrCallback,
+    params.callback,
+  );
+
+  const executorWrapper = () =>
+    executor({
+      input,
+      options,
+    });
+
+  if (callback) {
+    return callbackify(executorWrapper)(callback);
+  }
+  return executorWrapper();
+}
+
+export function isTypeOf<T>(
+  value: unknown | undefined,
+  result: boolean,
+): value is T {
+  return result;
 }

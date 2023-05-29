@@ -1,10 +1,10 @@
-import { BaseLLM } from 'langchain/llms/base';
-import { Client, Configuration } from './client.js';
+import { BaseLLM, BaseLLMParams } from 'langchain/llms/base';
+import { Client, Configuration } from '../client.js';
 import { CallbackManagerForLLMRun } from 'langchain/callbacks';
-import { isNotEmptyArray, concatUnique } from './helpers/common.js';
+import { isNotEmptyArray, concatUnique } from '../helpers/common.js';
 import type { LLMResult, Generation } from 'langchain/schema';
-import type { GenerateOutput } from './client-types.js';
-import { GenerateInput } from './client-types.js';
+import type { GenerateOutput } from '../client-types.js';
+import { GenerateInput } from '../client-types.js';
 
 export interface GenAIModelOptions {
   modelId: string;
@@ -28,8 +28,9 @@ export class GenAIModel extends BaseLLM {
     parameters,
     timeout,
     configuration,
-  }: GenAIModelOptions) {
-    super({});
+    ...baseParams
+  }: GenAIModelOptions & BaseLLMParams) {
+    super(baseParams ?? {});
 
     this.modelId = modelId;
     this.timeout = timeout;

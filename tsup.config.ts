@@ -9,7 +9,7 @@ if (!GENAI_DEFAULT_ENDPOINT)
   throw new Error('Missing GENAI_DEFAULT_ENDPOINT env variable');
 
 export default defineConfig({
-  entry: ['src/index.ts', 'src/langchain.ts'],
+  entry: ['src/index.ts', 'src/langchain/index.ts'],
   tsconfig: 'tsconfig.build.json',
   clean: true,
   dts: true,

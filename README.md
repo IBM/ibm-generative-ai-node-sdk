@@ -214,4 +214,44 @@ await model.call('Tell me a joke.', undefined, [
 ]);
 ```
 
+#### Chat support
+
+import { GenAIChatModel } from '@ibm-generative-ai/node-sdk/langchain';
+
+```typescript
+const client = new GenAIChatModel({
+  modelId: 'sambanovasystems/bloomchat-176b-v1',
+  stream: false,
+  configuration: {
+    endpoint: process.env.ENDPOINT,
+    apiKey: process.env.API_KEY,
+  },
+  parameters: {
+    decoding_method: 'greedy',
+    min_new_tokens: 10,
+    max_new_tokens: 25,
+    repetition_penalty: 1.5,
+  },
+  rolesMapping: {
+    human: {
+      name: 'human',
+      stopSequence: '<human>:',
+    },
+    system: {
+      name: 'bot',
+      stopSequence: '<bot>:',
+    },
+  },
+});
+
+const response = await chat.call([
+  new SystemChatMessage(
+    'You are a helpful assistant that translates English to Spanish.',
+  ),
+  new HumanChatMessage('Translate: I love programming.'),
+]);
+```
+
+console.info(response.text) // "Me encanta la programación."
+
 ![-----------------------------------------------------](./docs/img/rainbow.png)

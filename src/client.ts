@@ -16,7 +16,6 @@ import errorFactory, {
 } from './errors.js';
 import {
   GenerateConfigInput,
-  GenerateConfigInputOptions,
   GenerateConfigOptions,
   GenerateConfigOutput,
   GenerateInput,
@@ -32,9 +31,17 @@ import {
   TokenizeOutput,
   ModelInput,
   ModelOutput,
+  GenerateConfigInputOptions,
 } from './client-types.js';
 import { version } from './buildInfo.js';
-import { isFunction, safeParseJson, Unwrap, wait } from './helpers/common.js';
+import {
+  safeParseJson,
+  Unwrap,
+  wait,
+  parseFunctionOverloads,
+  handle,
+  isTypeOf,
+} from './helpers/common.js';
 import { TypedReadable } from './utils/stream.js';
 import { lookupApiKey, lookupEndpoint } from './helpers/config.js';
 import { RETRY_ATTEMPTS_DEFAULT } from './constants.js';
@@ -244,29 +251,48 @@ export class Client {
     ).then((response) => response.data);
   }
 
-  async tokenize(
-    { input, ...restInput }: TokenizeInput,
+  tokenize(
+    input: TokenizeInput,
     options?: HttpHandlerOptions,
-  ): Promise<TokenizeOutput> {
-    const { results } = await this.#fetcher<
-      ApiTypes.TokenizeOutput,
-      ApiTypes.TokenizeInput
-    >({
-      ...options,
-      method: 'POST',
-      url: '/v1/tokenize',
-      data: {
-        ...restInput,
-        inputs: [input],
+  ): Promise<TokenizeOutput>;
+  tokenize(
+    input: TokenizeInput,
+    options: HttpHandlerOptions,
+    callback: Callback<TokenizeOutput>,
+  ): void;
+  tokenize(input: TokenizeInput, callback: Callback<TokenizeOutput>): void;
+  tokenize(
+    { input, ...restInput }: TokenizeInput,
+    optionsOrCallback?: HttpHandlerOptions | Callback<TokenizeOutput>,
+    callback?: Callback<TokenizeOutput>,
+  ): Promise<TokenizeOutput> | void {
+    return handle(
+      {
+        optionsOrCallback,
+        callback,
       },
-      stream: false,
-    });
+      async ({ options }) => {
+        const { results } = await this.#fetcher<
+          ApiTypes.TokenizeOutput,
+          ApiTypes.TokenizeInput
+        >({
+          ...options,
+          method: 'POST',
+          url: '/v1/tokenize',
+          data: {
+            ...restInput,
+            inputs: [input],
+          },
+          stream: false,
+        });
 
-    if (results.length !== 1) {
-      throw new InvalidInputError('Unexpected number of results');
-    }
+        if (results.length !== 1) {
+          throw new InvalidInputError('Unexpected number of results');
+        }
 
-    return results[0];
+        return results[0];
+      },
+    );
   }
 
   generate(input: GenerateInput, callback: Callback<GenerateOutput>): void;
@@ -305,20 +331,24 @@ export class Client {
       | HttpHandlerStreamOptions
       | Callback<GenerateOutput>
       | Callback<GenerateOutput | null>,
-    callback?: Callback<GenerateOutput> | Callback<GenerateOutput | null>,
+    callbackOrNothing?:
+      | Callback<GenerateOutput>
+      | Callback<GenerateOutput | null>,
   ):
     | TypedReadable<GenerateOutput>
     | Promise<GenerateOutput>
     | Promise<GenerateOutput>[]
     | void {
-    // Get overloaded arguments
-    const opts = !isFunction(optionsOrCallback) ? optionsOrCallback : undefined;
-    const cb = isFunction(optionsOrCallback) ? optionsOrCallback : callback;
+    const { callback, options } = parseFunctionOverloads(
+      undefined,
+      optionsOrCallback,
+      callbackOrNothing,
+    );
 
     // Track time for timeout
     const getTimeout = (() => {
       const start = Date.now();
-      const timeout = opts?.timeout ?? this.#client.defaults.timeout;
+      const timeout = options?.timeout ?? this.#client.defaults.timeout;
 
       return () => (timeout ? timeout - (Date.now() - start) : Infinity);
     })();
@@ -330,7 +360,7 @@ export class Client {
       input: inputText,
       ...params
     }: Unwrap<typeof input>) => ({
-      ...opts,
+      ...options,
       method: 'POST',
       url: '/v1/generate',
       data: {
@@ -339,12 +369,12 @@ export class Client {
         use_default: true,
         parameters: {
           ...params.parameters,
-          stream: Boolean(opts?.stream),
+          stream: Boolean(options?.stream),
         },
       },
     });
 
-    if (opts?.stream) {
+    if (options?.stream) {
       if (inputs.length > 1) {
         throw new InvalidInputError(
           'Cannot do streaming for more than one input!',
@@ -387,14 +417,14 @@ export class Client {
         .on('error', (err) => stream.emit('error', err))
         .pipe(stream);
 
-      if (!cb) {
+      if (!callback) {
         return stream;
       }
 
-      stream.on('data', (data) => cb(null, data));
-      stream.on('error', (err) => (cb as ErrorCallback)(err));
+      stream.on('data', (data) => callback(null, data));
+      stream.on('error', (err) => (callback as ErrorCallback)(err));
       stream.on('finish', () =>
-        (cb as DataCallback<GenerateOutput | null>)(null, null),
+        (callback as DataCallback<GenerateOutput | null>)(null, null),
       );
 
       return;
@@ -408,7 +438,7 @@ export class Client {
         // Retry on concurrency limit error
         while (getTimeout() > 0) {
           // Cached limits preflight
-          const limits = await this.generateLimits(undefined, opts);
+          const limits = await this.generateLimits(undefined, options);
 
           // Check if the input fits into the capacity given previous inputs have precedence
           const cumulativeTokenCount = tokenCounts
@@ -453,11 +483,11 @@ export class Client {
       }
     });
 
-    if (cb) {
+    if (callback) {
       promises.forEach((promise) =>
         promise.then(
-          (data) => cb(null as never, data),
-          (err) => (cb as ErrorCallback)(err),
+          (data) => callback(null as never, data),
+          (err) => (callback as ErrorCallback)(err),
         ),
       );
     } else {
@@ -465,96 +495,194 @@ export class Client {
     }
   }
 
-  async generateConfig(
+  generateConfig(
+    options: GenerateConfigOptions,
+    callback: Callback<GenerateConfigOutput>,
+  ): void;
+  generateConfig(
     options?: GenerateConfigOptions,
   ): Promise<GenerateConfigOutput>;
-  async generateConfig(
+  generateConfig(
+    input: GenerateConfigInput,
+    options?: GenerateConfigInputOptions,
+  ): Promise<GenerateConfigOutput>;
+  generateConfig(
+    input: GenerateConfigInput,
+    options?: GenerateConfigInputOptions,
+  ): Promise<GenerateConfigOutput>;
+  generateConfig(
     input: GenerateConfigInput,
     options: GenerateConfigInputOptions,
-  ): Promise<GenerateConfigOutput>;
-  async generateConfig(
-    inputOrOptions?: GenerateConfigInput | GenerateConfigOptions,
-    options?: GenerateConfigInputOptions,
-  ): Promise<GenerateConfigOutput> {
-    if (options) {
-      const { strategy, ...httpOptions } = options;
-      const input = inputOrOptions as GenerateConfigInput;
-      return this.#fetcher<
-        ApiTypes.GenerateConfigOutput,
-        ApiTypes.GenerateConfigInput
-      >({
-        ...httpOptions,
-        method: strategy === 'merge' ? 'PATCH' : 'PUT',
-        url: '/v1/generate/config',
-        data: input,
-      });
-    } else {
-      const { reset, ...httpOptions } = (inputOrOptions ??
-        {}) as GenerateConfigOptions;
-      const GET_GENERATE_CONFIG_ID = 'get-generate-config';
+    callback: Callback<GenerateConfigOutput>,
+  ): void;
+  generateConfig(
+    input: GenerateConfigInput,
+    callback: Callback<GenerateConfigOutput>,
+  ): void;
+  generateConfig(
+    inputOrResetOptions?: GenerateConfigInput | GenerateConfigOptions,
+    optionsOrCallback?:
+      | GenerateConfigInputOptions
+      | Callback<GenerateConfigOutput>,
+    callback?: Callback<GenerateConfigOutput>,
+  ): Promise<GenerateConfigOutput> | void {
+    return handle<
+      GenerateConfigInput | GenerateConfigOptions,
+      GenerateConfigInputOptions | Callback<GenerateConfigOutput>,
+      Callback<GenerateConfigOutput>,
+      GenerateConfigOutput
+    >(
+      {
+        inputOrOptionsOrCallback: inputOrResetOptions,
+        optionsOrCallback: optionsOrCallback,
+        callback,
+      },
+      ({ input, options }) => {
+        if (
+          isTypeOf<GenerateConfigOptions | undefined>(
+            input,
+            !input || 'reset' in input,
+          )
+        ) {
+          const { reset, ...httpOptions } = input ?? {};
+          const GET_GENERATE_CONFIG_ID = 'get-generate-config';
 
-      if (reset) {
-        return this.#fetcher<ApiTypes.GenerateConfigOutput>({
+          if (reset) {
+            return this.#fetcher<ApiTypes.GenerateConfigOutput>({
+              ...httpOptions,
+              method: 'DELETE',
+              url: '/v1/generate/config',
+              cache: {
+                update: {
+                  [GET_GENERATE_CONFIG_ID]: 'delete',
+                },
+              },
+            });
+          } else {
+            return this.#fetcher<ApiTypes.GenerateConfigOutput>({
+              ...httpOptions,
+              method: 'GET',
+              url: '/v1/generate/config',
+              id: GET_GENERATE_CONFIG_ID,
+              cache: {
+                update: {
+                  [GET_GENERATE_CONFIG_ID]: 'delete',
+                },
+              },
+            });
+          }
+        }
+
+        const { strategy, ...httpOptions } = options ?? {};
+        return this.#fetcher<
+          ApiTypes.GenerateConfigOutput,
+          ApiTypes.GenerateConfigInput
+        >({
           ...httpOptions,
-          method: 'DELETE',
+          method: strategy === 'merge' ? 'PATCH' : 'PUT',
           url: '/v1/generate/config',
-          cache: {
-            update: {
-              [GET_GENERATE_CONFIG_ID]: 'delete',
-            },
-          },
+          stream: false,
+          data: input,
         });
-      } else {
-        return this.#fetcher<ApiTypes.GenerateConfigOutput>({
-          ...httpOptions,
-          method: 'GET',
-          url: '/v1/generate/config',
-          id: GET_GENERATE_CONFIG_ID,
-          cache: {
-            update: {
-              [GET_GENERATE_CONFIG_ID]: 'delete',
-            },
-          },
-        });
-      }
-    }
+      },
+    );
   }
 
   generateLimits(
     input?: GenerateLimitsInput,
     options?: HttpHandlerOptions,
-  ): Promise<GenerateLimitsOutput> {
-    return this.#fetcher<ApiTypes.GenerateLimitsOutput>({
-      ...options,
-      method: 'GET',
-      url: '/v1/generate/limits',
-      cache: {
-        ttl: 1_000,
+  ): Promise<GenerateLimitsOutput>;
+  generateLimits(callback: Callback<GenerateLimitsOutput>): void;
+  generateLimits(
+    input: GenerateLimitsInput,
+    callback: Callback<GenerateLimitsOutput>,
+  ): void;
+  generateLimits(
+    input: GenerateLimitsInput,
+    options: HttpHandlerOptions,
+    callback: Callback<GenerateLimitsOutput>,
+  ): void;
+  generateLimits(
+    inputOrCallback: GenerateLimitsInput,
+    optionsOrCallback?: HttpHandlerOptions | Callback<GenerateLimitsOutput>,
+    callback?: Callback<GenerateLimitsOutput>,
+  ): Promise<GenerateLimitsOutput> | void {
+    return handle(
+      {
+        inputOrOptionsOrCallback: inputOrCallback,
+        optionsOrCallback: optionsOrCallback,
+        callback,
       },
-    });
+      ({ options }) =>
+        this.#fetcher<ApiTypes.GenerateLimitsOutput>({
+          ...options,
+          method: 'GET',
+          url: '/v1/generate/limits',
+          cache: {
+            ttl: 1_000,
+          },
+        }),
+    );
   }
 
-  async models(
+  models(callback: Callback<ModelsOutput>): void;
+  models(input: ModelsInput, callback: Callback<ModelsOutput>): void;
+  models(
+    input: ModelsInput,
+    options: HttpHandlerOptions,
+    callback: Callback<ModelsOutput>,
+  ): void;
+  models(
     input?: ModelsInput,
     options?: HttpHandlerOptions,
-  ): Promise<ModelsOutput> {
-    const { results } = await this.#fetcher<ApiTypes.ModelsOutput>({
-      ...options,
-      method: 'GET',
-      url: '/v1/models',
-    });
-    return results;
+  ): Promise<ModelsOutput>;
+  models(
+    inputOrCallback?: ModelsInput | Callback<ModelsOutput>,
+    optionsOrCallback?: HttpHandlerOptions | Callback<ModelsOutput>,
+    callback?: Callback<ModelsOutput>,
+  ): Promise<ModelsOutput> | void {
+    return handle(
+      {
+        inputOrOptionsOrCallback: inputOrCallback,
+        optionsOrCallback,
+        callback,
+      },
+      async ({ options }) => {
+        const { results } = await this.#fetcher<ApiTypes.ModelsOutput>({
+          ...options,
+          method: 'GET',
+          url: '/v1/models',
+        });
+        return results;
+      },
+    );
   }
 
-  async model(
+  model(input: ModelInput, options?: HttpHandlerOptions): Promise<ModelOutput>;
+  model(
     input: ModelInput,
-    options?: HttpHandlerOptions,
-  ): Promise<ModelOutput> {
-    const { results } = await this.#fetcher<ApiTypes.ModelOutput>({
-      ...options,
-      method: 'GET',
-      url: `/v1/models/${encodeURIComponent(input.id)}`,
-    });
-    return results;
+    options: HttpHandlerOptions,
+    callback: Callback<ModelOutput>,
+  ): void;
+  model(input: ModelInput, callback: Callback<ModelOutput>): void;
+  model(
+    input: ModelInput,
+    optionsOrCallback?: HttpHandlerOptions | Callback<ModelOutput>,
+    callback?: Callback<ModelOutput>,
+  ): Promise<ModelOutput> | void {
+    return handle(
+      {
+        optionsOrCallback,
+        callback,
+      },
+      async ({ options }) => {
+        const { results } = await this.#fetcher<ApiTypes.ModelOutput>({
+          ...options,
+          method: 'GET',
+          url: `/v1/models/${encodeURIComponent(input.id)}`,
+        });
+        return results;
+      },
+    );
   }
 }

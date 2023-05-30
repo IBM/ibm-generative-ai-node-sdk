@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import type { Callback } from '../client.js';
 import { callbackify } from 'node:util';
 
 export type FalsyValues = false | '' | 0 | null | undefined;

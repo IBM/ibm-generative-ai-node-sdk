@@ -236,7 +236,10 @@ export class Client {
       (retry, attempt) =>
         this.#client<Output, Input>({
           ...cacheConfig,
-          timeout: input.timeout === Infinity ? undefined : input.timeout,
+          timeout:
+            input.timeout === undefined || input.timeout === Infinity
+              ? 0 // no timeout
+              : Math.max(1, input.timeout),
           cache: { ...cacheConfig.cache, override: attempt > 1 },
         }).catch((err) => {
           const error = errorFactory(err);
@@ -350,7 +353,8 @@ export class Client {
       const start = Date.now();
       const timeout = options?.timeout ?? this.#client.defaults.timeout;
 
-      return () => (timeout ? timeout - (Date.now() - start) : Infinity);
+      return () =>
+        Math.max(0, timeout ? timeout - (Date.now() - start) : Infinity);
     })();
 
     // Normalize inputs
@@ -438,7 +442,10 @@ export class Client {
         // Retry on concurrency limit error
         while (getTimeout() > 0) {
           // Cached limits preflight
-          const limits = await this.generateLimits(undefined, options);
+          const limits = await this.generateLimits(undefined, {
+            ...options,
+            timeout: getTimeout(),
+          });
 
           // Check if the input fits into the capacity given previous inputs have precedence
           const cumulativeTokenCount = tokenCounts
@@ -449,14 +456,13 @@ export class Client {
 
           // If within concurrency limits, try to execute the request
           if (isWithinLimits) {
-            const timeout = getTimeout();
             try {
               const { results } = await this.#fetcher<
                 ApiTypes.GenerateOutput,
                 ApiTypes.GenerateInput
               >({
                 ...prepareRequest(inputData),
-                timeout,
+                timeout: getTimeout(),
               });
 
               if (results.length !== 1) {

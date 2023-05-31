@@ -154,7 +154,9 @@ export class Client {
         );
       }
 
-      const onError = (err: unknown) => {
+      const onError = (e: unknown) => {
+        const err = errorFactory(e);
+
         delegatedController.abort();
         if (outputStream.readable) {
           outputStream.emit('error', err);
@@ -418,7 +420,7 @@ export class Client {
         timeout: getTimeout(),
         stream: true,
       })
-        .on('error', (err) => stream.emit('error', err))
+        .on('error', (err) => stream.emit('error', errorFactory(err)))
         .pipe(stream);
 
       if (!callback) {

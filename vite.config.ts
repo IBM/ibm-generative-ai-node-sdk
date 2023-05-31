@@ -8,5 +8,8 @@ export default defineConfig({
       'jest-extended/all',
       './src/tests/setup.ts',
     ],
+    coverage: {
+      exclude: ['**/__mocks__/**'],
+    },
   },
 });

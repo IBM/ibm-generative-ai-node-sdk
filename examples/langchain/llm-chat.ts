@@ -17,11 +17,9 @@ const makeClient = (stream?: boolean) =>
     },
     rolesMapping: {
       human: {
-        name: 'human',
         stopSequence: '<human>:',
       },
       system: {
-        name: 'bot',
         stopSequence: '<bot>:',
       },
     },

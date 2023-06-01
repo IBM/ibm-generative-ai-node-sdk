@@ -67,7 +67,7 @@ function isAbortError(err: unknown): err is DOMException {
   return Boolean(err && err instanceof Error && err.name === 'AbortError');
 }
 
-export default function errorFactory(err: unknown) {
+export function errorTransformer(err: unknown) {
   if (isAbortError(err)) {
     return new RequestCanceledError(
       err.message,
@@ -78,9 +78,11 @@ export default function errorFactory(err: unknown) {
     );
   }
 
-  if (!isAxiosError(err)) return err;
+  if (!isAxiosError(err)) {
+    return err;
+  }
 
-  if (isAxiosError(err) && err.response) {
+  if (err.response) {
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
     const response = err.response as AxiosResponse<ErrorResponse>;

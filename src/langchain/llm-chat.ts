@@ -10,7 +10,7 @@ import { InvalidInputError } from '../errors.js';
 import { GenAIModel, GenAIModelOptions } from './llm.js';
 import { GenerateOutput } from '../client-types.js';
 import { concatUnique } from '../helpers/common.js';
-import { SemiRequired } from '../helpers/types.js';
+import type { RequiredPartial } from '../helpers/types.js';
 
 interface GenAILLMOutput {
   tokenUsage: Pick<
@@ -19,11 +19,10 @@ interface GenAILLMOutput {
   >;
 }
 
-export type RolesMapping = SemiRequired<
+export type RolesMapping = RequiredPartial<
   Record<
     MessageType,
     {
-      name: string;
       stopSequence: string;
     }
   >,

@@ -14,15 +14,13 @@ describe('LangChain Chat', () => {
         decoding_method: 'greedy',
         min_new_tokens: 1,
         max_new_tokens: 25,
-        repetition_penalty: 1.5,
+        repetition_penalty: 2,
       },
       rolesMapping: {
         human: {
-          name: 'human',
           stopSequence: '<human>:',
         },
         system: {
-          name: 'bot',
           stopSequence: '<bot>:',
         },
       },
@@ -34,6 +32,12 @@ describe('LangChain Chat', () => {
   };
 
   describe('generate', () => {
+    const SYSTEM_MESSAGE = [
+      `You are a reliable English-to-French translation assistant.`,
+      `Your task is to accurately translate English text into French.`,
+      `Focus solely on providing the translation without including any additional information or content.`,
+    ].join(' ');
+
     test('should handle single question', async () => {
       const chat = makeClient();
 
@@ -49,10 +53,8 @@ describe('LangChain Chat', () => {
       const chat = makeClient();
 
       const response = await chat.call([
-        new SystemChatMessage(
-          'You are a helpful assistant that translates English to French.',
-        ),
-        new HumanChatMessage('Translate: I love programming.'),
+        new SystemChatMessage(SYSTEM_MESSAGE),
+        new HumanChatMessage('I love programming.'),
       ]);
       expectIsNonEmptyString(response.text);
     });
@@ -62,20 +64,12 @@ describe('LangChain Chat', () => {
 
       const response = await chat.generate([
         [
-          new SystemChatMessage(
-            'You are a helpful assistant that translates English to French.',
-          ),
-          new HumanChatMessage(
-            'Translate this sentence from English to French. I love programming.',
-          ),
+          new SystemChatMessage(SYSTEM_MESSAGE),
+          new HumanChatMessage('I love programming.'),
         ],
         [
-          new SystemChatMessage(
-            'You are a helpful assistant that translates English to French.',
-          ),
-          new HumanChatMessage(
-            'Translate this sentence from English to French. I love artificial intelligence.',
-          ),
+          new SystemChatMessage(SYSTEM_MESSAGE),
+          new HumanChatMessage('I love artificial intelligence.'),
         ],
       ]);
 

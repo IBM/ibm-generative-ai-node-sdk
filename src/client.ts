@@ -287,6 +287,7 @@ export class Client {
           url: '/v1/tokenize',
           data: {
             ...restInput,
+            use_default: true,
             inputs: [input],
           },
           stream: false,

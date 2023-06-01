@@ -8,7 +8,8 @@ import promiseRetry from 'promise-retry';
 import http from 'node:http';
 import https from 'node:https';
 import * as ApiTypes from './api-types.js';
-import errorFactory, {
+import {
+  errorTransformer,
   HttpError,
   InternalError,
   InvalidInputError,
@@ -154,7 +155,9 @@ export class Client {
         );
       }
 
-      const onError = (err: unknown) => {
+      const onError = (e: unknown) => {
+        const err = errorTransformer(e);
+
         delegatedController.abort();
         if (outputStream.readable) {
           outputStream.emit('error', err);
@@ -242,7 +245,7 @@ export class Client {
               : Math.max(1, input.timeout),
           cache: { ...cacheConfig.cache, override: attempt > 1 },
         }).catch((err) => {
-          const error = errorFactory(err);
+          const error = errorTransformer(err);
           const conditionFn = retryCondition ?? isRetrievableError;
 
           if (conditionFn(error)) {
@@ -418,7 +421,7 @@ export class Client {
         timeout: getTimeout(),
         stream: true,
       })
-        .on('error', (err) => stream.emit('error', err))
+        .on('error', (err) => stream.emit('error', errorTransformer(err)))
         .pipe(stream);
 
       if (!callback) {

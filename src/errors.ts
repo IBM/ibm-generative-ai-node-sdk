@@ -5,7 +5,7 @@ import {
   AxiosResponse,
   HttpStatusCode,
   isAxiosError,
-  isCancel,
+  isCancel as isAxiosCancel,
 } from 'axios';
 
 export class BaseError extends Error {}
@@ -34,6 +34,12 @@ export class RequestError extends BaseError {
   }
 }
 
+export class RequestCanceledError extends RequestError {
+  constructor(message?: string, code?: string, options?: ErrorOptions) {
+    super(message, code, true, options);
+  }
+}
+
 export class HttpError extends RequestError {
   statusCode: number;
   extensions?: ErrorExtensions;
@@ -57,8 +63,24 @@ export class HttpError extends RequestError {
   }
 }
 
-export default function errorFactory(err: unknown) {
-  if (!isAxiosError(err)) return err;
+function isAbortError(err: unknown): err is DOMException {
+  return Boolean(err && err instanceof Error && err.name === 'AbortError');
+}
+
+export function errorTransformer(err: unknown) {
+  if (isAbortError(err)) {
+    return new RequestCanceledError(
+      err.message,
+      String(err.cause ?? err.name),
+      {
+        cause: err,
+      },
+    );
+  }
+
+  if (!isAxiosError(err)) {
+    return err;
+  }
 
   if (err.response) {
     // The request was made and the server responded with a status code
@@ -80,7 +102,10 @@ export default function errorFactory(err: unknown) {
     );
   }
 
-  return new RequestError(err.message, err.code, isCancel(err), { cause: err });
+  if (isAxiosCancel(err as unknown)) {
+    return new RequestCanceledError(err.message, err.code, { cause: err });
+  }
+  return new RequestError(err.message, err.code, false, { cause: err });
 }
 
 export function isRetrievableError(error: unknown): boolean {

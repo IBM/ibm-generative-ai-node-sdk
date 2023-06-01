@@ -1,6 +1,7 @@
 import { GenerateResult } from '../../api-types.js';
 import { GenerateInput } from '../../client-types.js';
 import { Client } from '../../client.js';
+import { RequestCanceledError } from '../../errors.js';
 
 describe('client', () => {
   let client: Client;
@@ -201,12 +202,28 @@ describe('client', () => {
         controller.abort();
       }, 50);
 
-      await expect(generatePromise).rejects.toEqual(
-        expect.objectContaining({
-          code: 'ERR_CANCELED',
-          message: 'canceled',
-        }),
-      );
+      await expect(generatePromise).rejects.toThrow(RequestCanceledError);
+    });
+
+    test('should reject with ABORT_ERR when aborted (stream)', async () => {
+      const controller = new AbortController();
+      setTimeout(() => {
+        controller.abort();
+      }, 50);
+
+      await expect(async () => {
+        const stream = client.generate(
+          {
+            model_id: 'google/flan-ul2',
+            input: 'Hello, World',
+          },
+          { signal: controller.signal, stream: true },
+        );
+        await new Promise((resolve, reject) => {
+          stream.once('finish', resolve);
+          stream.once('error', reject);
+        });
+      }).rejects.toThrow(RequestCanceledError);
     });
 
     test('should reject with ETIMEDOUT when timed out', async () => {

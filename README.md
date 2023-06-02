@@ -248,7 +248,7 @@ const response = await chat.call([
   new SystemChatMessage(
     'You are a helpful assistant that translates English to Spanish.',
   ),
-  new HumanChatMessage('Translate: I love programming.'),
+  new HumanChatMessage('I love programming.'),
 ]);
 ```
 

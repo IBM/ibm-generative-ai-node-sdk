@@ -7,7 +7,7 @@ import type { GenerateOutput } from '../client-types.js';
 import { GenerateInput } from '../client-types.js';
 
 export interface GenAIModelOptions {
-  modelId?: string | null;
+  modelId?: string;
   stream?: boolean;
   parameters?: Record<string, any>;
   timeout?: number;
@@ -17,7 +17,7 @@ export interface GenAIModelOptions {
 export class GenAIModel extends BaseLLM {
   #client: Client;
 
-  protected modelId?: string | null;
+  protected modelId?: string;
   protected stream: boolean;
   protected timeout: number | undefined;
   protected parameters: Record<string, any>;

@@ -29,9 +29,9 @@
       "require": "./dist/index.cjs"
     },
     "./langchain": {
-      "types": "./dist/langchain.d.ts",
-      "import": "./dist/langchain.js",
-      "require": "./dist/langchain.cjs"
+      "types": "./dist/langchain/index.d.ts",
+      "import": "./dist/langchain/index.js",
+      "require": "./dist/langchain/index.cjs"
     }
   },
   "main": "./dist/index.js",

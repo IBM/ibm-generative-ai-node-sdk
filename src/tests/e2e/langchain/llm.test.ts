@@ -1,4 +1,4 @@
-import { GenAIModel } from './langchain.js';
+import { GenAIModel } from '../../../langchain/llm.js';
 import { PromptTemplate } from 'langchain/prompts';
 import { LLMChain } from 'langchain/chains';
 

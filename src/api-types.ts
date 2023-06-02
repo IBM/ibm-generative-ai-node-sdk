@@ -52,12 +52,11 @@ export interface UserGenerateDefaultOutput {
 // GENERATE
 
 export const GenerateInputSchema = z.object({
-  model_id: z.string(),
+  model_id: z.string().nullish(),
   inputs: z.array(z.string()),
   parameters: z.optional(z.record(z.any())),
   use_default: z.optional(z.boolean()),
 });
-
 export type GenerateInput = z.infer<typeof GenerateInputSchema>;
 
 export type GenerateStopReason =
@@ -102,8 +101,9 @@ export interface GenerateConfigOutput {
 }
 
 export const TokenizeInputSchema = z.object({
-  model_id: z.string(),
+  model_id: z.string().nullish(),
   inputs: z.array(z.string()),
+  use_default: z.optional(z.boolean()),
   parameters: z.optional(z.object({ return_tokens: z.optional(z.boolean()) })),
 });
 

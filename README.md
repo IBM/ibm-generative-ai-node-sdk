@@ -41,7 +41,7 @@ This is a hybrid package that supports both ESM and CommonJS, so you can use `im
 
 Install package using npm:
 
-```bash
+```shell
 npm install @ibm-generative-ai/node-sdk
 ```
 
@@ -234,11 +234,9 @@ const client = new GenAIChatModel({
   },
   rolesMapping: {
     human: {
-      name: 'human',
       stopSequence: '<human>:',
     },
     system: {
-      name: 'bot',
       stopSequence: '<bot>:',
     },
   },

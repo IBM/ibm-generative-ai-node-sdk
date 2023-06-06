@@ -7,6 +7,14 @@ import { lookupApiKey, lookupEndpoint } from './config.js';
 vi.mock('fs');
 
 describe('Helpers', () => {
+  const endpoint = process.env.GENAI_ENDPOINT;
+  const apiKey = process.env.GENAI_API_KEY;
+
+  afterAll(() => {
+    process.env.GENAI_ENDPOINT = endpoint;
+    process.env.GENAI_API_KEY = apiKey;
+  });
+
   describe('endpointLookup', () => {
     const EXPECTED_ENDPOINT = 'https://foobar';
 

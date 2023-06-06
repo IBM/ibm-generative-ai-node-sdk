@@ -8,8 +8,6 @@ export default defineConfig({
       'jest-extended/all',
       './src/tests/setup.ts',
     ],
-    singleThread: true,
-    bail: 1,
     coverage: {
       exclude: ['**/__mocks__/**'],
     },

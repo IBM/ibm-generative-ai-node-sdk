@@ -5,7 +5,7 @@ import fs from 'fs';
 
 export function lookupEndpoint(): string | null {
   return (
-    process.env.GENAI_ENDPOINT ?? process.env.GENAI_DEFAULT_ENDPOINT ?? null
+    process.env.GENAI_ENDPOINT || process.env.GENAI_DEFAULT_ENDPOINT || null
   );
 }
 

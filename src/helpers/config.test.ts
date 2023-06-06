@@ -7,19 +7,15 @@ import { lookupApiKey, lookupEndpoint } from './config.js';
 vi.mock('fs');
 
 describe('Helpers', () => {
-  const endpoint = process.env.GENAI_ENDPOINT;
-  const apiKey = process.env.GENAI_API_KEY;
-
   afterAll(() => {
-    process.env.GENAI_ENDPOINT = endpoint;
-    process.env.GENAI_API_KEY = apiKey;
+    vi.unstubAllEnvs();
   });
 
   describe('endpointLookup', () => {
     const EXPECTED_ENDPOINT = 'https://foobar';
 
     afterEach(() => {
-      delete process.env.GENAI_ENDPOINT;
+      vi.stubEnv('GENAI_ENDPOINT', '');
     });
 
     test('should read endpoint from the env variable', () => {
@@ -38,7 +34,7 @@ describe('Helpers', () => {
     const EXPECTED_API_KEY = 'foobar';
 
     afterEach(() => {
-      delete process.env.GENAI_API_KEY;
+      vi.stubEnv('GENAI_API_KEY', '');
     });
 
     test('should read apiKey from the env variable', () => {

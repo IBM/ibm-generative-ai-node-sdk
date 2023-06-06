@@ -216,9 +216,9 @@ await model.call('Tell me a joke.', undefined, [
 
 #### Chat support
 
+```typescript
 import { GenAIChatModel } from '@ibm-generative-ai/node-sdk/langchain';
 
-```typescript
 const client = new GenAIChatModel({
   modelId: 'sambanovasystems/bloomchat-176b-v1',
   stream: false,
@@ -250,8 +250,8 @@ const response = await chat.call([
   ),
   new HumanChatMessage('I love programming.'),
 ]);
-```
 
-console.info(response.text) // "Me encanta la programación."
+console.info(response.text); // "Me encanta la programación."
+```
 
 ![-----------------------------------------------------](./docs/img/rainbow.png)

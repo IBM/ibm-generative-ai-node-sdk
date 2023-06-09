@@ -8,6 +8,8 @@ The SDK supports both TypeScript and JavaScript as well as ESM and CommonJS.
 
 </div>
 
+>Looking for the Python version? Check out [IBM Generative AI Python SDK](https://github.com/IBM/ibm-generative-ai).
+
 ![-----------------------------------------------------](./docs/img/rainbow.png)
 
 ## Table of contents

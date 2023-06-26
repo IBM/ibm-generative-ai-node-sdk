@@ -374,7 +374,7 @@ export class Client {
       data: {
         ...params,
         inputs: [inputText],
-        use_default: true,
+        use_default: !params.prompt_id,
         parameters: {
           ...params.parameters,
           stream: Boolean(options?.stream),

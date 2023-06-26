@@ -53,6 +53,7 @@ export interface UserGenerateDefaultOutput {
 
 export const GenerateInputSchema = z.object({
   model_id: z.string().nullish(),
+  prompt_id: z.string().nullish(),
   inputs: z.array(z.string()),
   parameters: z.optional(z.record(z.any())),
   use_default: z.optional(z.boolean()),

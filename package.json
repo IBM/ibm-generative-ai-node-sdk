@@ -34,6 +34,12 @@
       "require": "./dist/langchain/index.cjs"
     }
   },
+  "typesVersions": {
+    "*": {
+      ".": ["dist/index.d.ts"],
+      "langchain": ["dist/langchain/index.d.ts"]
+    }
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "sideEffects": false,

@@ -15,11 +15,22 @@ export type HttpHandlerNoStreamOptions = HttpHandlerOptions & {
 export type HttpHandlerStreamOptions = HttpHandlerOptions & { stream: true };
 
 // GENERATE
-
-export const GenerateInputSchema = ApiTypes.GenerateInputSchema.omit({
+const BaseGenerateInputSchema = ApiTypes.GenerateInputSchema.omit({
   inputs: true,
   use_default: true,
+  prompt_id: true,
+  model_id: true,
 }).extend({ input: z.string() });
+export const GenerateInputSchema = z.union([
+  BaseGenerateInputSchema.extend({
+    model_id: ApiTypes.GenerateInputSchema.shape.model_id,
+    prompt_id: z.never().optional(),
+  }),
+  BaseGenerateInputSchema.extend({
+    prompt_id: ApiTypes.GenerateInputSchema.shape.prompt_id,
+    model_id: z.never().optional(),
+  }),
+]);
 export type GenerateInput = z.infer<typeof GenerateInputSchema>;
 export type GenerateOutput = ApiTypes.GenerateOutput['results'][number];
 

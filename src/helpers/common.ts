@@ -93,6 +93,35 @@ export function handle<A, B, C extends AnyFn, R>(
   return executorWrapper();
 }
 
+export function handleGenerator<A, B, C extends AnyFn, R>(
+  params: {
+    inputOrOptionsOrCallback?: A | B | C;
+    optionsOrCallback?: B | C;
+    callback?: C;
+  },
+  executor: (params: {
+    input?: Exclude<A, B | C>;
+    options?: Exclude<B, C>;
+  }) => AsyncGenerator<R>,
+) {
+  const { input, options, callback } = parseFunctionOverloads<A, B, C>(
+    params.inputOrOptionsOrCallback,
+    params.optionsOrCallback,
+    params.callback,
+  );
+
+  const executorWrapper = () =>
+    executor({
+      input,
+      options,
+    });
+
+  if (callback) {
+    return callbackifyGenerator(executorWrapper)(callback);
+  }
+  return executorWrapper();
+}
+
 export function isTypeOf<T>(
   value: unknown | undefined,
   result: boolean,
@@ -104,4 +133,20 @@ export function isNullish<T>(
   value: T | null | undefined,
 ): value is null | undefined {
   return value === null || value === undefined;
+}
+
+export function callbackifyGenerator<T>(generatorFn: () => AsyncGenerator<T>) {
+  const generator = generatorFn();
+  return (callback: AnyFn) => {
+    (async () => {
+      try {
+        for await (const result of generator) {
+          callback(null, result);
+        }
+      } catch (err) {
+        callback(err);
+      }
+    })();
+    return;
+  };
 }

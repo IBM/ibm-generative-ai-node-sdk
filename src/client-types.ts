@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import * as ApiTypes from './api-types.js';
+import { Readable } from 'node:stream';
 
 // GENERAL
 
@@ -64,3 +65,48 @@ export type ModelsOutput = ApiTypes.ModelsOutput['results'];
 export const ModelInputSchema = z.object({ id: z.string() });
 export type ModelInput = z.infer<typeof ModelInputSchema>;
 export type ModelOutput = ApiTypes.ModelOutput['results'];
+
+// TUNES
+
+export const TunesInputSchema = z.object({
+  filters: z
+    .object({
+      search: z.string().nullish(),
+      status: ApiTypes.TuneStatusSchema.nullish(),
+      offset: z.number().nonnegative().nullish(),
+      count: z.number().positive().nullish(),
+    })
+    .nullish(),
+});
+export type TunesInput = z.infer<typeof TunesInputSchema>;
+export type TunesOutput = ApiTypes.TunesOuput['results'][number];
+
+export type TuneAssetType = z.infer<typeof TuneAssetTypeSchema>;
+export const TuneAssetTypeSchema = z.enum(['encoder', 'logs']);
+
+export const TuneInputSchema = z.object({
+  id: z.string(),
+});
+export type TuneInput = z.infer<typeof TuneInputSchema>;
+export type TuneOptions = HttpHandlerOptions & {
+  delete?: boolean;
+};
+
+export const TuneCreateInputSchema = z.union([
+  TuneInputSchema,
+  ApiTypes.TuneInputSchema,
+]);
+export type TuneCreateInput = z.infer<typeof TuneCreateInputSchema>;
+export type TuneCreateOptions = HttpHandlerOptions;
+export type TuneOutput =
+  | (ApiTypes.TuneOutput['results'] & {
+      status: Exclude<ApiTypes.TuneOutput['results']['status'], 'COMPLETED'>;
+    })
+  | (ApiTypes.TuneOutput['results'] & {
+      status: Extract<ApiTypes.TuneOutput['results']['status'], 'COMPLETED'>;
+      downloadAsset: (type: TuneAssetType) => Promise<Readable>;
+    });
+
+export const TuneMethodsInputSchema = z.never();
+export type TuneMethodsInput = z.infer<typeof TuneMethodsInputSchema>;
+export type TuneMethodsOutput = ApiTypes.TuneMethodsOutput['results'];

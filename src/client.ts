@@ -5,7 +5,7 @@ import {
   setupCache,
 } from 'axios-cache-interceptor';
 import promiseRetry from 'promise-retry';
-import http from 'node:http';
+import http, { IncomingMessage } from 'node:http';
 import https from 'node:https';
 import * as ApiTypes from './api-types.js';
 import {
@@ -33,6 +33,16 @@ import {
   ModelInput,
   ModelOutput,
   GenerateConfigInputOptions,
+  TunesInput,
+  TunesOutput,
+  TuneCreateInput,
+  TuneOutput,
+  TuneOptions,
+  TuneInput,
+  TuneCreateOptions,
+  TuneMethodsOutput,
+  TuneMethodsInput,
+  TuneAssetType,
 } from './client-types.js';
 import { version } from './buildInfo.js';
 import {
@@ -42,6 +52,7 @@ import {
   parseFunctionOverloads,
   handle,
   isTypeOf,
+  handleGenerator,
 } from './helpers/common.js';
 import { TypedReadable } from './utils/stream.js';
 import { lookupApiKey, lookupEndpoint } from './helpers/config.js';
@@ -690,6 +701,175 @@ export class Client {
           ...options,
           method: 'GET',
           url: `/v1/models/${encodeURIComponent(input.id)}`,
+        });
+        return results;
+      },
+    );
+  }
+
+  tunes(callback: Callback<TunesOutput>): void;
+  tunes(input: TunesInput, callback: Callback<TunesOutput>): void;
+  tunes(
+    input: TunesInput,
+    options: HttpHandlerOptions,
+    callback: Callback<TunesOutput>,
+  ): void;
+  tunes(
+    input?: TunesInput,
+    options?: HttpHandlerOptions,
+  ): AsyncGenerator<TunesOutput>;
+  tunes(
+    inputOrCallback?: TunesInput | Callback<TunesOutput>,
+    optionsOrCallback?: HttpHandlerOptions | Callback<TunesOutput>,
+    callback?: Callback<TunesOutput>,
+  ): AsyncGenerator<TunesOutput> | void {
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const self = this;
+    return handleGenerator<
+      TunesInput | Callback<TunesOutput>,
+      HttpHandlerOptions | Callback<TunesOutput>,
+      Callback<TunesOutput>,
+      TunesOutput
+    >(
+      {
+        inputOrOptionsOrCallback: inputOrCallback,
+        optionsOrCallback,
+        callback,
+      },
+      async function* ({ input, options }) {
+        const params = new URLSearchParams();
+        if (input?.filters?.search) params.set('search', input.filters.search);
+        if (input?.filters?.status) params.set('status', input.filters.status);
+
+        let offset = input?.filters?.offset ?? 0;
+        let remainingCount = input?.filters?.count ?? Infinity;
+        let totalCount = Infinity;
+        while (offset < totalCount) {
+          const paginatedParams = new URLSearchParams(params);
+          paginatedParams.set('offset', offset.toString());
+          paginatedParams.set(
+            'limit',
+            Math.min(remainingCount, 100).toString(),
+          );
+          const output = await self.#fetcher<ApiTypes.TunesOuput>({
+            ...options,
+            method: 'GET',
+            url: `/v1/tunes?${paginatedParams.toString()}`,
+          });
+          for (const result of output.results) {
+            yield result;
+            if (--remainingCount === 0) return;
+            ++offset;
+          }
+          totalCount = output.totalCount;
+        }
+      },
+    );
+  }
+
+  tune(
+    input: TuneCreateInput,
+    options?: TuneCreateOptions,
+  ): Promise<TuneOutput>;
+  tune(input: TuneInput, options?: TuneOptions): Promise<void>;
+  tune(
+    input: TuneCreateInput,
+    options: TuneCreateOptions,
+    callback: Callback<TuneOutput>,
+  ): void;
+  tune(input: TuneInput, options: TuneOptions, callback: Callback<void>): void;
+  tune(input: TuneCreateInput, callback: Callback<TuneOutput>): void;
+  tune(input: TuneInput, callback: Callback<void>): void;
+  tune(
+    input: TuneCreateInput | TuneInput,
+    optionsOrCallback?:
+      | TuneCreateOptions
+      | TuneOptions
+      | Callback<TuneOutput>
+      | Callback<void>,
+    callback?: Callback<TuneOutput> | Callback<void>,
+  ): Promise<TuneOutput | void> | void {
+    return handle({ optionsOrCallback, callback }, async ({ options }) => {
+      let apiOutput: ApiTypes.TuneOutput;
+      const isTuneInput = isTypeOf<TuneInput>(input, 'id' in input);
+      if (isTuneInput) {
+        const opts = options as TuneOptions | undefined;
+        if (opts?.delete) {
+          await this.#fetcher({
+            ...options,
+            method: 'DELETE',
+            url: `/v1/tunes/${encodeURIComponent(input.id)}`,
+          });
+          return;
+        } else {
+          apiOutput = await this.#fetcher<ApiTypes.TuneOutput>({
+            ...options,
+            method: 'GET',
+            url: `/v1/tunes/${encodeURIComponent(input.id)}`,
+          });
+        }
+      } else {
+        apiOutput = await this.#fetcher<
+          ApiTypes.TuneOutput,
+          ApiTypes.TuneInput
+        >({
+          ...options,
+          method: 'POST',
+          url: `/v1/tunes`,
+          data: input,
+        });
+      }
+      const { status } = apiOutput.results;
+      switch (status) {
+        case 'COMPLETED':
+          return {
+            ...apiOutput.results,
+            status,
+            downloadAsset: async (type: TuneAssetType) =>
+              this.#fetcher<IncomingMessage>({
+                ...options,
+                responseType: 'stream',
+                method: 'GET',
+                url: `/v1/tunes/${encodeURIComponent(
+                  apiOutput.results.id,
+                )}/content/${type}`,
+              }),
+          };
+        default:
+          return { ...apiOutput.results, status };
+      }
+    });
+  }
+
+  tuneMethods(callback: Callback<TuneMethodsOutput>): void;
+  tuneMethods(
+    input: TuneMethodsInput,
+    callback: Callback<TuneMethodsOutput>,
+  ): void;
+  tuneMethods(
+    input: TuneMethodsInput,
+    options: HttpHandlerOptions,
+    callback: Callback<TuneMethodsOutput>,
+  ): void;
+  tuneMethods(
+    input?: TuneMethodsInput,
+    options?: HttpHandlerOptions,
+  ): Promise<TuneMethodsOutput>;
+  tuneMethods(
+    inputOrCallback?: TuneMethodsInput | Callback<TuneMethodsOutput>,
+    optionsOrCallback?: HttpHandlerOptions | Callback<TuneMethodsOutput>,
+    callback?: Callback<TuneMethodsOutput>,
+  ): Promise<TuneMethodsOutput> | void {
+    return handle(
+      {
+        optionsOrCallback,
+        callback,
+      },
+      async ({ options }) => {
+        const { results } = await this.#fetcher<ApiTypes.TuneMethodsOutput>({
+          ...options,
+          method: 'GET',
+          url: `/v1/tune_methods`,
         });
         return results;
       },

@@ -110,3 +110,31 @@ export type TuneOutput =
 export const TuneMethodsInputSchema = z.never();
 export type TuneMethodsInput = z.infer<typeof TuneMethodsInputSchema>;
 export type TuneMethodsOutput = ApiTypes.TuneMethodsOutput['results'];
+
+// PROMPT TEMPLATES
+
+export type PromptTemplateInput = ApiTypes.PromptTemplateBaseInput;
+export type PromptTemplateCreateInput = ApiTypes.PromptTemplateCreateInput;
+
+export type PromptTemplateOutput = ApiTypes.PromptTemplateOutput['results'];
+export type PromptTemplatesOutput =
+  ApiTypes.PromptTemplatesOutput['results'][number];
+
+export type PromptTemplatesInput = Omit<
+  ApiTypes.PromptTemplatesInput,
+  'limit'
+> & {
+  count: number;
+};
+
+export type PromptTemplateOptions = HttpHandlerOptions & {
+  delete?: false;
+};
+export type PromptTemplateDeleteOptions = HttpHandlerOptions & {
+  delete: true;
+};
+
+export type PromptTemplateExecuteInput = ApiTypes.PromptTemplateExecuteInput;
+export type PromptTemplateExecuteOutput =
+  ApiTypes.PromptTemplateExecuteOutput['results'];
+export type PromptTemplateExecuteOptions = HttpHandlerOptions;

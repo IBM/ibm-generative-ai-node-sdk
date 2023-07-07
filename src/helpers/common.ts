@@ -186,3 +186,14 @@ export async function* paginator<T>(
     totalCount = output.totalCount;
   }
 }
+
+export function isEmptyObject<T extends Record<any, unknown>>(
+  obj: T,
+): obj is Record<any, never> {
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      return false;
+    }
+  }
+  return true;
+}

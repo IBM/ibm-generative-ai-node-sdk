@@ -79,9 +79,28 @@ export const tuneMethodsStore = [
   { id: 'bar', name: 'Bar' },
 ];
 
+export let promptTemplatesStore: any[];
+export const resetPromptTemplateStore = () => {
+  promptTemplatesStore = [
+    {
+      id: 'foo',
+      name: 'Foo',
+      value: '{{instruction}}\n{{#examples}}\n{{input}}',
+      created_at: new Date('2023-07-01'),
+    },
+    {
+      id: 'bar',
+      name: 'Bar',
+      value: '{{name}}',
+      created_at: new Date('2023-07-01'),
+    },
+  ];
+};
+
 export const resetStores = () => {
   resetGenerateConfigStore();
   resetTunesStore();
+  resetPromptTemplateStore();
 };
 resetStores();
 
@@ -228,6 +247,106 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
         return res(ctx.status(404));
       }
       return res(ctx.status(200), ctx.body(tune.assets[type]));
+    },
+  ),
+
+  // Prompt templates
+  rest.get(`${MOCK_ENDPOINT}/v1/prompt_templates`, (req, res, ctx) => {
+    const offset = parseInt(req.url.searchParams.get('offset') ?? '0');
+    const limit = parseInt(req.url.searchParams.get('limit') ?? '1');
+
+    return res(
+      ctx.status(200),
+      ctx.json({
+        results: promptTemplatesStore.slice(offset, limit),
+        totalCount: promptTemplatesStore.length,
+      }),
+    );
+  }),
+  rest.post(`${MOCK_ENDPOINT}/v1/prompt_templates`, async (req, res, ctx) => {
+    const body = await req.json();
+    const newTemplate = {
+      ...body,
+      id: randomUUID(),
+      created_at: new Date('2023-07-01'),
+    };
+    promptTemplatesStore.push(newTemplate);
+    return res(
+      ctx.status(200),
+      ctx.json({
+        results: newTemplate,
+      }),
+    );
+  }),
+  rest.get(
+    `${MOCK_ENDPOINT}/v1/prompt_templates/:id`,
+    async (req, res, ctx) => {
+      const template = promptTemplatesStore.find(
+        ({ id }) => id === req.params.id,
+      );
+      if (!template) {
+        return res(ctx.status(404));
+      }
+      return res(
+        ctx.status(200),
+        ctx.json({
+          results: template,
+        }),
+      );
+    },
+  ),
+  rest.delete(
+    `${MOCK_ENDPOINT}/v1/prompt_templates/:id`,
+    async (req, res, ctx) => {
+      const index = promptTemplatesStore.findIndex(
+        ({ id }) => id === req.params.id,
+      );
+      if (index === -1) {
+        res(ctx.status(404));
+      }
+      promptTemplatesStore.splice(index, 1);
+      return res(ctx.status(204));
+    },
+  ),
+  rest.put(
+    `${MOCK_ENDPOINT}/v1/prompt_templates/:id`,
+    async (req, res, ctx) => {
+      const template = promptTemplatesStore.find(
+        ({ id }) => id === req.params.id,
+      );
+      if (!template) {
+        res(ctx.status(404));
+      }
+
+      Object.assign(template, await req.json());
+
+      return res(
+        ctx.status(200),
+        ctx.json({
+          results: template,
+        }),
+      );
+    },
+  ),
+
+  rest.post(
+    `${MOCK_ENDPOINT}/v1/prompt_templates/output`,
+    async (req, res, ctx) => {
+      const { inputs, template } = await req.json();
+      const results = inputs.map((input: string) => {
+        let str = template.value;
+        for (const [key, value] of Object.entries(template.data ?? {})) {
+          str = str.replace(`{{${key}}}`, value);
+        }
+        return str.replace('{{input}}', input);
+      });
+
+      return res(
+        ctx.status(200),
+        ctx.json({
+          results,
+        }),
+      );
     },
   ),
 ];

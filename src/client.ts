@@ -43,6 +43,16 @@ import {
   TuneMethodsOutput,
   TuneMethodsInput,
   TuneAssetType,
+  PromptTemplatesOutput,
+  PromptTemplatesInput,
+  PromptTemplateCreateInput,
+  PromptTemplateOutput,
+  PromptTemplateOptions,
+  PromptTemplateDeleteOptions,
+  PromptTemplateInput,
+  PromptTemplateExecuteInput,
+  PromptTemplateExecuteOptions,
+  PromptTemplateExecuteOutput,
 } from './client-types.js';
 import { version } from './buildInfo.js';
 import {
@@ -54,6 +64,7 @@ import {
   isTypeOf,
   handleGenerator,
   paginator,
+  isEmptyObject,
 } from './helpers/common.js';
 import { TypedReadable } from './utils/stream.js';
 import { lookupApiKey, lookupEndpoint } from './helpers/config.js';
@@ -875,5 +886,177 @@ export class Client {
         return results;
       },
     );
+  }
+
+  promptTemplate(
+    input: PromptTemplateInput,
+    callback: Callback<PromptTemplateOutput>,
+  ): void;
+  promptTemplate(
+    input: PromptTemplateInput,
+    options: PromptTemplateOptions,
+    callback: Callback<PromptTemplateOutput>,
+  ): void;
+  promptTemplate(
+    input: PromptTemplateInput | PromptTemplateCreateInput,
+    options?: PromptTemplateOptions,
+  ): Promise<PromptTemplateOutput>;
+  promptTemplate(
+    input: PromptTemplateInput,
+    options: PromptTemplateDeleteOptions,
+  ): Promise<void>;
+  promptTemplate(
+    input: PromptTemplateInput,
+    options: PromptTemplateDeleteOptions,
+    callback: Callback<void>,
+  ): void;
+  promptTemplate(
+    input: PromptTemplateCreateInput,
+    callback: Callback<PromptTemplateOutput>,
+  ): void;
+  promptTemplate(
+    input: PromptTemplateCreateInput | PromptTemplateInput,
+    optionsOrCallback?:
+      | PromptTemplateDeleteOptions
+      | PromptTemplateOptions
+      | Callback<PromptTemplateOutput>
+      | Callback<void>,
+    callback?: Callback<PromptTemplateOutput> | Callback<void>,
+  ): Promise<PromptTemplateOutput | void> | void {
+    return handle({ optionsOrCallback, callback }, async ({ options }) => {
+      const isCreateInput = isTypeOf<PromptTemplateCreateInput>(
+        input,
+        !('id' in input),
+      );
+      if (isCreateInput) {
+        const { results: result } = await this.#fetcher<
+          ApiTypes.PromptTemplateOutput,
+          ApiTypes.PromptTemplateCreateInput
+        >({
+          ...options,
+          method: 'POST',
+          url: `/v1/prompt_templates`,
+          data: input,
+        });
+        return ApiTypes.SinglePromptTemplateOutputSchema.parse(result);
+      }
+
+      const endpoint = `/v1/prompt_templates/${encodeURIComponent(input.id)}`;
+      const opts = options as PromptTemplateDeleteOptions | undefined;
+      if (opts?.delete) {
+        await this.#fetcher({
+          ...options,
+          method: 'DELETE',
+          url: endpoint,
+        });
+        return;
+      }
+
+      const { id: _, ...body } = input;
+      if (!isEmptyObject(body)) {
+        const { results: result } = await this.#fetcher<
+          ApiTypes.PromptTemplateOutput,
+          ApiTypes.PromptTemplateUpdate
+        >({
+          ...options,
+          method: 'PUT',
+          url: endpoint,
+          data: body,
+        });
+        return ApiTypes.SinglePromptTemplateOutputSchema.parse(result);
+      }
+
+      const { results: result } =
+        await this.#fetcher<ApiTypes.PromptTemplateOutput>({
+          ...options,
+          method: 'GET',
+          url: endpoint,
+        });
+      return ApiTypes.SinglePromptTemplateOutputSchema.parse(result);
+    });
+  }
+
+  promptTemplates(callback: Callback<PromptTemplatesOutput>): void;
+  promptTemplates(
+    input: PromptTemplatesInput,
+    callback: Callback<PromptTemplatesOutput>,
+  ): void;
+  promptTemplates(
+    input: PromptTemplatesInput,
+    options: HttpHandlerOptions,
+    callback: Callback<PromptTemplatesOutput>,
+  ): void;
+  promptTemplates(
+    input?: PromptTemplatesInput,
+    options?: HttpHandlerOptions,
+  ): AsyncGenerator<PromptTemplatesOutput>;
+  promptTemplates(
+    inputOrCallback?: PromptTemplatesInput | Callback<PromptTemplatesOutput>,
+    optionsOrCallback?: HttpHandlerOptions | Callback<PromptTemplatesOutput>,
+    callback?: Callback<PromptTemplatesOutput>,
+  ): AsyncGenerator<PromptTemplatesOutput> | void {
+    return handleGenerator<
+      PromptTemplatesInput | Callback<PromptTemplatesOutput>,
+      HttpHandlerOptions | Callback<PromptTemplatesOutput>,
+      Callback<PromptTemplatesOutput>,
+      PromptTemplatesOutput
+    >(
+      {
+        inputOrOptionsOrCallback: inputOrCallback,
+        optionsOrCallback,
+        callback,
+      },
+      ({ input, options }) =>
+        paginator(
+          async (paginatorParams) => {
+            const response =
+              await this.#fetcher<ApiTypes.PromptTemplatesOutput>({
+                ...options,
+                method: 'GET',
+                url: `/v1/prompt_templates?${paginatorParams.toString()}`,
+              });
+
+            return ApiTypes.PromptTemplatesOutputSchema.parse(response);
+          },
+          {
+            offset: input?.offset ?? undefined,
+            count: input?.count ?? undefined,
+          },
+        ),
+    );
+  }
+
+  promptTemplateExecute(
+    input: PromptTemplateExecuteInput,
+    options?: PromptTemplateExecuteOptions,
+  ): Promise<PromptTemplateExecuteOutput>;
+  promptTemplateExecute(
+    input: PromptTemplateExecuteInput,
+    options: PromptTemplateExecuteOptions,
+    callback: Callback<PromptTemplateExecuteOutput>,
+  ): void;
+  promptTemplateExecute(
+    input: PromptTemplateExecuteInput,
+    callback: Callback<PromptTemplateExecuteOutput>,
+  ): void;
+  promptTemplateExecute(
+    input: PromptTemplateExecuteInput,
+    optionsOrCallback?:
+      | PromptTemplateExecuteOptions
+      | Callback<PromptTemplateExecuteOutput>,
+    callback?: Callback<PromptTemplateExecuteOutput> | Callback<void>,
+  ): Promise<PromptTemplateExecuteOutput> | void {
+    return handle({ optionsOrCallback, callback }, async ({ options }) => {
+      const { results } = await this.#fetcher<
+        ApiTypes.PromptTemplateExecuteOutput,
+        ApiTypes.PromptTemplateExecuteInput
+      >({
+        ...options,
+        method: 'POST',
+        url: '/v1/prompt_templates/output',
+        data: input,
+      });
+      return results;
+    });
   }
 }

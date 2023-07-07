@@ -5,6 +5,7 @@ import {
   tokenizeStore,
   tuneMethodsStore,
   tunesStore,
+  promptTemplatesStore,
 } from '../mocks/handlers.js';
 import { Client } from '../../client.js';
 
@@ -187,6 +188,86 @@ describe('client', () => {
       const { id } = tunesStore[1];
       await client.tune({ id }, { delete: true });
       expect(tunesStore.map(({ id }) => id)).not.toContain({ id });
+    });
+  });
+
+  describe('prompt templates', () => {
+    test('should list all prompt templates using callbacks', () =>
+      new Promise((done) => {
+        expect.assertions(promptTemplatesStore.length * 2);
+        let count = promptTemplatesStore.length;
+        client.promptTemplates((err, template) => {
+          expect(err).toBeFalsy();
+          expect(template).toBeDefined();
+          if (--count === 0) done(undefined);
+        });
+      }));
+
+    test('should list all prompt templates using for-await loop', async () => {
+      const templates = [];
+      for await (const promptTemplate of client.promptTemplates()) {
+        templates.push(promptTemplate);
+      }
+      expect(templates.length).toBe(promptTemplatesStore.length);
+      templates.forEach((promptTemplate, idx) => {
+        expect(promptTemplate).toHaveProperty(
+          'id',
+          promptTemplatesStore[idx].id,
+        );
+        expect(promptTemplate).toHaveProperty(
+          'created_at',
+          promptTemplatesStore[idx].created_at,
+        );
+      });
+    });
+
+    test('should show details of a prompt template', async () => {
+      const { id } = promptTemplatesStore[0];
+      const promptTemplate = await client.promptTemplate({ id });
+      expect(promptTemplate).toHaveProperty('id', id);
+    });
+
+    test('should create a prompt template', async () => {
+      const template = await client.promptTemplate({
+        name: 'my template',
+        value: 'Hello {{name}}!',
+      });
+      expect(promptTemplatesStore.map(({ id }) => id)).toContainEqual(
+        template.id,
+      );
+    });
+
+    test('should partially update the prompt template', async () => {
+      const template = await client.promptTemplate({
+        id: promptTemplatesStore[1].id,
+        name: 'Greeting template!',
+      });
+      expect(template.name).toBe('Greeting template!');
+    });
+
+    test('should delete a prompt template', async () => {
+      const { id } = promptTemplatesStore[1];
+      await client.promptTemplate({ id }, { delete: true });
+      expect(promptTemplatesStore.map(({ id }) => id)).not.toContain({ id });
+    });
+
+    test('should execute a prompt template', async () => {
+      const results = await client.promptTemplateExecute({
+        inputs: ['1+1', '2+2', '3+3'],
+        template: {
+          value: 'Hello {{name}}, how much is {{input}}?',
+          data: {
+            name: 'GENAI',
+          },
+        },
+      });
+      expect(results).toMatchInlineSnapshot(`
+        [
+          "Hello GENAI, how much is 1+1?",
+          "Hello GENAI, how much is 2+2?",
+          "Hello GENAI, how much is 3+3?",
+        ]
+      `);
     });
   });
 });

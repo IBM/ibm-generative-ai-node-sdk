@@ -269,3 +269,79 @@ export interface TuneOutput {
 export interface TuneMethodsOutput {
   results: { id: string; name: string }[];
 }
+
+// PROMPT TEMPLATES
+
+export const PromptTemplateBaseInputSchema = z.object({
+  id: z.string(),
+});
+
+export type PromptTemplateBaseInput = z.input<
+  typeof PromptTemplateBaseInputSchema
+>;
+
+export const PromptTemplateCreateInputSchema = z.object({
+  name: z.string(),
+  value: z.string(),
+});
+
+export type PromptTemplateCreateInput = z.input<
+  typeof PromptTemplateCreateInputSchema
+>;
+
+export const PromptTemplateUpdateInputSchema = z.union([
+  PromptTemplateBaseInputSchema,
+  PromptTemplateCreateInputSchema.partial(),
+]);
+export type PromptTemplateUpdate = z.input<
+  typeof PromptTemplateUpdateInputSchema
+>;
+
+export const PromptTemplatesInputSchema = z.object({
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+});
+export type PromptTemplatesInput = z.input<typeof PromptTemplatesInputSchema>;
+
+export const SinglePromptTemplateOutputSchema = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    value: z.string(),
+    created_at: z.coerce.date(),
+  })
+  .passthrough();
+
+export const PromptTemplateOutputSchema = z.object({
+  results: SinglePromptTemplateOutputSchema,
+});
+export type PromptTemplateOutput = z.infer<typeof PromptTemplateOutputSchema>;
+
+export const PromptTemplatesOutputSchema = z
+  .object({
+    totalCount: z.number().int().min(0),
+    results: z.array(SinglePromptTemplateOutputSchema),
+  })
+  .passthrough();
+export type PromptTemplatesOutput = z.infer<typeof PromptTemplatesOutputSchema>;
+
+export const PromptTemplateExecuteInputSchema = z.object({
+  inputs: z.array(z.string()),
+  template: z.union([
+    z.object({ id: z.string() }),
+    z.object({
+      value: z.string(),
+      data: z.object({}).passthrough(),
+    }),
+  ]),
+});
+export type PromptTemplateExecuteInput = z.input<
+  typeof PromptTemplateExecuteInputSchema
+>;
+
+export const PromptTemplateExecuteOutputSchema = z.object({
+  results: z.array(z.string()),
+});
+export type PromptTemplateExecuteOutput = z.infer<
+  typeof PromptTemplateExecuteOutputSchema
+>;

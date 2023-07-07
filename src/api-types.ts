@@ -221,11 +221,23 @@ interface TuneFile {
   created_at: string;
 }
 
+interface TuneMixin {
+  id: string;
+  name: string;
+  model_id: string;
+  method_id: string;
+  model_name: string;
+  status: TuneStatus;
+  task_id: string;
+  parameters: {
+    batch_size: number;
+    num_epochs: number;
+  };
+  created_at: string;
+}
+
 export interface TunesOuput {
-  results: Omit<
-    TuneOutput['results'],
-    'validation_files' | 'training_files' | 'evaluation_files' | 'datapoints'
-  >[];
+  results: TuneMixin[];
   totalCount: number;
 }
 
@@ -237,23 +249,11 @@ export const TuneInputSchema = z.object({
   validation_file_ids: z.array(z.string()).nullish(),
   evaluation_file_ids: z.array(z.string()).nullish(),
   method_id: z.string(),
-  parameters: z.object({}).passthrough().nullish(),
+  parameters: z.record(z.any()).nullish(),
 });
 export type TuneInput = z.input<typeof TuneInputSchema>;
 export interface TuneOutput {
-  results: {
-    id: string;
-    name: string;
-    model_id: string;
-    method_id: string;
-    model_name: string;
-    status: TuneStatus;
-    task_id: string;
-    parameters: {
-      batch_size: number;
-      num_epochs: number;
-    };
-    created_at: string;
+  results: TuneMixin & {
     validation_files?: TuneFile[];
     training_files?: TuneFile[];
     evaluation_files?: TuneFile[];

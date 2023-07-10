@@ -724,8 +724,6 @@ export class Client {
     optionsOrCallback?: HttpHandlerOptions | Callback<TunesOutput>,
     callback?: Callback<TunesOutput>,
   ): AsyncGenerator<TunesOutput> | void {
-    // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const self = this;
     return handleGenerator<
       TunesInput | Callback<TunesOutput>,
       HttpHandlerOptions | Callback<TunesOutput>,

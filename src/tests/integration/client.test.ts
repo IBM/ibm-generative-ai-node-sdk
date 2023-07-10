@@ -140,6 +140,9 @@ describe('client', () => {
         allTunes.push(tune);
       }
       expect(allTunes.length).toBe(tunesStore.length);
+      allTunes.forEach((tune, idx) => {
+        expect(tune).toHaveProperty('id', tunesStore[idx].id);
+      });
     });
 
     test('should list all tune methods', async () => {

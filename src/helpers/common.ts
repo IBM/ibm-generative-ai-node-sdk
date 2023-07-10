@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { callbackify } from 'node:util';
+import { URLSearchParams } from 'node:url';
 
 export type FalsyValues = false | '' | 0 | null | undefined;
 export type Truthy<T> = T extends FalsyValues ? never : T;
@@ -149,4 +150,41 @@ export function callbackifyGenerator<T>(generatorFn: () => AsyncGenerator<T>) {
     })();
     return;
   };
+}
+
+export async function* paginator<T>(
+  executor: (searchParams: URLSearchParams) => Promise<{
+    results: T[];
+    totalCount: number;
+  }>,
+  {
+    offset = 0,
+    count = Infinity,
+    params,
+    limit = 100,
+  }: {
+    offset?: number;
+    count?: number;
+    params?: URLSearchParams;
+    limit?: number;
+  },
+): AsyncGenerator<T> {
+  let currentOffset = offset;
+  let remainingCount = count;
+  let totalCount = Infinity;
+  while (currentOffset < totalCount) {
+    const paginatedSearchParams = new URLSearchParams(params);
+    paginatedSearchParams.set('offset', currentOffset.toString());
+    paginatedSearchParams.set(
+      'limit',
+      Math.min(remainingCount, limit).toString(),
+    );
+    const output = await executor(paginatedSearchParams);
+    for (const result of output.results) {
+      yield result;
+      if (--remainingCount === 0) return;
+      ++currentOffset;
+    }
+    totalCount = output.totalCount;
+  }
 }

@@ -53,6 +53,7 @@ import {
   handle,
   isTypeOf,
   handleGenerator,
+  paginator,
 } from './helpers/common.js';
 import { TypedReadable } from './utils/stream.js';
 import { lookupApiKey, lookupEndpoint } from './helpers/config.js';
@@ -736,33 +737,22 @@ export class Client {
         optionsOrCallback,
         callback,
       },
-      async function* ({ input, options }) {
+      ({ input, options }) => {
         const params = new URLSearchParams();
         if (input?.filters?.search) params.set('search', input.filters.search);
         if (input?.filters?.status) params.set('status', input.filters.status);
-
-        let offset = input?.filters?.offset ?? 0;
-        let remainingCount = input?.filters?.count ?? Infinity;
-        let totalCount = Infinity;
-        while (offset < totalCount) {
-          const paginatedParams = new URLSearchParams(params);
-          paginatedParams.set('offset', offset.toString());
-          paginatedParams.set(
-            'limit',
-            Math.min(remainingCount, 100).toString(),
-          );
-          const output = await self.#fetcher<ApiTypes.TunesOuput>({
-            ...options,
-            method: 'GET',
-            url: `/v1/tunes?${paginatedParams.toString()}`,
-          });
-          for (const result of output.results) {
-            yield result;
-            if (--remainingCount === 0) return;
-            ++offset;
-          }
-          totalCount = output.totalCount;
-        }
+        return paginator(
+          (paginatorParams) =>
+            this.#fetcher<ApiTypes.TunesOuput>({
+              ...options,
+              method: 'GET',
+              url: `/v1/tunes?${paginatorParams.toString()}`,
+            }),
+          {
+            offset: input?.filters?.offset ?? undefined,
+            count: input?.filters?.count ?? undefined,
+          },
+        );
       },
     );
   }

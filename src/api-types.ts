@@ -244,7 +244,7 @@ export interface TunesOuput {
 export const TuneInputSchema = z.object({
   name: z.string(),
   model_id: z.string(),
-  task_id: z.string().nullish(),
+  task_id: z.string(),
   training_file_ids: z.array(z.string()),
   validation_file_ids: z.array(z.string()).nullish(),
   evaluation_file_ids: z.array(z.string()).nullish(),

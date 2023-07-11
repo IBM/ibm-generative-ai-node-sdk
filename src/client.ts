@@ -586,11 +586,6 @@ export class Client {
               method: 'GET',
               url: '/v1/generate/config',
               id: GET_GENERATE_CONFIG_ID,
-              cache: {
-                update: {
-                  [GET_GENERATE_CONFIG_ID]: 'delete',
-                },
-              },
             });
           }
         }
@@ -780,6 +775,7 @@ export class Client {
     return handle({ optionsOrCallback, callback }, async ({ options }) => {
       let apiOutput: ApiTypes.TuneOutput;
       const isTuneInput = isTypeOf<TuneInput>(input, 'id' in input);
+      const GET_TUNE_ID = 'get-tune';
       if (isTuneInput) {
         const opts = options as TuneOptions | undefined;
         if (opts?.delete) {
@@ -787,6 +783,11 @@ export class Client {
             ...options,
             method: 'DELETE',
             url: `/v1/tunes/${encodeURIComponent(input.id)}`,
+            cache: {
+              update: {
+                [GET_TUNE_ID]: 'delete',
+              },
+            },
           });
           return;
         } else {
@@ -794,6 +795,7 @@ export class Client {
             ...options,
             method: 'GET',
             url: `/v1/tunes/${encodeURIComponent(input.id)}`,
+            id: GET_TUNE_ID,
           });
         }
       } else {
@@ -805,6 +807,11 @@ export class Client {
           method: 'POST',
           url: `/v1/tunes`,
           data: input,
+          cache: {
+            update: {
+              [GET_TUNE_ID]: 'delete',
+            },
+          },
         });
       }
       const { status } = apiOutput.results;

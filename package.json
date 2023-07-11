@@ -56,7 +56,8 @@
     "prepack": "yarn build && pinst --disable",
     "postinstall": "husky install",
     "postpack": "pinst --enable",
-    "example:generate": "ts-node -r dotenv-flow/config examples/generate.ts"
+    "example:generate": "ts-node -r dotenv-flow/config examples/generate.ts",
+    "example:tune": "ts-node -r dotenv-flow/config examples/tune.ts"
   },
   "peerDependencies": {
     "langchain": ">=0.0.75"

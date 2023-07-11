@@ -560,6 +560,7 @@ export class Client {
         callback,
       },
       ({ input, options }) => {
+        const GET_GENERATE_CONFIG_ID = 'get-generate-config';
         if (
           isTypeOf<GenerateConfigOptions | undefined>(
             input,
@@ -567,7 +568,6 @@ export class Client {
           )
         ) {
           const { reset, ...httpOptions } = input ?? {};
-          const GET_GENERATE_CONFIG_ID = 'get-generate-config';
 
           if (reset) {
             return this.#fetcher<ApiTypes.GenerateConfigOutput>({
@@ -600,6 +600,11 @@ export class Client {
           url: '/v1/generate/config',
           stream: false,
           data: input,
+          cache: {
+            update: {
+              [GET_GENERATE_CONFIG_ID]: 'delete',
+            },
+          },
         });
       },
     );

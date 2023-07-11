@@ -8,7 +8,7 @@ describeIf(process.env.RUN_LANGCHAIN_CHAT_TESTS === 'true')(
   () => {
     const makeClient = (stream?: boolean) =>
       new GenAIChatModel({
-        modelId: 'sambanovasystems/bloomchat-176b-v1',
+        modelId: 'togethercomputer/gpt-neoxt-chat-base-20b',
         stream,
         configuration: {
           endpoint: process.env.ENDPOINT,

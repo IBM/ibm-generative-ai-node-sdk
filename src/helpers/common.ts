@@ -137,18 +137,16 @@ export function isNullish<T>(
 }
 
 export function callbackifyGenerator<T>(generatorFn: () => AsyncGenerator<T>) {
-  const generator = generatorFn();
   return (callback: AnyFn) => {
     (async () => {
       try {
-        for await (const result of generator) {
+        for await (const result of generatorFn()) {
           callback(null, result);
         }
       } catch (err) {
         callback(err);
       }
     })();
-    return;
   };
 }
 

@@ -165,7 +165,7 @@ describe('client', () => {
       expect.assertions(1);
       if (tune.status === 'COMPLETED') {
         const content = await tune.downloadAsset('encoder');
-        // unfortunately, we don't have .toArray() in the supported version of Node
+        // unfortunately, we don't have Array.fromAsync() in the supported version of Node
         for await (const chunk of content) {
           expect(chunk.toString()).toBe(encoder);
         }
@@ -177,6 +177,7 @@ describe('client', () => {
         name: 'newTune',
         model_id: 'foo',
         method_id: 'foo',
+        task_id: 'foo',
         training_file_ids: [],
       });
       expect(tunesStore.map(({ id }) => id)).toContainEqual(tune.id);

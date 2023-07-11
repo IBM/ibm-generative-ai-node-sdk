@@ -749,6 +749,7 @@ export class Client {
           {
             offset: input?.filters?.offset ?? undefined,
             count: input?.filters?.count ?? undefined,
+            params,
           },
         );
       },

@@ -3,6 +3,8 @@ import {
   generateStore,
   modelsStore,
   tokenizeStore,
+  tuneMethodsStore,
+  tunesStore,
 } from '../mocks/handlers.js';
 import { Client } from '../../client.js';
 
@@ -110,13 +112,81 @@ describe('client', () => {
   describe('models', () => {
     test('should return some models', async () => {
       const models = await client.models();
-      expect(models.length).toBeGreaterThan(0);
+      expect(models.length).not.toBeEmpty();
     });
 
     test('should return details for a given model', async () => {
       const id = modelsStore[0].id;
       const details = await client.model({ id });
       expect(details).toHaveProperty('id', id);
+    });
+  });
+
+  describe('tunes', () => {
+    test('should list all tunes using callbacks', () =>
+      new Promise((done) => {
+        expect.assertions(tunesStore.length * 2);
+        let count = tunesStore.length;
+        client.tunes((err, tune) => {
+          expect(err).toBeFalsy();
+          expect(tune).toBeDefined();
+          if (--count === 0) done(undefined);
+        });
+      }));
+
+    test('should list all tunes', async () => {
+      const allTunes = [];
+      for await (const tune of client.tunes()) {
+        allTunes.push(tune);
+      }
+      expect(allTunes.length).toBe(tunesStore.length);
+      allTunes.forEach((tune, idx) => {
+        expect(tune).toHaveProperty('id', tunesStore[idx].id);
+      });
+    });
+
+    test('should list all tune methods', async () => {
+      const tuneMethods = await client.tuneMethods();
+      expect(tuneMethods.length).toBe(tuneMethodsStore.length);
+    });
+
+    test('should show details of a tune', async () => {
+      const { id } = tunesStore[0];
+      const tune = await client.tune({ id });
+      expect(tune).toHaveProperty('id', id);
+    });
+
+    test('should download assets of a completed tune', async () => {
+      const {
+        id,
+        assets: { encoder },
+      } = tunesStore[0];
+      const tune = await client.tune({ id });
+      expect.assertions(1);
+      if (tune.status === 'COMPLETED') {
+        const content = await tune.downloadAsset('encoder');
+        // unfortunately, we don't have Array.fromAsync() in the supported version of Node
+        for await (const chunk of content) {
+          expect(chunk.toString()).toBe(encoder);
+        }
+      }
+    });
+
+    test('should create a tune', async () => {
+      const tune = await client.tune({
+        name: 'newTune',
+        model_id: 'foo',
+        method_id: 'foo',
+        task_id: 'foo',
+        training_file_ids: [],
+      });
+      expect(tunesStore.map(({ id }) => id)).toContainEqual(tune.id);
+    });
+
+    test('should delete a tune', async () => {
+      const { id } = tunesStore[1];
+      await client.tune({ id }, { delete: true });
+      expect(tunesStore.map(({ id }) => id)).not.toContain({ id });
     });
   });
 });

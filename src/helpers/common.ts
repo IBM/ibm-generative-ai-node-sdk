@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { callbackify } from 'node:util';
+import { URLSearchParams } from 'node:url';
 
 export type FalsyValues = false | '' | 0 | null | undefined;
 export type Truthy<T> = T extends FalsyValues ? never : T;
@@ -93,6 +94,35 @@ export function handle<A, B, C extends AnyFn, R>(
   return executorWrapper();
 }
 
+export function handleGenerator<A, B, C extends AnyFn, R>(
+  params: {
+    inputOrOptionsOrCallback?: A | B | C;
+    optionsOrCallback?: B | C;
+    callback?: C;
+  },
+  executor: (params: {
+    input?: Exclude<A, B | C>;
+    options?: Exclude<B, C>;
+  }) => AsyncGenerator<R>,
+) {
+  const { input, options, callback } = parseFunctionOverloads<A, B, C>(
+    params.inputOrOptionsOrCallback,
+    params.optionsOrCallback,
+    params.callback,
+  );
+
+  const executorWrapper = () =>
+    executor({
+      input,
+      options,
+    });
+
+  if (callback) {
+    return callbackifyGenerator(executorWrapper)(callback);
+  }
+  return executorWrapper();
+}
+
 export function isTypeOf<T>(
   value: unknown | undefined,
   result: boolean,
@@ -104,4 +134,55 @@ export function isNullish<T>(
   value: T | null | undefined,
 ): value is null | undefined {
   return value === null || value === undefined;
+}
+
+export function callbackifyGenerator<T>(generatorFn: () => AsyncGenerator<T>) {
+  return (callback: AnyFn) => {
+    (async () => {
+      try {
+        for await (const result of generatorFn()) {
+          callback(null, result);
+        }
+      } catch (err) {
+        callback(err);
+      }
+    })();
+  };
+}
+
+export async function* paginator<T>(
+  executor: (searchParams: URLSearchParams) => Promise<{
+    results: T[];
+    totalCount: number;
+  }>,
+  {
+    offset = 0,
+    count = Infinity,
+    params,
+    limit = 100,
+  }: {
+    offset?: number;
+    count?: number;
+    params?: URLSearchParams;
+    limit?: number;
+  },
+): AsyncGenerator<T> {
+  let currentOffset = offset;
+  let remainingCount = count;
+  let totalCount = Infinity;
+  while (currentOffset < totalCount) {
+    const paginatedSearchParams = new URLSearchParams(params);
+    paginatedSearchParams.set('offset', currentOffset.toString());
+    paginatedSearchParams.set(
+      'limit',
+      Math.min(remainingCount, limit).toString(),
+    );
+    const output = await executor(paginatedSearchParams);
+    for (const result of output.results) {
+      yield result;
+      if (--remainingCount === 0) return;
+      ++currentOffset;
+    }
+    totalCount = output.totalCount;
+  }
 }

@@ -200,3 +200,72 @@ export interface ModelOutput {
     schema_tokenize: ModelSchema;
   };
 }
+
+// TUNES
+
+export const TuneStatusSchema = z.enum([
+  'INITIALIZING',
+  'NOT_STARTED',
+  'PENDING',
+  'HALTED',
+  'RUNNING',
+  'QUEUED',
+  'COMPLETED',
+  'FAILED',
+]);
+export type TuneStatus = z.infer<typeof TuneStatusSchema>;
+
+interface TuneFile {
+  id: string;
+  file_name: string;
+  created_at: string;
+}
+
+interface TuneMixin {
+  id: string;
+  name: string;
+  model_id: string;
+  method_id: string;
+  model_name: string;
+  status: TuneStatus;
+  task_id: string;
+  parameters: {
+    batch_size: number;
+    num_epochs: number;
+  };
+  created_at: string;
+}
+
+export interface TunesOuput {
+  results: TuneMixin[];
+  totalCount: number;
+}
+
+export const TuneInputSchema = z.object({
+  name: z.string(),
+  model_id: z.string(),
+  task_id: z.string(),
+  training_file_ids: z.array(z.string()),
+  validation_file_ids: z.array(z.string()).nullish(),
+  evaluation_file_ids: z.array(z.string()).nullish(),
+  method_id: z.string(),
+  parameters: z.record(z.any()).nullish(),
+});
+export type TuneInput = z.input<typeof TuneInputSchema>;
+export interface TuneOutput {
+  results: TuneMixin & {
+    validation_files?: TuneFile[];
+    training_files?: TuneFile[];
+    evaluation_files?: TuneFile[];
+    datapoints?: {
+      loss: {
+        data: any;
+        timestamp: string;
+      }[];
+    };
+  };
+}
+
+export interface TuneMethodsOutput {
+  results: { id: string; name: string }[];
+}

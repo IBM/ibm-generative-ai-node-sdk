@@ -1,5 +1,6 @@
 import { DefaultBodyType, MockedRequest, RestHandler, rest } from 'msw';
 import _ from 'lodash';
+import { randomUUID } from 'node:crypto';
 
 export const MOCK_ENDPOINT = 'https://mock';
 
@@ -55,8 +56,32 @@ export const modelsStore = [
   },
 ];
 
+export let tunesStore: any[];
+export const resetTunesStore = () => {
+  tunesStore = [
+    {
+      id: 'foo',
+      status: 'COMPLETED',
+      assets: {
+        encoder: 'encoderContent',
+        logs: 'logsContent',
+      },
+    },
+    {
+      id: 'deleteme',
+      status: 'PENDING',
+    },
+  ];
+};
+
+export const tuneMethodsStore = [
+  { id: 'foo', name: 'Foo' },
+  { id: 'bar', name: 'Bar' },
+];
+
 export const resetStores = () => {
   resetGenerateConfigStore();
+  resetTunesStore();
 };
 resetStores();
 
@@ -136,4 +161,73 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
       }),
     );
   }),
+
+  // Tunes
+  rest.get(`${MOCK_ENDPOINT}/v1/tune_methods`, async (req, res, ctx) =>
+    res(
+      ctx.status(200),
+      ctx.json({
+        results: tuneMethodsStore,
+      }),
+    ),
+  ),
+  rest.get(`${MOCK_ENDPOINT}/v1/tunes`, async (req, res, ctx) => {
+    const offset = parseInt(req.url.searchParams.get('offset') ?? '0');
+    const singleTune = tunesStore[offset];
+    if (!singleTune) {
+      return res(ctx.status(404));
+    }
+    return res(
+      ctx.status(200),
+      ctx.json({
+        results: [singleTune],
+        totalCount: tunesStore.length,
+      }),
+    );
+  }),
+  rest.post(`${MOCK_ENDPOINT}/v1/tunes`, async (req, res, ctx) => {
+    const body = await req.json();
+    const newTune = { ...body, id: randomUUID() };
+    tunesStore.push(newTune);
+    return res(
+      ctx.status(200),
+      ctx.json({
+        results: newTune,
+      }),
+    );
+  }),
+  rest.get(`${MOCK_ENDPOINT}/v1/tunes/:id`, async (req, res, ctx) => {
+    const tune = tunesStore.find((tune: any) => tune.id === req.params.id);
+    if (!tune) {
+      return res(ctx.status(404));
+    }
+    return res(
+      ctx.status(200),
+      ctx.json({
+        results: tune,
+      }),
+    );
+  }),
+  rest.delete(`${MOCK_ENDPOINT}/v1/tunes/:id`, async (req, res, ctx) => {
+    const tunesCount = tunesStore.length;
+    tunesStore = tunesStore.filter((tune: any) => tune.id !== req.params.id);
+    if (tunesCount === tunesStore.length) {
+      res(ctx.status(404));
+    }
+    return res(ctx.status(204));
+  }),
+  rest.get(
+    `${MOCK_ENDPOINT}/v1/tunes/:id/content/:type`,
+    async (req, res, ctx) => {
+      const tune = tunesStore.find((tune: any) => tune.id === req.params.id);
+      if (!tune) {
+        return res(ctx.status(404));
+      }
+      const type = req.params.type as string;
+      if (!['encoder', 'logger'].includes(type)) {
+        return res(ctx.status(404));
+      }
+      return res(ctx.status(200), ctx.body(tune.assets[type]));
+    },
+  ),
 ];

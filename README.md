@@ -222,7 +222,7 @@ await model.call('Tell me a joke.', undefined, [
 import { GenAIChatModel } from '@ibm-generative-ai/node-sdk/langchain';
 
 const client = new GenAIChatModel({
-  modelId: 'sambanovasystems/bloomchat-176b-v1',
+  modelId: 'togethercomputer/gpt-neoxt-chat-base-20b',
   stream: false,
   configuration: {
     endpoint: process.env.ENDPOINT,

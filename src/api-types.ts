@@ -272,36 +272,31 @@ export interface TuneMethodsOutput {
 
 // PROMPT TEMPLATES
 
-export const PromptTemplateBaseInputSchema = z.object({
-  id: z.string(),
-});
+export const PromptTemplateIdMixinSchema = z
+  .object({
+    id: z.string(),
+  })
+  .strict();
 
-export type PromptTemplateBaseInput = z.input<
-  typeof PromptTemplateBaseInputSchema
+export type PromptTemplateBaseInput = z.output<
+  typeof PromptTemplateIdMixinSchema
 >;
 
-export const PromptTemplateCreateInputSchema = z.object({
-  name: z.string(),
-  value: z.string(),
-});
+export const PromptTemplateCreateInputSchema = z
+  .object({
+    name: z.string(),
+    value: z.string(),
+  })
+  .strict();
 
 export type PromptTemplateCreateInput = z.input<
   typeof PromptTemplateCreateInputSchema
 >;
 
-export const PromptTemplateUpdateInputSchema = z.union([
-  PromptTemplateBaseInputSchema,
-  PromptTemplateCreateInputSchema.partial(),
-]);
+export const PromptTemplateUpdateInputSchema = PromptTemplateCreateInputSchema;
 export type PromptTemplateUpdate = z.input<
   typeof PromptTemplateUpdateInputSchema
 >;
-
-export const PromptTemplatesInputSchema = z.object({
-  limit: z.number().int().min(1),
-  offset: z.number().int().min(0),
-});
-export type PromptTemplatesInput = z.input<typeof PromptTemplatesInputSchema>;
 
 export const SinglePromptTemplateOutputSchema = z
   .object({

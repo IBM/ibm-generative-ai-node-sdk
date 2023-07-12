@@ -115,17 +115,23 @@ export type TuneMethodsOutput = ApiTypes.TuneMethodsOutput['results'];
 
 export type PromptTemplateInput = ApiTypes.PromptTemplateBaseInput;
 export type PromptTemplateCreateInput = ApiTypes.PromptTemplateCreateInput;
+export const PromptTemplateUpdateInputSchema = z.intersection(
+  ApiTypes.PromptTemplateIdMixinSchema,
+  ApiTypes.PromptTemplateUpdateInputSchema,
+);
+export type PromptTemplateUpdateInput = z.input<
+  typeof PromptTemplateUpdateInputSchema
+>;
 
 export type PromptTemplateOutput = ApiTypes.PromptTemplateOutput['results'];
 export type PromptTemplatesOutput =
   ApiTypes.PromptTemplatesOutput['results'][number];
 
-export type PromptTemplatesInput = Omit<
-  ApiTypes.PromptTemplatesInput,
-  'limit'
-> & {
-  count: number;
-};
+export const PromptTemplatesInputSchema = z.object({
+  count: z.number().int().min(1).nullish(),
+  offset: z.number().int().min(0).nullish(),
+});
+export type PromptTemplatesInput = z.input<typeof PromptTemplatesInputSchema>;
 
 export type PromptTemplateOptions = HttpHandlerOptions & {
   delete?: false;
@@ -138,3 +144,9 @@ export type PromptTemplateExecuteInput = ApiTypes.PromptTemplateExecuteInput;
 export type PromptTemplateExecuteOutput =
   ApiTypes.PromptTemplateExecuteOutput['results'];
 export type PromptTemplateExecuteOptions = HttpHandlerOptions;
+
+type UnionKeys<T> = T extends T ? keyof T : never;
+type StrictUnionHelper<T, TAll> = T extends any
+  ? T & Partial<Record<Exclude<UnionKeys<TAll>, keyof T>, never>>
+  : never;
+export type ExclusiveType<T> = StrictUnionHelper<T, T>;

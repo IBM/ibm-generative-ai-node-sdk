@@ -53,6 +53,8 @@ import {
   PromptTemplateExecuteInput,
   PromptTemplateExecuteOptions,
   PromptTemplateExecuteOutput,
+  PromptTemplateUpdateInput,
+  ExclusiveType,
 } from './client-types.js';
 import { version } from './buildInfo.js';
 import {
@@ -71,6 +73,7 @@ import { lookupApiKey, lookupEndpoint } from './helpers/config.js';
 import { RETRY_ATTEMPTS_DEFAULT } from './constants.js';
 import { EventStreamContentType, fetchEventSource } from './utils/sse/sse.js';
 import { Transform, TransformCallback } from 'stream';
+import { ZodSchema } from 'zod';
 
 type FetchConfig<R, D> = Omit<CacheRequestConfig<R, D>, 'signal'> & {
   retries?: number;
@@ -143,14 +146,17 @@ export class Client {
 
   #fetcher<Output, Input = undefined>(
     input: FetchConfigStream<Output, Input>,
+    schema?: ZodSchema<Output>,
   ): TypedReadable<Output>;
   #fetcher<Output, Input = undefined>(
     input: FetchConfigNoStream<Output, Input> | FetchConfig<Output, Input>,
+    schema?: ZodSchema<Output>,
   ): Promise<Output>;
   #fetcher<Output, Input = undefined>(
     input:
       | FetchConfigNoStream<Output, Input>
       | FetchConfigStream<Output, Input>,
+    schema?: ZodSchema<Output>,
   ): Promise<Output> | TypedReadable<Output> {
     if (input.stream) {
       const outputStream = new TypedReadable<Output>({
@@ -247,7 +253,7 @@ export class Client {
             return;
           }
 
-          outputStream.push(result);
+          outputStream.push(schema ? schema.parse(result) : result);
         },
         onerror: onError,
       }).catch(() => {
@@ -277,7 +283,7 @@ export class Client {
           throw error;
         }),
       { retries: retries ?? this.#options.retries },
-    ).then((response) => response.data);
+    ).then(({ data }) => (schema ? schema.parse(data) : data));
   }
 
   tokenize(
@@ -889,16 +895,20 @@ export class Client {
   }
 
   promptTemplate(
-    input: PromptTemplateInput,
+    input: ExclusiveType<PromptTemplateInput | PromptTemplateUpdateInput>,
     callback: Callback<PromptTemplateOutput>,
   ): void;
   promptTemplate(
-    input: PromptTemplateInput,
+    input: ExclusiveType<PromptTemplateInput | PromptTemplateUpdateInput>,
     options: PromptTemplateOptions,
     callback: Callback<PromptTemplateOutput>,
   ): void;
   promptTemplate(
-    input: PromptTemplateInput | PromptTemplateCreateInput,
+    input: ExclusiveType<
+      | PromptTemplateInput
+      | PromptTemplateCreateInput
+      | PromptTemplateUpdateInput
+    >,
     options?: PromptTemplateOptions,
   ): Promise<PromptTemplateOutput>;
   promptTemplate(
@@ -915,7 +925,11 @@ export class Client {
     callback: Callback<PromptTemplateOutput>,
   ): void;
   promptTemplate(
-    input: PromptTemplateCreateInput | PromptTemplateInput,
+    input: ExclusiveType<
+      | PromptTemplateCreateInput
+      | PromptTemplateInput
+      | PromptTemplateUpdateInput
+    >,
     optionsOrCallback?:
       | PromptTemplateDeleteOptions
       | PromptTemplateOptions
@@ -924,6 +938,8 @@ export class Client {
     callback?: Callback<PromptTemplateOutput> | Callback<void>,
   ): Promise<PromptTemplateOutput | void> | void {
     return handle({ optionsOrCallback, callback }, async ({ options }) => {
+      const GET_PROMPT_TEMPLATE_CACHE_ID = 'get-prompt-template';
+
       const isCreateInput = isTypeOf<PromptTemplateCreateInput>(
         input,
         !('id' in input),
@@ -932,13 +948,21 @@ export class Client {
         const { results: result } = await this.#fetcher<
           ApiTypes.PromptTemplateOutput,
           ApiTypes.PromptTemplateCreateInput
-        >({
-          ...options,
-          method: 'POST',
-          url: `/v1/prompt_templates`,
-          data: input,
-        });
-        return ApiTypes.SinglePromptTemplateOutputSchema.parse(result);
+        >(
+          {
+            ...options,
+            method: 'POST',
+            url: `/v1/prompt_templates`,
+            data: input,
+            cache: {
+              update: {
+                [GET_PROMPT_TEMPLATE_CACHE_ID]: 'delete',
+              },
+            },
+          },
+          ApiTypes.PromptTemplateOutputSchema,
+        );
+        return result;
       }
 
       const endpoint = `/v1/prompt_templates/${encodeURIComponent(input.id)}`;
@@ -948,31 +972,48 @@ export class Client {
           ...options,
           method: 'DELETE',
           url: endpoint,
+          cache: {
+            update: {
+              [GET_PROMPT_TEMPLATE_CACHE_ID]: 'delete',
+            },
+          },
         });
         return;
       }
 
       const { id: _, ...body } = input;
-      if (!isEmptyObject(body)) {
+      if (isTypeOf<ApiTypes.PromptTemplateUpdate>(body, !isEmptyObject(body))) {
         const { results: result } = await this.#fetcher<
           ApiTypes.PromptTemplateOutput,
           ApiTypes.PromptTemplateUpdate
-        >({
-          ...options,
-          method: 'PUT',
-          url: endpoint,
-          data: body,
-        });
-        return ApiTypes.SinglePromptTemplateOutputSchema.parse(result);
+        >(
+          {
+            ...options,
+            method: 'PUT',
+            url: endpoint,
+            data: body,
+            cache: {
+              update: {
+                [GET_PROMPT_TEMPLATE_CACHE_ID]: 'delete',
+              },
+            },
+          },
+          ApiTypes.PromptTemplateOutputSchema,
+        );
+        return result;
       }
 
       const { results: result } =
-        await this.#fetcher<ApiTypes.PromptTemplateOutput>({
-          ...options,
-          method: 'GET',
-          url: endpoint,
-        });
-      return ApiTypes.SinglePromptTemplateOutputSchema.parse(result);
+        await this.#fetcher<ApiTypes.PromptTemplateOutput>(
+          {
+            ...options,
+            method: 'GET',
+            url: endpoint,
+            id: GET_PROMPT_TEMPLATE_CACHE_ID,
+          },
+          ApiTypes.PromptTemplateOutputSchema,
+        );
+      return result;
     });
   }
 
@@ -1008,16 +1049,15 @@ export class Client {
       },
       ({ input, options }) =>
         paginator(
-          async (paginatorParams) => {
-            const response =
-              await this.#fetcher<ApiTypes.PromptTemplatesOutput>({
+          async (paginatorParams) =>
+            this.#fetcher<ApiTypes.PromptTemplatesOutput>(
+              {
                 ...options,
                 method: 'GET',
                 url: `/v1/prompt_templates?${paginatorParams.toString()}`,
-              });
-
-            return ApiTypes.PromptTemplatesOutputSchema.parse(response);
-          },
+              },
+              ApiTypes.PromptTemplatesOutputSchema,
+            ),
           {
             offset: input?.offset ?? undefined,
             count: input?.count ?? undefined,

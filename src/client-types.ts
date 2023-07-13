@@ -113,10 +113,10 @@ export type TuneMethodsOutput = ApiTypes.TuneMethodsOutput['results'];
 
 // PROMPT TEMPLATES
 
-export type PromptTemplateInput = ApiTypes.PromptTemplateBaseInput;
+export type PromptTemplateInput = ApiTypes.PromptTemplateInput;
 export type PromptTemplateCreateInput = ApiTypes.PromptTemplateCreateInput;
 export const PromptTemplateUpdateInputSchema = z.intersection(
-  ApiTypes.PromptTemplateIdMixinSchema,
+  ApiTypes.PromptTemplateInputSchema,
   ApiTypes.PromptTemplateUpdateInputSchema,
 );
 export type PromptTemplateUpdateInput = z.input<
@@ -140,13 +140,11 @@ export type PromptTemplateDeleteOptions = HttpHandlerOptions & {
   delete: true;
 };
 
-export type PromptTemplateExecuteInput = ApiTypes.PromptTemplateExecuteInput;
+export const PromptTemplateExecuteInputSchema =
+  ApiTypes.PromptTemplateExecuteInputSchema;
+export type PromptTemplateExecuteInput = z.input<
+  typeof PromptTemplateExecuteInputSchema
+>;
 export type PromptTemplateExecuteOutput =
   ApiTypes.PromptTemplateExecuteOutput['results'];
 export type PromptTemplateExecuteOptions = HttpHandlerOptions;
-
-type UnionKeys<T> = T extends T ? keyof T : never;
-type StrictUnionHelper<T, TAll> = T extends any
-  ? T & Partial<Record<Exclude<UnionKeys<TAll>, keyof T>, never>>
-  : never;
-export type ExclusiveType<T> = StrictUnionHelper<T, T>;

@@ -54,8 +54,8 @@ import {
   PromptTemplateExecuteOptions,
   PromptTemplateExecuteOutput,
   PromptTemplateUpdateInput,
-  ExclusiveType,
 } from './client-types.js';
+import type { StrictUnion } from './types.js';
 import { version } from './buildInfo.js';
 import {
   safeParseJson,
@@ -895,16 +895,16 @@ export class Client {
   }
 
   promptTemplate(
-    input: ExclusiveType<PromptTemplateInput | PromptTemplateUpdateInput>,
+    input: StrictUnion<PromptTemplateInput | PromptTemplateUpdateInput>,
     callback: Callback<PromptTemplateOutput>,
   ): void;
   promptTemplate(
-    input: ExclusiveType<PromptTemplateInput | PromptTemplateUpdateInput>,
+    input: StrictUnion<PromptTemplateInput | PromptTemplateUpdateInput>,
     options: PromptTemplateOptions,
     callback: Callback<PromptTemplateOutput>,
   ): void;
   promptTemplate(
-    input: ExclusiveType<
+    input: StrictUnion<
       | PromptTemplateInput
       | PromptTemplateCreateInput
       | PromptTemplateUpdateInput
@@ -925,7 +925,7 @@ export class Client {
     callback: Callback<PromptTemplateOutput>,
   ): void;
   promptTemplate(
-    input: ExclusiveType<
+    input: StrictUnion<
       | PromptTemplateCreateInput
       | PromptTemplateInput
       | PromptTemplateUpdateInput
@@ -1003,16 +1003,15 @@ export class Client {
         return result;
       }
 
-      const { results: result } =
-        await this.#fetcher<ApiTypes.PromptTemplateOutput>(
-          {
-            ...options,
-            method: 'GET',
-            url: endpoint,
-            id: GET_PROMPT_TEMPLATE_CACHE_ID,
-          },
-          ApiTypes.PromptTemplateOutputSchema,
-        );
+      const { results: result } = await this.#fetcher(
+        {
+          ...options,
+          method: 'GET',
+          url: endpoint,
+          id: GET_PROMPT_TEMPLATE_CACHE_ID,
+        },
+        ApiTypes.PromptTemplateOutputSchema,
+      );
       return result;
     });
   }

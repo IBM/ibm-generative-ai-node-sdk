@@ -272,15 +272,13 @@ export interface TuneMethodsOutput {
 
 // PROMPT TEMPLATES
 
-export const PromptTemplateIdMixinSchema = z
+export const PromptTemplateInputSchema = z
   .object({
     id: z.string(),
   })
   .strict();
 
-export type PromptTemplateBaseInput = z.output<
-  typeof PromptTemplateIdMixinSchema
->;
+export type PromptTemplateInput = z.output<typeof PromptTemplateInputSchema>;
 
 export const PromptTemplateCreateInputSchema = z
   .object({
@@ -298,7 +296,7 @@ export type PromptTemplateUpdate = z.input<
   typeof PromptTemplateUpdateInputSchema
 >;
 
-export const SinglePromptTemplateOutputSchema = z
+const SinglePromptTemplateOutputSchema = z
   .object({
     id: z.string(),
     name: z.string(),

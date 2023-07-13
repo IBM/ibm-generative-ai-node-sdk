@@ -110,3 +110,41 @@ export type TuneOutput =
 export const TuneMethodsInputSchema = z.never();
 export type TuneMethodsInput = z.infer<typeof TuneMethodsInputSchema>;
 export type TuneMethodsOutput = ApiTypes.TuneMethodsOutput['results'];
+
+// PROMPT TEMPLATES
+
+export type PromptTemplateInput = ApiTypes.PromptTemplateInput;
+export type PromptTemplateCreateInput = ApiTypes.PromptTemplateCreateInput;
+export const PromptTemplateUpdateInputSchema = z.intersection(
+  ApiTypes.PromptTemplateInputSchema,
+  ApiTypes.PromptTemplateUpdateInputSchema,
+);
+export type PromptTemplateUpdateInput = z.input<
+  typeof PromptTemplateUpdateInputSchema
+>;
+
+export type PromptTemplateOutput = ApiTypes.PromptTemplateOutput['results'];
+export type PromptTemplatesOutput =
+  ApiTypes.PromptTemplatesOutput['results'][number];
+
+export const PromptTemplatesInputSchema = z.object({
+  count: z.number().int().min(1).nullish(),
+  offset: z.number().int().min(0).nullish(),
+});
+export type PromptTemplatesInput = z.input<typeof PromptTemplatesInputSchema>;
+
+export type PromptTemplateOptions = HttpHandlerOptions & {
+  delete?: false;
+};
+export type PromptTemplateDeleteOptions = HttpHandlerOptions & {
+  delete: true;
+};
+
+export const PromptTemplateExecuteInputSchema =
+  ApiTypes.PromptTemplateExecuteInputSchema;
+export type PromptTemplateExecuteInput = z.input<
+  typeof PromptTemplateExecuteInputSchema
+>;
+export type PromptTemplateExecuteOutput =
+  ApiTypes.PromptTemplateExecuteOutput['results'];
+export type PromptTemplateExecuteOptions = HttpHandlerOptions;

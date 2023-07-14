@@ -8,7 +8,7 @@ The SDK supports both TypeScript and JavaScript as well as ESM and CommonJS.
 
 </div>
 
->Looking for the Python version? Check out [IBM Generative AI Python SDK](https://github.com/IBM/ibm-generative-ai).
+> Looking for the Python version? Check out [IBM Generative AI Python SDK](https://github.com/IBM/ibm-generative-ai).
 
 ![-----------------------------------------------------](./docs/img/rainbow.png)
 
@@ -252,6 +252,29 @@ const response = await chat.call([
 ]);
 
 console.info(response.text); // "Me encanta la programación."
+```
+
+#### Prompt Templates (GenAI x LangChain)
+
+For using GenAI Prompt Template in LangChain, there needs to be a conversion between appropriate template syntaxes.
+This can be done via helper classes provided within our SDK.
+
+```typescript
+import { GenAIPromptTemplate } from '@ibm-generative-ai/node-sdk/langchain';
+import { PromptTemplate } from 'langchain/prompts';
+
+// Converting the LangChain Prompt Template (f-string) to GenAI Prompt Template'
+const promptTemplate = GenAIPromptTemplate.fromLangChain(
+  PromptTemplate.fromTemplate(`Tell me a {adjective} joke about {content}.`),
+);
+console.log(promptTemplate); // "Tell me a {{adjective}} joke about {{content}}."
+
+// Converting the GenAI Prompt Template to GenAI Prompt Template
+const langChainPromptTemplate = GenAIPromptTemplate.toLangChain(
+  `Tell me a {{adjective}} joke about {{content}}.`,
+);
+
+console.log(langChainPromptTemplate); // "Tell me a {adjective} joke about {content}."
 ```
 
 ![-----------------------------------------------------](./docs/img/rainbow.png)

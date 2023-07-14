@@ -97,10 +97,43 @@ export const resetPromptTemplateStore = () => {
   ];
 };
 
+export let historyStore: any[];
+export const resetHistoryStore = () => {
+  historyStore = Array(2)
+    .fill(null)
+    .map((_, index) => ({
+      id: String(index + 1),
+      duration: 431,
+      request: {
+        inputs: ['XXX'],
+        model_id: 'aaa/bbb',
+        parameters: {
+          temperature: 0,
+          max_new_tokens: 1,
+        },
+      },
+      status: 'SUCCESS',
+      created_at: '2022-12-19T22:53:22.000Z',
+      response: {
+        results: [
+          {
+            generated_text: 'YYY',
+            generated_token_count: 1,
+            input_token_count: 2,
+            stop_reason: 'MAX_TOKENS',
+          },
+        ],
+        model_id: 'aaa/bbb',
+        created_at: '2022-12-19T22:53:22.358Z',
+      },
+    }));
+};
+
 export const resetStores = () => {
   resetGenerateConfigStore();
   resetTunesStore();
   resetPromptTemplateStore();
+  resetHistoryStore();
 };
 resetStores();
 
@@ -349,4 +382,18 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
       );
     },
   ),
+
+  // History
+  rest.get(`${MOCK_ENDPOINT}/v1/requests`, (req, res, ctx) => {
+    const offset = parseInt(req.url.searchParams.get('offset') ?? '0');
+    const limit = parseInt(req.url.searchParams.get('limit') ?? '1');
+
+    return res(
+      ctx.status(200),
+      ctx.json({
+        results: historyStore.slice(offset, limit),
+        totalCount: historyStore.length,
+      }),
+    );
+  }),
 ];

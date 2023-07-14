@@ -1,7 +1,9 @@
-import { GenerateResult } from '../../api-types.js';
+import { GenerateOutput } from '../../api-types.js';
 import { GenerateInput } from '../../client-types.js';
 import { Client } from '../../client.js';
 import { RequestCanceledError } from '../../errors.js';
+
+export type GenerateResult = GenerateOutput['results'][0];
 
 describe('client', () => {
   let client: Client;

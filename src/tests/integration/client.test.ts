@@ -6,6 +6,7 @@ import {
   tuneMethodsStore,
   tunesStore,
   promptTemplatesStore,
+  historyStore,
 } from '../mocks/handlers.js';
 import { Client } from '../../client.js';
 
@@ -268,6 +269,28 @@ describe('client', () => {
           "Hello GENAI, how much is 3+3?",
         ]
       `);
+    });
+  });
+
+  describe('history', () => {
+    test('should list all requests from the past', () =>
+      new Promise((done) => {
+        expect.assertions(historyStore.length * 2);
+        let count = historyStore.length;
+        client.history((err, entry) => {
+          expect(err).toBeFalsy();
+          expect(entry).toBeDefined();
+          if (--count === 0) done(undefined);
+        });
+      }));
+
+    test('should list all requests from the past using for-await loop', async () => {
+      const entries = [];
+      for await (const entry of client.history()) {
+        entries.push(entry);
+        expect(entry).toBeDefined();
+      }
+      expect(entries.length).toBe(historyStore.length);
     });
   });
 });

@@ -10,7 +10,7 @@ import { PromptTemplate } from 'langchain/prompts';
 }
 
 {
-  // Converting the GenAI Prompt Template to GenAI Prompt Template
+  // Converting the GenAI Prompt Template to LangChain Prompt Template
   const result = GenAIPromptTemplate.toLangChain(
     `Tell me a {{adjective}} joke about {{content}}.`,
   );

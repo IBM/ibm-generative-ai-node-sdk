@@ -269,7 +269,7 @@ const promptTemplate = GenAIPromptTemplate.fromLangChain(
 );
 console.log(promptTemplate); // "Tell me a {{adjective}} joke about {{content}}."
 
-// Converting the GenAI Prompt Template to GenAI Prompt Template
+// Converting the GenAI Prompt Template to LangChain Prompt Template
 const langChainPromptTemplate = GenAIPromptTemplate.toLangChain(
   `Tell me a {{adjective}} joke about {{content}}.`,
 );

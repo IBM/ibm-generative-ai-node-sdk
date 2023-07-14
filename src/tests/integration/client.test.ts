@@ -237,9 +237,10 @@ describe('client', () => {
       );
     });
 
-    test('should partially update the prompt template', async () => {
+    test('should update the prompt template', async () => {
       const template = await client.promptTemplate({
         id: promptTemplatesStore[1].id,
+        value: promptTemplatesStore[1].value,
         name: 'Greeting template!',
       });
       expect(template.name).toBe('Greeting template!');

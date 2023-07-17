@@ -57,6 +57,13 @@ import {
   HistoryInput,
   HistoryOptions,
   HistoryOutput,
+  FileInput,
+  FileOutput,
+  FileOptions,
+  FileDeleteOptions,
+  FileCreateInput,
+  FilesOutput,
+  FilesInput,
 } from './client-types.js';
 import type { StrictUnion } from './types.js';
 import { version } from './buildInfo.js';
@@ -1152,5 +1159,142 @@ export class Client {
         );
       },
     );
+  }
+
+  files(callback: Callback<FilesOutput>): void;
+  files(input: FilesInput, callback: Callback<FilesOutput>): void;
+  files(
+    input: FilesInput,
+    options: HttpHandlerOptions,
+    callback: Callback<FilesOutput>,
+  ): void;
+  files(
+    input?: FilesInput,
+    options?: HttpHandlerOptions,
+  ): AsyncGenerator<FilesOutput>;
+  files(
+    inputOrCallback?: FilesInput | Callback<FilesOutput>,
+    optionsOrCallback?: HttpHandlerOptions | Callback<FilesOutput>,
+    callback?: Callback<FilesOutput>,
+  ): AsyncGenerator<FilesOutput> | void {
+    return handleGenerator<
+      FilesInput | Callback<FilesOutput>,
+      HttpHandlerOptions | Callback<FilesOutput>,
+      Callback<FilesOutput>,
+      FilesOutput
+    >(
+      {
+        inputOrOptionsOrCallback: inputOrCallback,
+        optionsOrCallback,
+        callback,
+      },
+      ({ input, options }) =>
+        paginator(
+          async (paginatorParams) =>
+            this.#fetcher(
+              {
+                ...options,
+                method: 'GET',
+                url: `/v1/files?${paginatorParams.toString()}`,
+              },
+              ApiTypes.FilesOutputSchema,
+            ),
+          {
+            offset: input?.offset ?? undefined,
+            count: input?.count ?? undefined,
+          },
+        ),
+    );
+  }
+
+  file(input: StrictUnion<FileInput>, callback: Callback<FileOutput>): void;
+  file(
+    input: StrictUnion<FileInput>,
+    options: FileOptions,
+    callback: Callback<FileOutput>,
+  ): void;
+  file(
+    input: StrictUnion<FileInput | FileCreateInput>,
+    options?: FileOptions,
+  ): Promise<FileOutput>;
+  file(input: FileInput, options: FileDeleteOptions): Promise<void>;
+  file(
+    input: FileInput,
+    options: FileDeleteOptions,
+    callback: Callback<void>,
+  ): void;
+  file(input: FileCreateInput, callback: Callback<FileOutput>): void;
+  file(
+    input: StrictUnion<FileCreateInput | FileInput>,
+    optionsOrCallback?:
+      | FileDeleteOptions
+      | FileOptions
+      | Callback<FileOutput>
+      | Callback<void>,
+    callback?: Callback<FileOutput> | Callback<void>,
+  ): Promise<FileOutput | void> | void {
+    return handle({ optionsOrCallback, callback }, async ({ options }) => {
+      const GET_FILE_CACHE_ID = 'get-file';
+
+      const transformOutput = (apiOutput: ApiTypes.FileOutput['results']) => ({
+        ...apiOutput,
+        download: () =>
+          this.#fetcher<IncomingMessage>({
+            ...options,
+            responseType: 'stream',
+            method: 'GET',
+            url: `/v1/files/${encodeURIComponent(apiOutput.id)}/content`,
+          }),
+      });
+
+      const isCreateInput = isTypeOf<FileCreateInput>(input, !('id' in input));
+      if (isCreateInput) {
+        const { results: result } = await this.#fetcher<
+          ApiTypes.FileOutput,
+          ApiTypes.FileCreateInput
+        >(
+          {
+            ...options,
+            method: 'POST',
+            url: `/v1/files`,
+            data: input.file,
+            cache: {
+              update: {
+                [GET_FILE_CACHE_ID]: 'delete',
+              },
+            },
+          },
+          ApiTypes.FileOutputSchema,
+        );
+        return transformOutput(result);
+      }
+
+      const endpoint = `/v1/files/${encodeURIComponent(input.id)}`;
+      const opts = options as FileDeleteOptions | undefined;
+      if (opts?.delete) {
+        await this.#fetcher({
+          ...options,
+          method: 'DELETE',
+          url: endpoint,
+          cache: {
+            update: {
+              [GET_FILE_CACHE_ID]: 'delete',
+            },
+          },
+        });
+        return;
+      }
+
+      const { results: result } = await this.#fetcher(
+        {
+          ...options,
+          method: 'GET',
+          url: endpoint,
+          id: GET_FILE_CACHE_ID,
+        },
+        ApiTypes.FileOutputSchema,
+      );
+      return transformOutput(result);
+    });
   }
 }

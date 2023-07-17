@@ -1,6 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { Readable } from 'node:stream';
 import { z } from 'zod';
+
+// COMMON
+
+const PaginationOutputSchema = z.object({
+  totalCount: z.number().int().nonnegative(),
+  results: z.array(z.any()),
+});
+
+// ERRORS
 
 export interface ErrorExtensions {
   code: string;
@@ -274,12 +284,9 @@ export const PromptTemplateOutputSchema = z.object({
 });
 export type PromptTemplateOutput = z.infer<typeof PromptTemplateOutputSchema>;
 
-export const PromptTemplatesOutputSchema = z
-  .object({
-    totalCount: z.number().int().min(0),
-    results: z.array(SinglePromptTemplateOutputSchema),
-  })
-  .passthrough();
+export const PromptTemplatesOutputSchema = PaginationOutputSchema.extend({
+  results: z.array(SinglePromptTemplateOutputSchema),
+}).passthrough();
 export type PromptTemplatesOutput = z.infer<typeof PromptTemplatesOutputSchema>;
 
 export const PromptTemplateExecuteInputSchema = z.object({
@@ -303,7 +310,8 @@ export type PromptTemplateExecuteOutput = z.infer<
   typeof PromptTemplateExecuteOutputSchema
 >;
 
-// History
+// HISTORY
+
 export const HistoryStatusSchema = z.enum(['SUCCESS', 'ERROR']);
 export type HistoryStatus = z.infer<typeof HistoryStatusSchema>;
 
@@ -318,7 +326,7 @@ export const HistoryInputSchema = z
   .partial();
 export type HistoryInput = z.input<typeof HistoryInputSchema>;
 
-export const HistoryOutputSchema = z.object({
+export const HistoryOutputSchema = PaginationOutputSchema.extend({
   results: z.array(
     z.object({
       id: z.string(),
@@ -329,6 +337,40 @@ export const HistoryOutputSchema = z.object({
       response: GenerateOutputSchema,
     }),
   ),
-  totalCount: z.number().int().min(0),
 });
 export type HistoryOutput = z.infer<typeof HistoryOutputSchema>;
+
+// FILES
+
+export const FilePurposeSchema = z.enum(['tune', 'template', 'other']);
+export type FilePurpose = z.infer<typeof FilePurposeSchema>;
+
+export const FileInputSchema = z
+  .object({
+    id: z.string(),
+  })
+  .strict();
+export type FileInput = z.input<typeof FileInputSchema>;
+
+export const FileCreateInputSchema = z.custom<Readable>();
+export type FileCreateInput = z.input<typeof FileCreateInputSchema>;
+
+const SingleFileOutputSchema = z
+  .object({
+    id: z.string(),
+    bytes: z.number().nonnegative(),
+    file_name: z.string(),
+    purpose: FilePurposeSchema,
+    created_at: z.coerce.date(),
+  })
+  .passthrough();
+
+export const FileOutputSchema = z.object({
+  results: SingleFileOutputSchema,
+});
+export type FileOutput = z.output<typeof FileOutputSchema>;
+
+export const FilesOutputSchema = PaginationOutputSchema.extend({
+  results: z.array(SingleFileOutputSchema),
+});
+export type FilesOutput = z.output<typeof FilesOutputSchema>;

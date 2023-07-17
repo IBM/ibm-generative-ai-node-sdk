@@ -60,6 +60,17 @@ export const GenerateInputSchema = z.object({
 });
 export type GenerateInput = z.infer<typeof GenerateInputSchema>;
 
+export const GenerateStopReasonSchema = z.enum([
+  'NOT_FINISHED',
+  'MAX_TOKENS',
+  'EOS_TOKEN',
+  'CANCELLED',
+  'TIME_LIMIT',
+  'STOP_SEQUENCE',
+  'TOKEN_LIMIT',
+  'ERROR',
+]);
+
 export const GenerateOutputSchema = z.object({
   model_id: z.string(),
   created_at: z.coerce.date(),
@@ -69,16 +80,7 @@ export const GenerateOutputSchema = z.object({
         generated_text: z.string(),
         generated_token_count: z.number().int().min(0),
         input_token_count: z.number().int().min(0),
-        stop_reason: z.enum([
-          'NOT_FINISHED',
-          'MAX_TOKENS',
-          'EOS_TOKEN',
-          'CANCELLED',
-          'TIME_LIMIT',
-          'STOP_SEQUENCE',
-          'TOKEN_LIMIT',
-          'ERROR',
-        ]),
+        stop_reason: GenerateStopReasonSchema,
       })
       .passthrough(),
   ),
@@ -300,10 +302,12 @@ export type PromptTemplateExecuteOutput = z.infer<
 >;
 
 // History
+export const HistoryStatusSchema = z.enum(['SUCCESS', 'ERROR']);
+export const HistoryOriginSchema = z.enum(['API', 'UI']);
 export const HistoryInputSchema = z
   .object({
-    status: z.enum(['SUCCESS', 'ERROR']),
-    origin: z.enum(['API', 'UI']),
+    status: HistoryStatusSchema,
+    origin: HistoryOriginSchema,
   })
   .partial();
 export type HistoryInput = z.input<typeof HistoryInputSchema>;

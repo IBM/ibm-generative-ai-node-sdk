@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { Readable } from 'node:stream';
 import { z } from 'zod';
+import type FormData from 'form-data';
 
 // COMMON
 
@@ -352,13 +352,12 @@ export const FileInputSchema = z
   .strict();
 export type FileInput = z.input<typeof FileInputSchema>;
 
-export const FileCreateInputSchema = z.custom<Readable>();
+export const FileCreateInputSchema = z.custom<FormData>();
 export type FileCreateInput = z.input<typeof FileCreateInputSchema>;
 
 const SingleFileOutputSchema = z
   .object({
     id: z.string(),
-    bytes: z.number().nonnegative(),
     file_name: z.string(),
     purpose: FilePurposeSchema,
     created_at: z.coerce.date(),

@@ -178,7 +178,8 @@ export type FileInput = z.input<typeof FileInputSchema>;
 
 export const FileCreateInputSchema = z.object({
   purpose: FilePurposeSchema,
-  file: ApiTypes.FileCreateInputSchema,
+  filename: z.string(),
+  file: z.custom<Readable>(),
 });
 export type FileCreateInput = z.input<typeof FileCreateInputSchema>;
 

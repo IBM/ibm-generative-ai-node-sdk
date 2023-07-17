@@ -1,6 +1,7 @@
 import { createReadStream, createWriteStream } from 'node:fs';
+import { pipeline } from 'node:stream/promises';
+
 import { Client } from '../src/index.js';
-import { pipeline } from 'node:stream';
 
 const client = new Client({
   apiKey: process.env.GENAI_API_KEY,
@@ -25,6 +26,7 @@ const client = new Client({
   // Upload a file
   const newFile = await client.file({
     purpose: 'tune',
+    filename: 'tune_input.jsonl',
     file: createReadStream('examples/assets/tune_input.jsonl'),
   });
   console.log(newFile);

@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios';
+import FormData from 'form-data';
 import {
   AxiosCacheInstance,
   CacheRequestConfig,
@@ -1249,6 +1250,10 @@ export class Client {
 
       const isCreateInput = isTypeOf<FileCreateInput>(input, !('id' in input));
       if (isCreateInput) {
+        const { purpose, filename, file } = input;
+        const formData = new FormData();
+        formData.append('purpose', purpose);
+        formData.append('file', file, { filename });
         const { results: result } = await this.#fetcher<
           ApiTypes.FileOutput,
           ApiTypes.FileCreateInput
@@ -1257,7 +1262,7 @@ export class Client {
             ...options,
             method: 'POST',
             url: `/v1/files`,
-            data: input.file,
+            data: formData,
             cache: {
               update: {
                 [GET_FILE_CACHE_ID]: 'delete',

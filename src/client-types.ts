@@ -164,7 +164,6 @@ export type HistoryInput = z.input<typeof HistoryInputSchema>;
 
 export type HistoryOptions = HttpHandlerOptions;
 
-export const HistoryOutputSchema = ApiTypes.HistoryOutputSchema;
-export type HistoryOutput = z.infer<
-  typeof HistoryOutputSchema.shape.results.element
->;
+export const HistoryOutputSchema =
+  ApiTypes.HistoryOutputSchema.shape.results.element;
+export type HistoryOutput = z.infer<typeof HistoryOutputSchema>;

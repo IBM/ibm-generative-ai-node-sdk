@@ -1,5 +1,4 @@
-import { GenerateResult } from '../../api-types.js';
-import { GenerateInput } from '../../client-types.js';
+import { GenerateInput, GenerateOutput } from '../../client-types.js';
 import { Client } from '../../client.js';
 import { RequestCanceledError } from '../../errors.js';
 
@@ -66,7 +65,7 @@ describe('client', () => {
           },
         );
 
-      const validateStreamChunk = (chunk: GenerateResult) => {
+      const validateStreamChunk = (chunk: GenerateOutput) => {
         const isNumberOrNull = (value: unknown) =>
           value === null || !Number.isNaN(value);
 
@@ -99,9 +98,9 @@ describe('client', () => {
       test('should return valid stream for a single input', async () => {
         const stream = makeValidStream();
 
-        const chunks = await new Promise<GenerateResult[]>(
+        const chunks = await new Promise<GenerateOutput[]>(
           (resolve, reject) => {
-            const chunks: GenerateResult[] = [];
+            const chunks: GenerateOutput[] = [];
             stream.on('data', (chunk) => {
               validateStreamChunk(chunk);
               chunks.push(chunk);
@@ -119,9 +118,9 @@ describe('client', () => {
       }, 15_000);
 
       test('should handle callback approach', async () => {
-        const chunks = await new Promise<GenerateResult[]>(
+        const chunks = await new Promise<GenerateOutput[]>(
           (resolve, reject) => {
-            const chunks: GenerateResult[] = [];
+            const chunks: GenerateOutput[] = [];
             client.generate(
               {
                 model_id: 'google/ul2',

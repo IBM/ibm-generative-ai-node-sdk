@@ -148,3 +148,22 @@ export type PromptTemplateExecuteInput = z.input<
 export type PromptTemplateExecuteOutput =
   ApiTypes.PromptTemplateExecuteOutput['results'];
 export type PromptTemplateExecuteOptions = HttpHandlerOptions;
+
+// HISTORY
+
+export const HistoryInputSchema = ApiTypes.HistoryInputSchema.pick({
+  status: true,
+  origin: true,
+})
+  .extend({
+    count: z.number().int().min(1).nullish(),
+    offset: z.number().int().min(0).nullish(),
+  })
+  .partial();
+export type HistoryInput = z.input<typeof HistoryInputSchema>;
+
+export type HistoryOptions = HttpHandlerOptions;
+
+export const HistoryOutputSchema =
+  ApiTypes.HistoryOutputSchema.shape.results.element;
+export type HistoryOutput = z.infer<typeof HistoryOutputSchema>;

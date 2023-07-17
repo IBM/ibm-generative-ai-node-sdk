@@ -54,6 +54,9 @@ import {
   PromptTemplateExecuteOptions,
   PromptTemplateExecuteOutput,
   PromptTemplateUpdateInput,
+  HistoryInput,
+  HistoryOptions,
+  HistoryOutput,
 } from './client-types.js';
 import type { StrictUnion } from './types.js';
 import { version } from './buildInfo.js';
@@ -438,7 +441,7 @@ export class Client {
               stop_reason,
               input_token_count,
               generated_token_count,
-            } as ApiTypes.GenerateResult);
+            } as GenerateOutput);
           } catch (e) {
             const err = (chunk || e) as unknown as Error;
             callback(err, null);
@@ -1097,5 +1100,57 @@ export class Client {
       });
       return results;
     });
+  }
+
+  history(callback: Callback<HistoryOutput>): void;
+  history(input: HistoryInput, callback: Callback<HistoryOutput>): void;
+  history(
+    input: HistoryInput,
+    options: HistoryOptions,
+    callback: Callback<HistoryOutput>,
+  ): void;
+  history(
+    input?: HistoryInput,
+    options?: HistoryOptions,
+  ): AsyncGenerator<HistoryOutput>;
+  history(
+    inputOrCallback?: HistoryInput | Callback<HistoryOutput>,
+    optionsOrCallback?: HistoryOptions | Callback<HistoryOutput>,
+    callback?: Callback<HistoryOutput>,
+  ): AsyncGenerator<HistoryOutput> | void {
+    return handleGenerator<
+      HistoryInput | Callback<HistoryOutput>,
+      HistoryOptions | Callback<HistoryOutput>,
+      Callback<HistoryOutput>,
+      HistoryOutput
+    >(
+      {
+        inputOrOptionsOrCallback: inputOrCallback,
+        optionsOrCallback,
+        callback,
+      },
+      ({ input, options }) => {
+        const params = new URLSearchParams();
+        if (input?.status) params.set('status', input.status);
+        if (input?.origin) params.set('origin', input.origin);
+
+        return paginator(
+          (paginatorParams) =>
+            this.#fetcher(
+              {
+                ...options,
+                method: 'GET',
+                url: `/v1/requests?${paginatorParams.toString()}`,
+              },
+              ApiTypes.HistoryOutputSchema,
+            ),
+          {
+            offset: input?.offset ?? undefined,
+            count: input?.count ?? undefined,
+            params,
+          },
+        );
+      },
+    );
   }
 }

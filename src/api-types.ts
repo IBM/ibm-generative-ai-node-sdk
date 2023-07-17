@@ -60,29 +60,34 @@ export const GenerateInputSchema = z.object({
 });
 export type GenerateInput = z.infer<typeof GenerateInputSchema>;
 
-export type GenerateStopReason =
-  | 'NOT_FINISHED'
-  | 'MAX_TOKENS'
-  | 'EOS_TOKEN'
-  | 'CANCELLED'
-  | 'TIME_LIMIT'
-  | 'STOP_SEQUENCE'
-  | 'TOKEN_LIMIT'
-  | 'ERROR';
+export const GenerateStopReasonSchema = z.enum([
+  'NOT_FINISHED',
+  'MAX_TOKENS',
+  'EOS_TOKEN',
+  'CANCELLED',
+  'TIME_LIMIT',
+  'STOP_SEQUENCE',
+  'TOKEN_LIMIT',
+  'ERROR',
+]);
+export type GenerateStopReason = z.infer<typeof GenerateStopReasonSchema>;
 
-export interface GenerateResult {
-  generated_text: string;
-  generated_token_count: number;
-  input_token_count: number;
-  stop_reason: GenerateStopReason;
-  [x: string]: any;
-}
+export const GenerateResultSchema = z
+  .object({
+    generated_text: z.string(),
+    generated_token_count: z.number().int().min(0),
+    input_token_count: z.number().int().min(0),
+    stop_reason: GenerateStopReasonSchema,
+  })
+  .passthrough();
+export type GenerateResult = z.infer<typeof GenerateResultSchema>;
 
-export interface GenerateOutput {
-  model_id: string;
-  created_at: string;
-  results: GenerateResult[];
-}
+export const GenerateOutputSchema = z.object({
+  model_id: z.string(),
+  created_at: z.coerce.date(),
+  results: z.array(GenerateResultSchema),
+});
+export type GenerateOutput = z.infer<typeof GenerateOutputSchema>;
 
 export interface GenerateLimitsOutput {
   tokenCapacity: number;
@@ -119,47 +124,6 @@ export interface TokenizeOutput {
   model_id: string;
   created_at: string;
   results: TokenizeResult[];
-}
-
-export const RequestsInputSchema = z.object({
-  limit: z.optional(z.number()),
-  offset: z.optional(z.number()),
-  status: z.optional(z.enum(['SUCCESS', 'ERROR'])),
-  origin: z.optional(z.enum(['API', 'UI'])),
-});
-
-export type RequestsInput = z.infer<typeof RequestsInputSchema>;
-
-export interface RequestSuccessResult {
-  status: 'SUCCESS';
-  id: string;
-  created_at: string;
-  duration: number;
-  request: GenerateInput;
-  response: GenerateOutput | null;
-}
-
-export interface RequestsErrorResult {
-  status: 'ERROR';
-  id: string;
-  created_at: string;
-  duration: number;
-  request: GenerateInput;
-  response: Record<string, any> | null;
-}
-
-export type RequestsResult = RequestSuccessResult | RequestsErrorResult;
-
-export interface RequestsOutput {
-  totalCount: number;
-  results: RequestsResult[];
-}
-
-export interface AcceptTouOutput {
-  results: {
-    tou_accepted: boolean;
-    tou_accepted_at: string;
-  };
 }
 
 // MODELS
@@ -338,3 +302,33 @@ export const PromptTemplateExecuteOutputSchema = z.object({
 export type PromptTemplateExecuteOutput = z.infer<
   typeof PromptTemplateExecuteOutputSchema
 >;
+
+// History
+export const HistoryStatusSchema = z.enum(['SUCCESS', 'ERROR']);
+export type HistoryStatus = z.infer<typeof HistoryStatusSchema>;
+
+export const HistoryOriginSchema = z.enum(['API', 'UI']);
+export type HistoryOrigin = z.infer<typeof HistoryOriginSchema>;
+
+export const HistoryInputSchema = z
+  .object({
+    status: HistoryStatusSchema,
+    origin: HistoryOriginSchema,
+  })
+  .partial();
+export type HistoryInput = z.input<typeof HistoryInputSchema>;
+
+export const HistoryOutputSchema = z.object({
+  results: z.array(
+    z.object({
+      id: z.string(),
+      duration: z.number().int().min(0),
+      request: GenerateInputSchema.partial(),
+      status: HistoryInputSchema.shape.status,
+      created_at: z.coerce.date(),
+      response: GenerateOutputSchema,
+    }),
+  ),
+  totalCount: z.number().int().min(0),
+});
+export type HistoryOutput = z.infer<typeof HistoryOutputSchema>;

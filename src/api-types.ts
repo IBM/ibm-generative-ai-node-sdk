@@ -342,7 +342,7 @@ export type HistoryOutput = z.infer<typeof HistoryOutputSchema>;
 
 // FILES
 
-export const FilePurposeSchema = z.enum(['tune', 'template', 'other']);
+export const FilePurposeSchema = z.enum(['tune', 'template']);
 export type FilePurpose = z.infer<typeof FilePurposeSchema>;
 
 export const FileInputSchema = z

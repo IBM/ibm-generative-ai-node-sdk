@@ -244,7 +244,7 @@ const client = new GenAIChatModel({
   },
 });
 
-const response = await chat.call([
+const response = await client.call([
   new SystemChatMessage(
     'You are a helpful assistant that translates English to Spanish.',
   ),

@@ -9,16 +9,16 @@ const client = new Client({
 
 {
   // List all files
-  for await (const tune of client.files()) {
-    console.log(tune);
+  for await (const file of client.files()) {
+    console.log(file);
   }
 }
 
 {
   // List all files via callback interface
-  client.files((err, tune) => {
+  client.files((err, file) => {
     if (err) console.error(err);
-    console.log(tune);
+    console.log(file);
   });
 }
 

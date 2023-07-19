@@ -5,7 +5,7 @@ import { FlagOption } from './helpers/types.js';
 
 // COMMON
 
-const ListSchema = z.object({
+const ListInputSchema = z.object({
   offset: z.number().int().nonnegative().nullish(),
   count: z.number().int().positive().nullish(),
 });
@@ -78,7 +78,7 @@ export type ModelOutput = ApiTypes.ModelOutput['results'];
 
 export const TunesInputSchema = z
   .object({
-    filters: ListSchema.and(
+    filters: ListInputSchema.and(
       z.object({
         search: z.string().nullish(),
         status: ApiTypes.TuneStatusSchema.nullish(),
@@ -135,7 +135,7 @@ export type PromptTemplateOutput = ApiTypes.PromptTemplateOutput['results'];
 export type PromptTemplatesOutput =
   ApiTypes.PromptTemplatesOutput['results'][number];
 
-export const PromptTemplatesInputSchema = ListSchema;
+export const PromptTemplatesInputSchema = ListInputSchema;
 export type PromptTemplatesInput = z.input<typeof PromptTemplatesInputSchema>;
 
 export type PromptTemplateOptions = HttpHandlerOptions &
@@ -154,7 +154,7 @@ export type PromptTemplateExecuteOptions = HttpHandlerOptions;
 
 // HISTORY
 
-export const HistoryInputSchema = ListSchema.and(
+export const HistoryInputSchema = ListInputSchema.and(
   ApiTypes.HistoryInputSchema.pick({
     status: true,
     origin: true,
@@ -190,7 +190,7 @@ export const FileOutputSchema = ApiTypes.FileOutputSchema.shape.results.and(
 );
 export type FileOutput = z.output<typeof FileOutputSchema>;
 
-export const FilesInputSchema = ListSchema;
+export const FilesInputSchema = ListInputSchema;
 export type FilesInput = z.input<typeof FilesInputSchema>;
 
 export type FileOptions = HttpHandlerOptions & FlagOption<'delete', false>;

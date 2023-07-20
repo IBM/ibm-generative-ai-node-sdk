@@ -1,6 +1,14 @@
 import { z } from 'zod';
 import * as ApiTypes from './api-types.js';
 import { Readable } from 'node:stream';
+import { FlagOption } from './helpers/types.js';
+
+// COMMON
+
+const ListInputSchema = z.object({
+  offset: z.number().int().nonnegative().nullish(),
+  count: z.number().int().positive().nullish(),
+});
 
 // GENERAL
 
@@ -10,10 +18,10 @@ export interface HttpHandlerOptions {
   retries?: number;
 }
 
-export type HttpHandlerNoStreamOptions = HttpHandlerOptions & {
-  stream?: false;
-};
-export type HttpHandlerStreamOptions = HttpHandlerOptions & { stream: true };
+export type HttpHandlerNoStreamOptions = HttpHandlerOptions &
+  FlagOption<'stream', false>;
+export type HttpHandlerStreamOptions = HttpHandlerOptions &
+  FlagOption<'stream', true>;
 
 // GENERATE
 const BaseGenerateInputSchema = ApiTypes.GenerateInputSchema.omit({
@@ -68,16 +76,16 @@ export type ModelOutput = ApiTypes.ModelOutput['results'];
 
 // TUNES
 
-export const TunesInputSchema = z.object({
-  filters: z
-    .object({
-      search: z.string().nullish(),
-      status: ApiTypes.TuneStatusSchema.nullish(),
-      offset: z.number().nonnegative().nullish(),
-      count: z.number().positive().nullish(),
-    })
-    .nullish(),
-});
+export const TunesInputSchema = z
+  .object({
+    filters: ListInputSchema.and(
+      z.object({
+        search: z.string().nullish(),
+        status: ApiTypes.TuneStatusSchema.nullish(),
+      }),
+    ),
+  })
+  .partial();
 export type TunesInput = z.infer<typeof TunesInputSchema>;
 export type TunesOutput = ApiTypes.TunesOuput['results'][number];
 
@@ -127,18 +135,13 @@ export type PromptTemplateOutput = ApiTypes.PromptTemplateOutput['results'];
 export type PromptTemplatesOutput =
   ApiTypes.PromptTemplatesOutput['results'][number];
 
-export const PromptTemplatesInputSchema = z.object({
-  count: z.number().int().min(1).nullish(),
-  offset: z.number().int().min(0).nullish(),
-});
+export const PromptTemplatesInputSchema = ListInputSchema;
 export type PromptTemplatesInput = z.input<typeof PromptTemplatesInputSchema>;
 
-export type PromptTemplateOptions = HttpHandlerOptions & {
-  delete?: false;
-};
-export type PromptTemplateDeleteOptions = HttpHandlerOptions & {
-  delete: true;
-};
+export type PromptTemplateOptions = HttpHandlerOptions &
+  FlagOption<'delete', false>;
+export type PromptTemplateDeleteOptions = HttpHandlerOptions &
+  FlagOption<'delete', true>;
 
 export const PromptTemplateExecuteInputSchema =
   ApiTypes.PromptTemplateExecuteInputSchema;
@@ -151,15 +154,12 @@ export type PromptTemplateExecuteOptions = HttpHandlerOptions;
 
 // HISTORY
 
-export const HistoryInputSchema = ApiTypes.HistoryInputSchema.pick({
-  status: true,
-  origin: true,
-})
-  .extend({
-    count: z.number().int().min(1).nullish(),
-    offset: z.number().int().min(0).nullish(),
-  })
-  .partial();
+export const HistoryInputSchema = ListInputSchema.and(
+  ApiTypes.HistoryInputSchema.pick({
+    status: true,
+    origin: true,
+  }),
+);
 export type HistoryInput = z.input<typeof HistoryInputSchema>;
 
 export type HistoryOptions = HttpHandlerOptions;
@@ -167,3 +167,35 @@ export type HistoryOptions = HttpHandlerOptions;
 export const HistoryOutputSchema =
   ApiTypes.HistoryOutputSchema.shape.results.element;
 export type HistoryOutput = z.infer<typeof HistoryOutputSchema>;
+
+// FILES
+
+export const FilePurposeSchema = ApiTypes.FilePurposeSchema;
+export type FilePupose = z.infer<typeof FilePurposeSchema>;
+
+export const FileInputSchema = ApiTypes.FileInputSchema;
+export type FileInput = z.input<typeof FileInputSchema>;
+
+export const FileCreateInputSchema = z.object({
+  purpose: FilePurposeSchema,
+  filename: z.string(),
+  file: z.custom<Readable>(),
+});
+export type FileCreateInput = z.input<typeof FileCreateInputSchema>;
+
+export const FileOutputSchema = ApiTypes.FileOutputSchema.shape.results.and(
+  z.object({
+    download: z.function().returns(z.custom<Promise<Readable>>()),
+  }),
+);
+export type FileOutput = z.output<typeof FileOutputSchema>;
+
+export const FilesInputSchema = ListInputSchema;
+export type FilesInput = z.input<typeof FilesInputSchema>;
+
+export type FileOptions = HttpHandlerOptions & FlagOption<'delete', false>;
+export type FileDeleteOptions = HttpHandlerOptions & FlagOption<'delete', true>;
+
+export const FilesOutputSchema =
+  ApiTypes.FilesOutputSchema.shape.results.element;
+export type FilesOutput = z.output<typeof FilesOutputSchema>;

@@ -99,10 +99,11 @@ export const GenerateOutputSchema = z.object({
 });
 export type GenerateOutput = z.infer<typeof GenerateOutputSchema>;
 
-export interface GenerateLimitsOutput {
-  tokenCapacity: number;
-  tokensUsed: number;
-}
+export const GenerateLimitsOutputSchema = z.object({
+  tokenCapacity: z.number().int().nonnegative(),
+  tokensUsed: z.number().int().nonnegative(),
+});
+export type GenerateLimitsOutput = z.output<typeof GenerateLimitsOutputSchema>;
 
 export const GenerateConfigInputSchema = z.object({
   model_id: z.optional(z.string()),
@@ -111,10 +112,11 @@ export const GenerateConfigInputSchema = z.object({
 
 export type GenerateConfigInput = z.infer<typeof GenerateConfigInputSchema>;
 
-export interface GenerateConfigOutput {
-  model_id?: string;
-  parameters?: Record<string, any>;
-}
+export const GenerateConfigOutputSchema = z.object({
+  model_id: z.string().nullish(),
+  parameters: z.record(z.any()).nullish(),
+});
+export type GenerateConfigOutput = z.output<typeof GenerateConfigOutputSchema>;
 
 export const TokenizeInputSchema = z.object({
   model_id: z.string().nullish(),
@@ -125,55 +127,62 @@ export const TokenizeInputSchema = z.object({
 
 export type TokenizeInput = z.infer<typeof TokenizeInputSchema>;
 
-export interface TokenizeResult {
-  token_count: number;
-  tokens?: string[];
-}
-
-export interface TokenizeOutput {
-  model_id: string;
-  created_at: string;
-  results: TokenizeResult[];
-}
+export const TokenizeOutputSchema = z.object({
+  model_id: z.string(),
+  created_at: z.string(),
+  results: z.array(
+    z.object({
+      token_count: z.number().int().nonnegative(),
+      tokens: z.array(z.string()),
+    }),
+  ),
+});
+export type TokenizeOutput = z.output<typeof TokenizeOutputSchema>;
 
 // MODELS
 
-export interface ModelsOutput {
-  results: {
-    id: string;
-    name: string;
-    size: string;
-    token_limit: number;
-  }[];
-}
+export const ModelsOutputSchema = z.object({
+  results: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      size: z.string(),
+      token_limit: z.number().int().nonnegative(),
+    }),
+  ),
+});
+export type ModelsOutput = z.output<typeof ModelsOutputSchema>;
 
-type ModelSchema = { id: number; value: any };
+const ModelSchemaSchema = z.object({ id: z.number().int(), value: z.any() });
 
-export interface ModelOutput {
-  results: {
-    id: string;
-    name: string;
-    size: string;
-    description: string;
-    token_limit: number;
-    tags: string[];
-    source_model_id: string | null;
-    tasks: {
-      id: string;
-      name: string;
-      json_example: string;
-      jsonl_example: string;
-    }[];
-    model_family: {
-      id: number;
-      name: string;
-      short_description?: string;
-      description?: string;
-    };
-    schema_generate: ModelSchema;
-    schema_tokenize: ModelSchema;
-  };
-}
+export const ModelOutputSchema = z.object({
+  results: z.object({
+    id: z.string(),
+    name: z.string(),
+    size: z.string(),
+    description: z.string(),
+    token_limit: z.number().int().nonnegative(),
+    tags: z.array(z.string()),
+    source_model_id: z.string().nullable(),
+    tasks: z.array(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        json_example: z.string(),
+        jsonl_example: z.string(),
+      }),
+    ),
+    model_family: z.object({
+      id: z.number().int(),
+      name: z.string(),
+      short_description: z.string().nullish(),
+      description: z.string().nullish(),
+    }),
+    schema_generate: ModelSchemaSchema,
+    schema_tokenize: ModelSchemaSchema,
+  }),
+});
+export type ModelOutput = z.output<typeof ModelOutputSchema>;
 
 // TUNES
 
@@ -189,26 +198,27 @@ export const TuneStatusSchema = z.enum([
 ]);
 export type TuneStatus = z.infer<typeof TuneStatusSchema>;
 
-interface TuneFile {
-  id: string;
-  file_name: string;
-  created_at: string;
-}
+const TuneFileSchema = z.object({
+  id: z.string(),
+  file_name: z.string(),
+  created_at: z.string(),
+});
 
-interface TuneMixin {
-  id: string;
-  name: string;
-  model_id: string;
-  method_id: string;
-  model_name: string;
-  status: TuneStatus;
-  task_id: string;
-  parameters: {
-    batch_size: number;
-    num_epochs: number;
-  };
-  created_at: string;
-}
+const TuneMixinSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  model_id: z.string(),
+  method_id: z.string(),
+  model_name: z.string(),
+  status: TuneStatusSchema,
+  task_id: z.string(),
+  parameters: z.object({
+    batch_size: z.number().int().positive(),
+    num_epochs: z.number().int().positive(),
+  }),
+  created_at: z.string(),
+});
+type TuneMixin = z.infer<typeof TuneMixinSchema>;
 
 export interface TunesOuput {
   results: TuneMixin[];
@@ -226,23 +236,35 @@ export const TuneInputSchema = z.object({
   parameters: z.record(z.any()).nullish(),
 });
 export type TuneInput = z.input<typeof TuneInputSchema>;
-export interface TuneOutput {
-  results: TuneMixin & {
-    validation_files?: TuneFile[];
-    training_files?: TuneFile[];
-    evaluation_files?: TuneFile[];
-    datapoints?: {
-      loss: {
-        data: any;
-        timestamp: string;
-      }[];
-    };
-  };
-}
 
-export interface TuneMethodsOutput {
-  results: { id: string; name: string }[];
-}
+export const TuneOutputSchema = z.object({
+  results: TuneMixinSchema.extend({
+    validation_files: z.array(TuneFileSchema).nullish(),
+    training_files: z.array(TuneFileSchema).nullish(),
+    evaluation_files: z.array(TuneFileSchema).nullish(),
+    datapoints: z
+      .object({
+        loss: z.array(
+          z.object({
+            data: z.any(),
+            timestamp: z.string(),
+          }),
+        ),
+      })
+      .nullish(),
+  }),
+});
+export type TuneOutput = z.output<typeof TuneOutputSchema>;
+
+export const TuneMethodsOutputSchema = z.object({
+  results: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+    }),
+  ),
+});
+export type TuneMethodsOutput = z.output<typeof TuneMethodsOutputSchema>;
 
 // PROMPT TEMPLATES
 
@@ -342,7 +364,7 @@ export type HistoryOutput = z.infer<typeof HistoryOutputSchema>;
 
 // FILES
 
-export const FilePurposeSchema = z.enum(['tune', 'template']);
+export const FilePurposeSchema = z.enum(['tune', 'template', 'generate']);
 export type FilePurpose = z.infer<typeof FilePurposeSchema>;
 
 export const FileInputSchema = z

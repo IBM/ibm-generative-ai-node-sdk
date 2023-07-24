@@ -44,8 +44,10 @@ export type GenerateInput = z.infer<typeof GenerateInputSchema>;
 export type GenerateOutput = ApiTypes.GenerateOutput['results'][number];
 
 export const GenerateConfigInputSchema = ApiTypes.GenerateConfigInputSchema;
-export type GenerateConfigInput = z.infer<typeof GenerateConfigInputSchema>;
-export type GenerateConfigOutput = ApiTypes.GenerateConfigOutput;
+export type GenerateConfigInput = z.input<typeof GenerateConfigInputSchema>;
+
+export const GenerateConfigOutputSchema = ApiTypes.GenerateConfigOutputSchema;
+export type GenerateConfigOutput = z.output<typeof GenerateConfigOutputSchema>;
 
 export type GenerateConfigOptions = HttpHandlerOptions & { reset?: boolean };
 export type GenerateConfigInputOptions = HttpHandlerOptions & {
@@ -53,8 +55,10 @@ export type GenerateConfigInputOptions = HttpHandlerOptions & {
 };
 
 export const GenerateLimitsInputSchema = z.never();
-export type GenerateLimitsInput = z.infer<typeof GenerateLimitsInputSchema>;
-export type GenerateLimitsOutput = ApiTypes.GenerateLimitsOutput;
+export type GenerateLimitsInput = z.input<typeof GenerateLimitsInputSchema>;
+
+export const GenerateLimitsOutputSchema = ApiTypes.GenerateLimitsOutputSchema;
+export type GenerateLimitsOutput = z.output<typeof GenerateLimitsOutputSchema>;
 
 // TOKENIZE
 
@@ -62,17 +66,24 @@ export const TokenizeInputSchema = ApiTypes.TokenizeInputSchema.omit({
   inputs: true,
 }).extend({ input: z.string() });
 export type TokenizeInput = z.infer<typeof TokenizeInputSchema>;
-export type TokenizeOutput = ApiTypes.TokenizeOutput['results'][number];
+
+export const TokenizeOutputSchema =
+  ApiTypes.TokenizeOutputSchema.shape.results.element;
+export type TokenizeOutput = z.output<typeof TokenizeOutputSchema>;
 
 // MODELS
 
 export const ModelsInputSchema = z.never();
 export type ModelsInput = z.infer<typeof ModelsInputSchema>;
-export type ModelsOutput = ApiTypes.ModelsOutput['results'];
+
+export const ModelsOutputSchema = ApiTypes.ModelsOutputSchema.shape.results;
+export type ModelsOutput = z.output<typeof ModelsOutputSchema>;
 
 export const ModelInputSchema = z.object({ id: z.string() });
 export type ModelInput = z.infer<typeof ModelInputSchema>;
-export type ModelOutput = ApiTypes.ModelOutput['results'];
+
+export const ModelOutputSchema = ApiTypes.ModelOutputSchema.shape.results;
+export type ModelOutput = z.output<typeof ModelOutputSchema>;
 
 // TUNES
 
@@ -96,6 +107,7 @@ export const TuneInputSchema = z.object({
   id: z.string(),
 });
 export type TuneInput = z.infer<typeof TuneInputSchema>;
+
 export type TuneOptions = HttpHandlerOptions & {
   delete?: boolean;
 };
@@ -106,37 +118,76 @@ export const TuneCreateInputSchema = z.union([
 ]);
 export type TuneCreateInput = z.infer<typeof TuneCreateInputSchema>;
 export type TuneCreateOptions = HttpHandlerOptions;
-export type TuneOutput =
-  | (ApiTypes.TuneOutput['results'] & {
-      status: Exclude<ApiTypes.TuneOutput['results']['status'], 'COMPLETED'>;
+
+export const TuneOutputSchema = z.union([
+  ApiTypes.TuneOutputSchema.shape.results.extend({
+    status: ApiTypes.TuneOutputSchema.shape.results.shape.status.exclude([
+      'COMPLETED',
+    ]),
+  }),
+  ApiTypes.TuneOutputSchema.shape.results
+    .extend({
+      status: ApiTypes.TuneOutputSchema.shape.results.shape.status.extract([
+        'COMPLETED',
+      ]),
     })
-  | (ApiTypes.TuneOutput['results'] & {
-      status: Extract<ApiTypes.TuneOutput['results']['status'], 'COMPLETED'>;
-      downloadAsset: (type: TuneAssetType) => Promise<Readable>;
-    });
+    .and(
+      z.object({
+        downloadAsset: z
+          .function()
+          .args(TuneAssetTypeSchema)
+          .returns(z.custom<Promise<Readable>>()),
+      }),
+    ),
+]);
+export type TuneOutput = z.output<typeof TuneOutputSchema>;
+
+export const TuneDeleteOutputSchema = z.void();
+export type TuneDeleteOutput = z.output<typeof TuneDeleteOutputSchema>;
 
 export const TuneMethodsInputSchema = z.never();
 export type TuneMethodsInput = z.infer<typeof TuneMethodsInputSchema>;
-export type TuneMethodsOutput = ApiTypes.TuneMethodsOutput['results'];
+
+export const TuneMethodsOutputSchema =
+  ApiTypes.TuneMethodsOutputSchema.shape.results;
+export type TuneMethodsOutput = z.output<typeof TuneMethodsOutputSchema>;
 
 // PROMPT TEMPLATES
 
-export type PromptTemplateInput = ApiTypes.PromptTemplateInput;
-export type PromptTemplateCreateInput = ApiTypes.PromptTemplateCreateInput;
+export const PromptTemplateInputSchema = ApiTypes.PromptTemplateInputSchema;
+export type PromptTemplateInput = z.input<typeof PromptTemplateInputSchema>;
+
+export const PromptTemplateCreateInputSchema =
+  ApiTypes.PromptTemplateCreateInputSchema;
+export type PromptTemplateCreateInput = z.input<
+  typeof PromptTemplateCreateInputSchema
+>;
+
 export const PromptTemplateUpdateInputSchema = z.intersection(
-  ApiTypes.PromptTemplateInputSchema,
+  PromptTemplateInputSchema,
   ApiTypes.PromptTemplateUpdateInputSchema,
 );
 export type PromptTemplateUpdateInput = z.input<
   typeof PromptTemplateUpdateInputSchema
 >;
 
-export type PromptTemplateOutput = ApiTypes.PromptTemplateOutput['results'];
-export type PromptTemplatesOutput =
-  ApiTypes.PromptTemplatesOutput['results'][number];
+export const PromptTemplateOutputSchema =
+  ApiTypes.PromptTemplateOutputSchema.shape.results;
+export type PromptTemplateOutput = z.output<typeof PromptTemplateOutputSchema>;
+
+export const PromptTemplateDeleteOutputSchema = z.void();
+export type PromptTemplateDeleteOutput = z.output<
+  typeof PromptTemplateDeleteOutputSchema
+>;
 
 export const PromptTemplatesInputSchema = ListInputSchema;
 export type PromptTemplatesInput = z.input<typeof PromptTemplatesInputSchema>;
+
+export const PromptTemplatesOutputSchema =
+  ApiTypes.PromptTemplatesOutputSchema.shape.results.element;
+export type PromptTemplatesOutput = z.output<
+  typeof PromptTemplatesOutputSchema
+>;
 
 export type PromptTemplateOptions = HttpHandlerOptions &
   FlagOption<'delete', false>;
@@ -148,8 +199,13 @@ export const PromptTemplateExecuteInputSchema =
 export type PromptTemplateExecuteInput = z.input<
   typeof PromptTemplateExecuteInputSchema
 >;
-export type PromptTemplateExecuteOutput =
-  ApiTypes.PromptTemplateExecuteOutput['results'];
+
+export const PromptTemplateExecuteOutputSchema =
+  ApiTypes.PromptTemplateExecuteOutputSchema.shape.results;
+export type PromptTemplateExecuteOutput = z.output<
+  typeof PromptTemplateExecuteOutputSchema
+>;
+
 export type PromptTemplateExecuteOptions = HttpHandlerOptions;
 
 // HISTORY
@@ -189,6 +245,9 @@ export const FileOutputSchema = ApiTypes.FileOutputSchema.shape.results.and(
   }),
 );
 export type FileOutput = z.output<typeof FileOutputSchema>;
+
+export const FileDeleteOutputSchema = z.void();
+export type FileDeleteOutput = z.output<typeof FileDeleteOutputSchema>;
 
 export const FilesInputSchema = ListInputSchema;
 export type FilesInput = z.input<typeof FilesInputSchema>;

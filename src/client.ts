@@ -65,6 +65,8 @@ import {
   FileCreateInput,
   FilesOutput,
   FilesInput,
+  FileDeleteOutput,
+  PromptTemplateDeleteOutput,
 } from './client-types.js';
 import type { StrictUnion } from './types.js';
 import { version } from './buildInfo.js';
@@ -925,11 +927,11 @@ export class Client {
   promptTemplate(
     input: PromptTemplateInput,
     options: PromptTemplateDeleteOptions,
-  ): Promise<void>;
+  ): Promise<PromptTemplateDeleteOutput>;
   promptTemplate(
     input: PromptTemplateInput,
     options: PromptTemplateDeleteOptions,
-    callback: Callback<void>,
+    callback: Callback<PromptTemplateDeleteOutput>,
   ): void;
   promptTemplate(
     input: PromptTemplateCreateInput,
@@ -945,9 +947,11 @@ export class Client {
       | PromptTemplateDeleteOptions
       | PromptTemplateOptions
       | Callback<PromptTemplateOutput>
-      | Callback<void>,
-    callback?: Callback<PromptTemplateOutput> | Callback<void>,
-  ): Promise<PromptTemplateOutput | void> | void {
+      | Callback<PromptTemplateDeleteOutput>,
+    callback?:
+      | Callback<PromptTemplateOutput>
+      | Callback<PromptTemplateDeleteOutput>,
+  ): Promise<PromptTemplateOutput | PromptTemplateDeleteOutput> | void {
     return handle({ optionsOrCallback, callback }, async ({ options }) => {
       const GET_PROMPT_TEMPLATE_CACHE_ID = 'get-prompt-template';
 
@@ -1208,9 +1212,9 @@ export class Client {
     );
   }
 
-  file(input: StrictUnion<FileInput>, callback: Callback<FileOutput>): void;
+  file(input: FileInput, callback: Callback<FileOutput>): void;
   file(
-    input: StrictUnion<FileInput>,
+    input: FileInput,
     options: FileOptions,
     callback: Callback<FileOutput>,
   ): void;
@@ -1218,11 +1222,11 @@ export class Client {
     input: StrictUnion<FileInput | FileCreateInput>,
     options?: FileOptions,
   ): Promise<FileOutput>;
-  file(input: FileInput, options: FileDeleteOptions): Promise<void>;
+  file(input: FileInput, options: FileDeleteOptions): Promise<FileDeleteOutput>;
   file(
     input: FileInput,
     options: FileDeleteOptions,
-    callback: Callback<void>,
+    callback: Callback<FileDeleteOutput>,
   ): void;
   file(input: FileCreateInput, callback: Callback<FileOutput>): void;
   file(
@@ -1231,9 +1235,9 @@ export class Client {
       | FileDeleteOptions
       | FileOptions
       | Callback<FileOutput>
-      | Callback<void>,
-    callback?: Callback<FileOutput> | Callback<void>,
-  ): Promise<FileOutput | void> | void {
+      | Callback<FileDeleteOutput>,
+    callback?: Callback<FileOutput> | Callback<FileDeleteOutput>,
+  ): Promise<FileOutput | FileDeleteOutput> | void {
     return handle({ optionsOrCallback, callback }, async ({ options }) => {
       const GET_FILE_CACHE_ID = 'get-file';
 

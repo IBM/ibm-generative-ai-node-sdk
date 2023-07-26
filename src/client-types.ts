@@ -224,6 +224,12 @@ export const HistoryOutputSchema =
   ApiTypes.HistoryOutputSchema.shape.results.element;
 export type HistoryOutput = z.infer<typeof HistoryOutputSchema>;
 
+export const HistoryStatusSchema = ApiTypes.HistoryStatusSchema;
+export type HistoryStatus = z.infer<typeof HistoryStatusSchema>;
+
+export const HistoryOriginSchema = ApiTypes.HistoryOriginSchema;
+export type HistoryOrigin = z.infer<typeof HistoryOriginSchema>;
+
 // FILES
 
 export const FilePurposeSchema = ApiTypes.FilePurposeSchema;

@@ -92,11 +92,13 @@ export const GenerateResultSchema = z
   .passthrough();
 export type GenerateResult = z.infer<typeof GenerateResultSchema>;
 
-export const GenerateOutputSchema = z.object({
-  model_id: z.string(),
-  created_at: z.coerce.date(),
-  results: z.array(GenerateResultSchema),
-});
+export const GenerateOutputSchema = z
+  .object({
+    model_id: z.string(),
+    created_at: z.coerce.date(),
+    results: z.array(GenerateResultSchema),
+  })
+  .passthrough();
 export type GenerateOutput = z.infer<typeof GenerateOutputSchema>;
 
 export const GenerateLimitsOutputSchema = z.object({
@@ -350,14 +352,16 @@ export type HistoryInput = z.input<typeof HistoryInputSchema>;
 
 export const HistoryOutputSchema = PaginationOutputSchema.extend({
   results: z.array(
-    z.object({
-      id: z.string(),
-      duration: z.number().int().min(0),
-      request: GenerateInputSchema.partial(),
-      status: HistoryInputSchema.shape.status,
-      created_at: z.coerce.date(),
-      response: GenerateOutputSchema,
-    }),
+    z
+      .object({
+        id: z.string(),
+        duration: z.number().int().min(0),
+        request: GenerateInputSchema.partial(),
+        status: HistoryInputSchema.shape.status,
+        created_at: z.coerce.date(),
+        response: GenerateOutputSchema.nullable(),
+      })
+      .passthrough(),
   ),
 });
 export type HistoryOutput = z.infer<typeof HistoryOutputSchema>;

@@ -154,6 +154,7 @@ export class Client {
           clarifyTimeoutError: true,
         },
       }),
+      { ttl: 1_000 },
     );
   }
 
@@ -276,16 +277,19 @@ export class Client {
       return outputStream;
     }
 
-    const { retries, retryCondition, ...cacheConfig } = input;
+    const { retries, retryCondition, cache, ...restConfig } = input;
     return promiseRetry(
       (retry, attempt) =>
         this.#client<Output, Input>({
-          ...cacheConfig,
+          ...restConfig,
           timeout:
             input.timeout === undefined || input.timeout === Infinity
               ? 0 // no timeout
               : Math.max(1, input.timeout),
-          cache: { ...cacheConfig.cache, override: attempt > 1 },
+          cache: {
+            ...cache,
+            override: (cache ? cache.override : false) || attempt > 1,
+          },
         }).catch((err) => {
           const error = errorTransformer(err);
           const conditionFn = retryCondition ?? isRetrievableError;
@@ -864,6 +868,7 @@ export class Client {
                 url: `/v1/tunes/${encodeURIComponent(
                   apiOutput.results.id,
                 )}/content/${type}`,
+                cache: false,
               }),
           };
         default:
@@ -1249,6 +1254,7 @@ export class Client {
             responseType: 'stream',
             method: 'GET',
             url: `/v1/files/${encodeURIComponent(apiOutput.id)}/content`,
+            cache: false,
           }),
       });
 

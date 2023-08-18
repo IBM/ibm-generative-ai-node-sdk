@@ -192,17 +192,21 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
     res(
       ctx.status(200),
       ctx.json({
-        results: modelsStore.map(({ id, name, size, token_limit }) => ({
-          id,
-          name,
-          size,
-          token_limit,
-        })),
+        results: [...modelsStore, ...tunesStore].map(
+          ({ id, name, size, token_limit }) => ({
+            id,
+            name,
+            size,
+            token_limit,
+          }),
+        ),
       }),
     ),
   ),
   rest.get(`${MOCK_ENDPOINT}/v1/models/:id`, async (req, res, ctx) => {
-    const model = modelsStore.find((model) => model.id === req.params.id);
+    const model = [...modelsStore, ...tunesStore].find(
+      (model) => model.id === req.params.id,
+    );
     if (!model) {
       return res(ctx.status(404));
     }

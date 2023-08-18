@@ -1,10 +1,10 @@
 import { BaseLLM, BaseLLMParams } from 'langchain/llms/base';
-import { Client, Configuration } from '../client.js';
+import { Client, Configuration } from '../client/client.js';
 import { CallbackManagerForLLMRun } from 'langchain/callbacks';
 import { isNotEmptyArray, concatUnique, isNullish } from '../helpers/common.js';
 import type { LLMResult, Generation } from 'langchain/schema';
-import type { GenerateOutput } from '../client-types.js';
-import { GenerateInput } from '../client-types.js';
+import type { GenerateOutput } from '../client/types.js';
+import { GenerateInput } from '../client/types.js';
 
 interface BaseGenAIModelOptions {
   stream?: boolean;

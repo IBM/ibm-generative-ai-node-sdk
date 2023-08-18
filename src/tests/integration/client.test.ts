@@ -8,7 +8,15 @@ import {
   promptTemplatesStore,
   historyStore,
 } from '../mocks/handlers.js';
-import { Client } from '../../client.js';
+import { Client } from '../../client/client.js';
+
+const dummyTune = {
+  name: 'newTune',
+  model_id: 'foo',
+  method_id: 'foo',
+  task_id: 'foo',
+  training_file_ids: [],
+};
 
 describe('client', () => {
   let client: Client;
@@ -175,13 +183,7 @@ describe('client', () => {
     });
 
     test('should create a tune', async () => {
-      const tune = await client.tune({
-        name: 'newTune',
-        model_id: 'foo',
-        method_id: 'foo',
-        task_id: 'foo',
-        training_file_ids: [],
-      });
+      const tune = await client.tune(dummyTune);
       expect(tunesStore.map(({ id }) => id)).toContainEqual(tune.id);
     });
 
@@ -189,6 +191,13 @@ describe('client', () => {
       const { id } = tunesStore[1];
       await client.tune({ id }, { delete: true });
       expect(tunesStore.map(({ id }) => id)).not.toContain({ id });
+    });
+
+    test('should not get a deleted tune', async () => {
+      const { id } = await client.tune(dummyTune);
+      await client.model({ id });
+      await client.tune({ id }, { delete: true });
+      expect(client.tune({ id })).toReject();
     });
   });
 
@@ -271,6 +280,35 @@ describe('client', () => {
         ]
       `);
     });
+
+    test('should not get a deleted prompt template', async () => {
+      const { id } = await client.promptTemplate({
+        name: 'my template',
+        value: 'Hello {{name}}!',
+      });
+      await client.promptTemplate({ id });
+      await client.promptTemplate({ id }, { delete: true });
+      expect(client.tune({ id })).toReject();
+    });
+
+    test('should get an updated prompt template', async () => {
+      const oldName = 'old name';
+      const { id } = await client.promptTemplate({
+        name: oldName,
+        value: 'Hello {{name}}!',
+      });
+      const oldTemplate = await client.promptTemplate({ id });
+      expect(oldTemplate).toHaveProperty('name', oldName);
+
+      const newName = 'old name';
+      await client.promptTemplate({
+        id,
+        name: newName,
+        value: 'Hello {{name}}!',
+      });
+      const newTemplate = await client.promptTemplate({ id });
+      expect(newTemplate).toHaveProperty('name', newName);
+    });
   });
 
   describe('history', () => {
@@ -292,6 +330,31 @@ describe('client', () => {
         expect(entry).toBeDefined();
       }
       expect(entries.length).toBe(historyStore.length);
+    });
+  });
+
+  describe('cross method', () => {
+    test('should not get deleted tune via model', async () => {
+      const { id } = await client.tune(dummyTune);
+      await client.model({ id });
+      await client.tune({ id }, { delete: true });
+      expect(client.model({ id })).toReject();
+    });
+
+    test('should not get deleted tune in models list', async () => {
+      const { id } = await client.tune(dummyTune);
+      const modelsWithTune = await client.models();
+      expect(modelsWithTune.map(({ id }) => id)).toContain(id);
+      await client.tune({ id }, { delete: true });
+      const models = await client.models();
+      expect(models.map(({ id }) => id)).not.toContain(id);
+    });
+
+    test('should get newly added tune in models list', async () => {
+      await client.models();
+      const { id } = await client.tune(dummyTune);
+      const models = await client.models();
+      expect(models.map(({ id }) => id)).toContain(id);
     });
   });
 });

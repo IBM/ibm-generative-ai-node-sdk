@@ -1,5 +1,5 @@
-import { GenerateInput, GenerateOutput } from '../../client-types.js';
-import { Client } from '../../client.js';
+import { GenerateInput, GenerateOutput } from '../../client/types.js';
+import { Client } from '../../client/client.js';
 import { RequestCanceledError } from '../../errors.js';
 
 describe('client', () => {

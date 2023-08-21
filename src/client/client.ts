@@ -8,14 +8,14 @@ import {
 import promiseRetry from 'promise-retry';
 import http, { IncomingMessage } from 'node:http';
 import https from 'node:https';
-import * as ApiTypes from './api-types.js';
+import * as ApiTypes from '../api-types.js';
 import {
   errorTransformer,
   HttpError,
   InternalError,
   InvalidInputError,
   isRetrievableError,
-} from './errors.js';
+} from '../errors.js';
 import {
   GenerateConfigInput,
   GenerateConfigOptions,
@@ -67,9 +67,9 @@ import {
   FilesInput,
   FileDeleteOutput,
   PromptTemplateDeleteOutput,
-} from './client-types.js';
-import type { StrictUnion } from './types.js';
-import { version } from './buildInfo.js';
+} from './types.js';
+import type { StrictUnion } from '../types.js';
+import { version } from '../buildInfo.js';
 import {
   safeParseJson,
   Unwrap,
@@ -80,13 +80,14 @@ import {
   handleGenerator,
   paginator,
   isEmptyObject,
-} from './helpers/common.js';
-import { TypedReadable } from './utils/stream.js';
-import { lookupApiKey, lookupEndpoint } from './helpers/config.js';
-import { RETRY_ATTEMPTS_DEFAULT } from './constants.js';
-import { EventStreamContentType, fetchEventSource } from './utils/sse/sse.js';
+} from '../helpers/common.js';
+import { TypedReadable } from '../utils/stream.js';
+import { lookupApiKey, lookupEndpoint } from '../helpers/config.js';
+import { RETRY_ATTEMPTS_DEFAULT } from '../constants.js';
+import { EventStreamContentType, fetchEventSource } from '../utils/sse/sse.js';
 import { Transform, TransformCallback } from 'stream';
 import { ZodSchema } from 'zod';
+import { CacheDiscriminator, generateCacheKey } from './cache.js';
 
 type FetchConfig<R, D> = Omit<CacheRequestConfig<R, D>, 'signal'> & {
   retries?: number;
@@ -154,7 +155,6 @@ export class Client {
           clarifyTimeoutError: true,
         },
       }),
-      { ttl: 1_000 },
     );
   }
 
@@ -594,7 +594,7 @@ export class Client {
         callback,
       },
       ({ input, options }) => {
-        const GET_GENERATE_CONFIG_ID = 'get-generate-config';
+        const cacheKey = generateCacheKey(CacheDiscriminator.GENERATE_CONFIG);
         if (
           isTypeOf<GenerateConfigOptions | undefined>(
             input,
@@ -602,7 +602,6 @@ export class Client {
           )
         ) {
           const { reset, ...httpOptions } = input ?? {};
-
           if (reset) {
             return this.#fetcher<ApiTypes.GenerateConfigOutput>({
               ...httpOptions,
@@ -610,7 +609,7 @@ export class Client {
               url: '/v1/generate/config',
               cache: {
                 update: {
-                  [GET_GENERATE_CONFIG_ID]: 'delete',
+                  [cacheKey]: 'delete',
                 },
               },
             });
@@ -619,7 +618,7 @@ export class Client {
               ...httpOptions,
               method: 'GET',
               url: '/v1/generate/config',
-              id: GET_GENERATE_CONFIG_ID,
+              id: cacheKey,
             });
           }
         }
@@ -636,7 +635,7 @@ export class Client {
           data: input,
           cache: {
             update: {
-              [GET_GENERATE_CONFIG_ID]: 'delete',
+              [cacheKey]: 'delete',
             },
           },
         });
@@ -708,6 +707,7 @@ export class Client {
           ...options,
           method: 'GET',
           url: '/v1/models',
+          id: generateCacheKey(CacheDiscriminator.MODELS),
         });
         return results;
       },
@@ -736,6 +736,7 @@ export class Client {
           ...options,
           method: 'GET',
           url: `/v1/models/${encodeURIComponent(input.id)}`,
+          id: generateCacheKey(CacheDiscriminator.MODEL, input.id),
         });
         return results;
       },
@@ -779,6 +780,7 @@ export class Client {
               ...options,
               method: 'GET',
               url: `/v1/tunes?${paginatorParams.toString()}`,
+              cache: false,
             }),
           {
             offset: input?.filters?.offset ?? undefined,
@@ -794,7 +796,7 @@ export class Client {
     input: TuneCreateInput,
     options?: TuneCreateOptions,
   ): Promise<TuneOutput>;
-  tune(input: TuneInput, options?: TuneOptions): Promise<void>;
+  tune(input: TuneInput, options?: TuneOptions): Promise<TuneOutput>;
   tune(
     input: TuneCreateInput,
     options: TuneCreateOptions,
@@ -815,8 +817,8 @@ export class Client {
     return handle({ optionsOrCallback, callback }, async ({ options }) => {
       let apiOutput: ApiTypes.TuneOutput;
       const isTuneInput = isTypeOf<TuneInput>(input, 'id' in input);
-      const GET_TUNE_ID = 'get-tune';
       if (isTuneInput) {
+        const cacheKey = generateCacheKey(CacheDiscriminator.TUNE, input.id);
         const opts = options as TuneOptions | undefined;
         if (opts?.delete) {
           await this.#fetcher({
@@ -825,7 +827,10 @@ export class Client {
             url: `/v1/tunes/${encodeURIComponent(input.id)}`,
             cache: {
               update: {
-                [GET_TUNE_ID]: 'delete',
+                [cacheKey]: 'delete',
+                [generateCacheKey(CacheDiscriminator.MODEL, input.id)]:
+                  'delete',
+                [generateCacheKey(CacheDiscriminator.MODELS)]: 'delete',
               },
             },
           });
@@ -835,7 +840,7 @@ export class Client {
             ...options,
             method: 'GET',
             url: `/v1/tunes/${encodeURIComponent(input.id)}`,
-            id: GET_TUNE_ID,
+            id: cacheKey,
           });
         }
       } else {
@@ -849,7 +854,7 @@ export class Client {
           data: input,
           cache: {
             update: {
-              [GET_TUNE_ID]: 'delete',
+              [generateCacheKey(CacheDiscriminator.MODELS)]: 'delete',
             },
           },
         });
@@ -958,8 +963,6 @@ export class Client {
       | Callback<PromptTemplateDeleteOutput>,
   ): Promise<PromptTemplateOutput | PromptTemplateDeleteOutput> | void {
     return handle({ optionsOrCallback, callback }, async ({ options }) => {
-      const GET_PROMPT_TEMPLATE_CACHE_ID = 'get-prompt-template';
-
       const isCreateInput = isTypeOf<PromptTemplateCreateInput>(
         input,
         !('id' in input),
@@ -974,11 +977,6 @@ export class Client {
             method: 'POST',
             url: `/v1/prompt_templates`,
             data: input,
-            cache: {
-              update: {
-                [GET_PROMPT_TEMPLATE_CACHE_ID]: 'delete',
-              },
-            },
           },
           ApiTypes.PromptTemplateOutputSchema,
         );
@@ -986,6 +984,10 @@ export class Client {
       }
 
       const endpoint = `/v1/prompt_templates/${encodeURIComponent(input.id)}`;
+      const cacheKey = generateCacheKey(
+        CacheDiscriminator.PROMPT_TEMPLATE,
+        input.id,
+      );
       const opts = options as PromptTemplateDeleteOptions | undefined;
       if (opts?.delete) {
         await this.#fetcher({
@@ -994,7 +996,7 @@ export class Client {
           url: endpoint,
           cache: {
             update: {
-              [GET_PROMPT_TEMPLATE_CACHE_ID]: 'delete',
+              [cacheKey]: 'delete',
             },
           },
         });
@@ -1014,7 +1016,7 @@ export class Client {
             data: body,
             cache: {
               update: {
-                [GET_PROMPT_TEMPLATE_CACHE_ID]: 'delete',
+                [cacheKey]: 'delete',
               },
             },
           },
@@ -1028,7 +1030,7 @@ export class Client {
           ...options,
           method: 'GET',
           url: endpoint,
-          id: GET_PROMPT_TEMPLATE_CACHE_ID,
+          id: cacheKey,
         },
         ApiTypes.PromptTemplateOutputSchema,
       );
@@ -1074,6 +1076,7 @@ export class Client {
                 ...options,
                 method: 'GET',
                 url: `/v1/prompt_templates?${paginatorParams.toString()}`,
+                cache: false,
               },
               ApiTypes.PromptTemplatesOutputSchema,
             ),
@@ -1158,6 +1161,7 @@ export class Client {
                 ...options,
                 method: 'GET',
                 url: `/v1/requests?${paginatorParams.toString()}`,
+                cache: false,
               },
               ApiTypes.HistoryOutputSchema,
             ),
@@ -1206,6 +1210,7 @@ export class Client {
                 ...options,
                 method: 'GET',
                 url: `/v1/files?${paginatorParams.toString()}`,
+                cache: false,
               },
               ApiTypes.FilesOutputSchema,
             ),
@@ -1244,8 +1249,6 @@ export class Client {
     callback?: Callback<FileOutput> | Callback<FileDeleteOutput>,
   ): Promise<FileOutput | FileDeleteOutput> | void {
     return handle({ optionsOrCallback, callback }, async ({ options }) => {
-      const GET_FILE_CACHE_ID = 'get-file';
-
       const transformOutput = (apiOutput: ApiTypes.FileOutput['results']) => ({
         ...apiOutput,
         download: () =>
@@ -1273,11 +1276,6 @@ export class Client {
             method: 'POST',
             url: `/v1/files`,
             data: formData,
-            cache: {
-              update: {
-                [GET_FILE_CACHE_ID]: 'delete',
-              },
-            },
           },
           ApiTypes.FileOutputSchema,
         );
@@ -1285,6 +1283,7 @@ export class Client {
       }
 
       const endpoint = `/v1/files/${encodeURIComponent(input.id)}`;
+      const cacheKey = generateCacheKey(CacheDiscriminator.FILE, input.id);
       const opts = options as FileDeleteOptions | undefined;
       if (opts?.delete) {
         await this.#fetcher({
@@ -1293,7 +1292,7 @@ export class Client {
           url: endpoint,
           cache: {
             update: {
-              [GET_FILE_CACHE_ID]: 'delete',
+              [cacheKey]: 'delete',
             },
           },
         });
@@ -1305,7 +1304,7 @@ export class Client {
           ...options,
           method: 'GET',
           url: endpoint,
-          id: GET_FILE_CACHE_ID,
+          id: cacheKey,
         },
         ApiTypes.FileOutputSchema,
       );

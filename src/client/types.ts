@@ -1,7 +1,7 @@
-import { z } from 'zod';
-import * as ApiTypes from './api-types.js';
 import { Readable } from 'node:stream';
-import { FlagOption } from './helpers/types.js';
+import { z } from 'zod';
+import * as ApiTypes from '../api-types.js';
+import { FlagOption } from '../helpers/types.js';
 
 // COMMON
 
@@ -112,10 +112,7 @@ export type TuneOptions = HttpHandlerOptions & {
   delete?: boolean;
 };
 
-export const TuneCreateInputSchema = z.union([
-  TuneInputSchema,
-  ApiTypes.TuneInputSchema,
-]);
+export const TuneCreateInputSchema = ApiTypes.TuneInputSchema;
 export type TuneCreateInput = z.infer<typeof TuneCreateInputSchema>;
 export type TuneCreateOptions = HttpHandlerOptions;
 

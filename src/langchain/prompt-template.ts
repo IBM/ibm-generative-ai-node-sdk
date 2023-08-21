@@ -1,4 +1,4 @@
-import type { PromptTemplateOutput as PromptTemplate } from '../client-types.js';
+import type { PromptTemplateOutput as PromptTemplate } from '../client/types.js';
 import { PromptTemplate as LangChainPromptTemplate } from 'langchain/prompts';
 import { InvalidInputError } from '../errors.js';
 

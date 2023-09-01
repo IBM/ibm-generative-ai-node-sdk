@@ -12,6 +12,10 @@ const ListInputSchema = z.object({
 
 // GENERAL
 
+export type ErrorCallback = (err: unknown) => void;
+export type DataCallback<T> = (err: unknown, result: T) => void;
+export type Callback<T> = ErrorCallback | DataCallback<T>;
+
 export interface HttpHandlerOptions {
   timeout?: number;
   signal?: AbortSignal;

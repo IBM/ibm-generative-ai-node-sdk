@@ -42,7 +42,9 @@ export class GenAIModel extends BaseLLM {
     this.timeout = timeout;
     this.parameters = parameters || {};
     this.stream = Boolean(stream);
-    this.#client = new Client(configuration);
+    this.#client = new Client({
+      config: configuration,
+    });
   }
 
   #createPayload(
@@ -76,10 +78,9 @@ export class GenAIModel extends BaseLLM {
     options: this['ParsedCallOptions'],
   ): Promise<GenerateOutput[]> {
     return await Promise.all(
-      this.#client.generate(this.#createPayload(prompts, options), {
+      this.#client.generate.generate(this.#createPayload(prompts, options), {
         signal: options.signal,
         timeout: this.timeout,
-        stream: false,
       }),
     );
   }
@@ -91,10 +92,9 @@ export class GenAIModel extends BaseLLM {
   ): Promise<GenerateOutput[]> {
     return await Promise.all(
       this.#createPayload(prompts, options).map(async (payload) => {
-        const stream = this.#client.generate(payload, {
+        const stream = this.#client.generate.generateStream(payload, {
           signal: options.signal,
           timeout: this.timeout,
-          stream: true,
         });
 
         const output: GenerateOutput = {
@@ -154,7 +154,7 @@ export class GenAIModel extends BaseLLM {
   }
 
   async getNumTokens(input: string): Promise<number> {
-    const result = await this.#client.tokenize({
+    const result = await this.#client.tokenizer.tokenize({
       ...(!isNullish(this.modelId) && {
         model_id: this.modelId,
       }),

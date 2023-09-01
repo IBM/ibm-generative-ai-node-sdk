@@ -6,8 +6,10 @@ describe('client', () => {
   let client: Client;
   beforeAll(() => {
     client = new Client({
-      endpoint: process.env.ENDPOINT,
-      apiKey: process.env.API_KEY,
+      config: {
+        endpoint: process.env.ENDPOINT,
+        apiKey: process.env.API_KEY,
+      },
     });
   });
 
@@ -18,7 +20,7 @@ describe('client', () => {
         input: 'Hello, World',
       }));
 
-      const requests = client.generate(inputs);
+      const requests = client.generate.generate(inputs);
 
       expect.assertions(requests.length);
       for (const request of requests) {
@@ -38,7 +40,7 @@ describe('client', () => {
 
     // TODO: enable once we will set default model for the test account
     test.skip('should fallback to default model', async () => {
-      const data = await client.generate({
+      const data = await client.generate.generate({
         input: `What's the name of highest building?`,
       });
 
@@ -52,18 +54,13 @@ describe('client', () => {
 
     describe('streaming', () => {
       const makeValidStream = () =>
-        client.generate(
-          {
-            model_id: 'google/ul2',
-            input: 'Hello, World',
-            parameters: {
-              max_new_tokens: 10,
-            },
+        client.generate.generateStream({
+          model_id: 'google/ul2',
+          input: 'Hello, World',
+          parameters: {
+            max_new_tokens: 10,
           },
-          {
-            stream: true,
-          },
-        );
+        });
 
       const validateStreamChunk = (chunk: GenerateOutput) => {
         const isNumberOrNull = (value: unknown) =>
@@ -77,21 +74,16 @@ describe('client', () => {
 
       test('should throw for multiple inputs', () => {
         expect(() =>
-          client.generate(
-            [
-              {
-                model_id: 'google/ul2',
-                input: 'Hello, World',
-              },
-              {
-                model_id: 'google/ul2',
-                input: 'Hello, World',
-              },
-            ] as unknown as GenerateInput,
+          client.generate.generateStream([
             {
-              stream: true,
+              model_id: 'google/ul2',
+              input: 'Hello, World',
             },
-          ),
+            {
+              model_id: 'google/ul2',
+              input: 'Hello, World',
+            },
+          ] as unknown as GenerateInput),
         ).toThrowError('Cannot do streaming for more than one input!');
       });
 
@@ -121,14 +113,11 @@ describe('client', () => {
         const chunks = await new Promise<GenerateOutput[]>(
           (resolve, reject) => {
             const chunks: GenerateOutput[] = [];
-            client.generate(
+            client.generate.generateStream(
               {
                 model_id: 'google/ul2',
                 input: 'Hello, World',
                 parameters: {},
-              },
-              {
-                stream: true,
               },
               (err, data) => {
                 if (err) {
@@ -153,15 +142,10 @@ describe('client', () => {
       }, 15_000);
 
       test('should handle errors', async () => {
-        const stream = client.generate(
-          {
-            model_id: 'XXX/XXX',
-            input: 'Hello, World',
-          },
-          {
-            stream: true,
-          },
-        );
+        const stream = client.generate.generateStream({
+          model_id: 'XXX/XXX',
+          input: 'Hello, World',
+        });
 
         await expect(
           new Promise((_, reject) => {
@@ -183,7 +167,7 @@ describe('client', () => {
   describe('error handling', () => {
     test('should reject with extended error for invalid model', async () => {
       await expect(
-        client.generate({
+        client.generate.generate({
           model_id: 'invalid-model',
           input: 'Hello, World',
         }),
@@ -203,7 +187,7 @@ describe('client', () => {
     test('should reject with ERR_CANCELED when aborted', async () => {
       const controller = new AbortController();
 
-      const generatePromise = client.generate(
+      const generatePromise = client.generate.generate(
         {
           model_id: 'google/flan-ul2',
           input: 'Hello, World',
@@ -225,12 +209,12 @@ describe('client', () => {
       }, 50);
 
       await expect(async () => {
-        const stream = client.generate(
+        const stream = client.generate.generateStream(
           {
             model_id: 'google/flan-ul2',
             input: 'Hello, World',
           },
-          { signal: controller.signal, stream: true },
+          { signal: controller.signal },
         );
         await new Promise((resolve, reject) => {
           stream.once('finish', resolve);
@@ -241,7 +225,7 @@ describe('client', () => {
 
     test('should reject with ETIMEDOUT when timed out', async () => {
       await expect(
-        client.generate(
+        client.generate.generate(
           { model_id: 'google/flan-ul2', input: 'Hello, World' },
           { timeout: 1, retries: 1 },
         ),

@@ -144,13 +144,37 @@ describe('client', () => {
   });
 
   describe('tokenize', () => {
-    test('should return tokenize info', () => {
-      expect(
+    test('should return tokenize info', async () => {
+      await expect(
         client.tokenize({
           input: 'Hello, how are you? Are you okay?',
           model_id: 'google/flan-t5-xl',
         }),
       ).resolves.toMatchObject(tokenizeStore);
+    });
+  });
+
+  describe('chat', () => {
+    test('should start a conversation', async () => {
+      await expect(
+        client.chat({
+          model_id: 'google/flan-t5-xl',
+          messages: [
+            { role: 'system', content: 'foo' },
+            { role: 'user', content: 'bar' },
+          ],
+        }),
+      ).resolves.toHaveProperty('conversation_id');
+    });
+
+    test('should continue an existing conversation', async () => {
+      await expect(
+        client.chat({
+          model_id: 'google/flan-t5-xl',
+          conversation_id: 'foo',
+          messages: [{ role: 'user', content: 'bar' }],
+        }),
+      ).resolves.toHaveProperty('conversation_id', 'foo');
     });
   });
 

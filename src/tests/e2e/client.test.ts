@@ -1,4 +1,8 @@
-import { GenerateInput, GenerateOutput } from '../../client/types.js';
+import {
+  ChatOutput,
+  GenerateInput,
+  GenerateOutput,
+} from '../../client/types.js';
 import { Client } from '../../client/client.js';
 import { RequestCanceledError } from '../../errors.js';
 
@@ -157,6 +161,105 @@ describe('client', () => {
           {
             model_id: 'XXX/XXX',
             input: 'Hello, World',
+          },
+          {
+            stream: true,
+          },
+        );
+
+        await expect(
+          new Promise((_, reject) => {
+            stream.on('error', reject);
+          }),
+        ).rejects.toMatchObject({
+          code: 'ERR_NON_2XX_3XX_RESPONSE',
+          statusCode: 404,
+          message: 'Model not found',
+          extensions: {
+            code: 'NOT_FOUND',
+            state: { model_id: 'XXX/XXX' },
+          },
+        });
+      }, 5_000);
+    });
+  });
+
+  describe('chat', () => {
+    describe('streaming', () => {
+      const makeValidStream = () =>
+        client.chat(
+          {
+            model_id: 'google/ul2',
+            messages: [{ role: 'user', content: 'Hello World!' }],
+          },
+          {
+            stream: true,
+          },
+        );
+
+      const validateStreamChunk = (chunk: ChatOutput) => {
+        expect(chunk).toBeObject();
+        expect(chunk).toHaveProperty('conversation_id');
+        expect(chunk).toHaveProperty('result');
+      };
+
+      test('should return valid stream', async () => {
+        const stream = makeValidStream();
+
+        const chunks = await new Promise<ChatOutput[]>((resolve, reject) => {
+          const chunks: ChatOutput[] = [];
+          stream.on('data', (chunk) => {
+            validateStreamChunk(chunk);
+            chunks.push(chunk);
+          });
+          stream.on('close', () => {
+            resolve(chunks);
+          });
+          stream.on('error', (err) => {
+            reject(err);
+          });
+        });
+
+        expect(chunks.length).toBeGreaterThan(0);
+      }, 15_000);
+
+      test('should handle callback approach', async () => {
+        const chunks = await new Promise<ChatOutput[]>((resolve, reject) => {
+          const chunks: ChatOutput[] = [];
+          client.chat(
+            {
+              model_id: 'google/ul2',
+              messages: [{ role: 'user', content: 'Hello World!' }],
+            },
+            {
+              stream: true,
+            },
+            (err, data) => {
+              if (err) {
+                console.info(data);
+                reject(err);
+                return;
+              }
+              if (data === null) {
+                resolve(chunks);
+                return;
+              }
+              chunks.push(data);
+            },
+          );
+        });
+
+        expect(chunks.length).toBeGreaterThan(0);
+        for (const chunk of chunks) {
+          validateStreamChunk(chunk);
+        }
+      }, 15_000);
+
+      test('should handle errors', async () => {
+        const stream = client.chat(
+          {
+            model_id: 'XXX/XXX',
+            messages: [{ role: 'user', content: 'Hello World!' }],
           },
           {
             stream: true,

@@ -1,10 +1,10 @@
 import { callbackify } from 'node:util';
 import { URLSearchParams } from 'node:url';
+import { Readable } from 'node:stream';
 
 import { z } from 'zod';
 
-export type FalsyValues = false | '' | 0 | null | undefined;
-export type Truthy<T> = T extends FalsyValues ? never : T;
+import { ErrorCallback, DataCallback, Truthy, Callback } from './types.js';
 
 export function isTruthy<T>(value: T): value is Truthy<T> {
   return Boolean(value);
@@ -149,6 +149,25 @@ export function callbackifyGenerator<T>(generatorFn: () => AsyncGenerator<T>) {
       }
     })();
   };
+}
+
+export function callbackifyStream<T>(
+  stream: Readable,
+  callbackFn: Callback<T>,
+) {
+  stream.on('data', (data) => callbackFn(null, data));
+  stream.on('error', (err) => (callbackFn as ErrorCallback)(err));
+  stream.on('finish', () => (callbackFn as DataCallback<T | null>)(null, null));
+}
+
+export function callbackifyPromise<T>(
+  promise: Promise<T>,
+  callbackFn: Callback<T>,
+) {
+  promise.then(
+    (data) => callbackFn(null, data),
+    (err) => (callbackFn as ErrorCallback)(err),
+  );
 }
 
 export async function* paginator<T>(

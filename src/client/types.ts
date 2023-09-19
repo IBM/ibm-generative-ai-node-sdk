@@ -263,3 +263,24 @@ export type FileDeleteOptions = HttpHandlerOptions & FlagOption<'delete', true>;
 export const FilesOutputSchema =
   ApiTypes.FilesOutputSchema.shape.results.element;
 export type FilesOutput = z.output<typeof FilesOutputSchema>;
+
+// CHAT
+
+export const ChatInputSchema = z.union([
+  ApiTypes.ChatInputSchema,
+  ApiTypes.ChatStreamInputSchema,
+]);
+export type ChatInput = z.input<typeof ChatInputSchema>;
+export type ChatOptions = HttpHandlerNoStreamOptions;
+export const ChatOutputSchema = ApiTypes.ChatOutputSchema.omit({
+  results: true,
+}).extend({ result: ApiTypes.ChatOutputSchema.shape.results.element });
+export type ChatOutput = z.output<typeof ChatOutputSchema>;
+
+export const ChatStreamInputSchema = ApiTypes.ChatStreamInputSchema;
+export type ChatStreamInput = z.input<typeof ChatStreamInputSchema>;
+export type ChatStreamOptions = HttpHandlerStreamOptions;
+export const ChatStreamOutputSchema = ApiTypes.ChatStreamOutputSchema.omit({
+  results: true,
+}).extend({ result: ApiTypes.ChatOutputSchema.shape.results.element });
+export type ChatStreamOutput = z.output<typeof ChatStreamOutputSchema>;

@@ -27,6 +27,41 @@ describe('client', () => {
     });
   });
 
+  describe('fetch', () => {
+    test("should hit endpoint when endpoint contains trailing '/'", async () => {
+      const client = new Client({
+        endpoint: MOCK_ENDPOINT + '/',
+        apiKey: 'foobar',
+      });
+      await expect(
+        client.generate({
+          model_id: 'bigscience/bloom',
+          input: 'Hello, World',
+        }),
+      ).toResolve();
+    });
+    test("should hit streaming endpoint when endpoint contains trailing '/'", async () => {
+      const client = new Client({
+        endpoint: MOCK_ENDPOINT + '/',
+        apiKey: 'foobar',
+      });
+      const stream = client.generate(
+        {
+          model_id: 'bigscience/bloom',
+          input: 'Hello, World',
+        },
+        { stream: true },
+      );
+      try {
+        for await (const chunk of stream) {
+          //pass
+        }
+      } catch (err) {
+        expect(err).toHaveProperty('statusCode', 200); // Mock handler ignores streaming
+      }
+    });
+  });
+
   describe('generate', () => {
     describe('config', () => {
       test('should read the config', async () => {

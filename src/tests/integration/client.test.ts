@@ -54,7 +54,7 @@ describe('client', () => {
       );
       try {
         for await (const chunk of stream) {
-          //pass
+          expect(chunk).toBeDefined();
         }
       } catch (err) {
         expect(err).toHaveProperty('statusCode', 200); // Mock handler ignores streaming

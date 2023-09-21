@@ -88,6 +88,7 @@ import { EventStreamContentType, fetchEventSource } from '../utils/sse/sse.js';
 import { Transform, TransformCallback } from 'stream';
 import { ZodSchema } from 'zod';
 import { CacheDiscriminator, generateCacheKey } from './cache.js';
+import { Request } from 'cross-fetch';
 
 type FetchConfig<R, D> = Omit<CacheRequestConfig<R, D>, 'signal'> & {
   retries?: number;
@@ -208,8 +209,11 @@ export class Client {
         }
         onClose();
       };
-
-      fetchEventSource(`${this.#options.endpoint}${input.url}`, {
+      const url = new URL(
+        input.url ?? this.#options.endpoint,
+        this.#options.endpoint,
+      );
+      fetchEventSource(new Request(url), {
         method: 'POST',
         body: JSON.stringify(input.data),
         headers: {

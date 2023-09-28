@@ -1,10 +1,16 @@
 import { BaseLLM, BaseLLMParams } from 'langchain/llms/base';
 import { Client, Configuration } from '../client/client.js';
 import { CallbackManagerForLLMRun } from 'langchain/callbacks';
-import { isNotEmptyArray, concatUnique, isNullish } from '../helpers/common.js';
+import {
+  isNotEmptyArray,
+  concatUnique,
+  isNullish,
+  asyncGeneratorToArray,
+} from '../helpers/common.js';
 import type { LLMResult, Generation } from 'langchain/schema';
 import type { GenerateOutput } from '../client/types.js';
 import { GenerateInput } from '../client/types.js';
+import { GenerationChunk } from 'langchain/schema';
 
 interface BaseGenAIModelOptions {
   stream?: boolean;
@@ -22,7 +28,7 @@ export class GenAIModel extends BaseLLM {
 
   protected modelId?: string;
   protected promptId?: string;
-  protected stream: boolean;
+  protected isStreaming: boolean;
   protected timeout: number | undefined;
   protected parameters: Record<string, any>;
 
@@ -40,8 +46,8 @@ export class GenAIModel extends BaseLLM {
     this.modelId = modelId;
     this.promptId = promptId;
     this.timeout = timeout;
+    this.isStreaming = Boolean(stream);
     this.parameters = parameters || {};
-    this.stream = Boolean(stream);
     this.#client = new Client(configuration);
   }
 
@@ -84,50 +90,21 @@ export class GenAIModel extends BaseLLM {
     );
   }
 
-  async #executeStream(
-    prompts: string[],
-    options: this['ParsedCallOptions'],
-    runManager?: CallbackManagerForLLMRun,
-  ): Promise<GenerateOutput[]> {
-    return await Promise.all(
-      this.#createPayload(prompts, options).map(async (payload) => {
-        const stream = this.#client.generate(payload, {
-          signal: options.signal,
-          timeout: this.timeout,
-          stream: true,
-        });
-
-        const output: GenerateOutput = {
-          generated_text: '',
-          stop_reason: 'NOT_FINISHED',
-          input_token_count: 0,
-          generated_token_count: 0,
-        };
-
-        for await (const chunk of stream) {
-          output.generated_text += chunk.generated_text;
-          if (chunk.stop_reason) {
-            output.stop_reason = chunk.stop_reason;
-          }
-          output.input_token_count += chunk.input_token_count;
-          output.generated_token_count += chunk.generated_token_count;
-
-          void runManager?.handleLLMNewToken(chunk.generated_text);
-        }
-
-        return output;
-      }),
-    );
-  }
-
   async _generate(
     prompts: string[],
     options: this['ParsedCallOptions'],
     runManager?: CallbackManagerForLLMRun,
   ): Promise<LLMResult> {
-    const response = this.stream
-      ? await this.#executeStream(prompts, options, runManager)
-      : await this.#execute(prompts, options);
+    const response: GenerateOutput[] = [];
+    if (this.isStreaming) {
+      const { output } = await asyncGeneratorToArray(
+        this._streamResponseChunks(prompts[0], options, runManager),
+      );
+      response.push(output);
+    } else {
+      const outputs = await this.#execute(prompts, options);
+      response.push(...outputs);
+    }
 
     const generations: Generation[][] = response.map(
       ({ generated_text: text, ...generationInfo }) => [
@@ -151,6 +128,44 @@ export class GenAIModel extends BaseLLM {
     );
 
     return { generations, llmOutput };
+  }
+
+  async *_streamResponseChunks(
+    _input: string,
+    _options: this['ParsedCallOptions'],
+    _runManager?: CallbackManagerForLLMRun,
+  ): AsyncGenerator<GenerationChunk> {
+    const [payload] = this.#createPayload([_input], _options);
+    const stream = this.#client.generate(payload, {
+      signal: _options.signal,
+      timeout: this.timeout,
+      stream: true,
+    });
+
+    const fullOutput: GenerateOutput = {
+      generated_text: '',
+      stop_reason: 'NOT_FINISHED',
+      input_token_count: 0,
+      generated_token_count: 0,
+    };
+
+    for await (const { generated_text, ...chunk } of stream) {
+      const generation = new GenerationChunk({
+        text: generated_text,
+        generationInfo: chunk,
+      });
+      yield generation;
+      void _runManager?.handleLLMNewToken(generated_text);
+
+      fullOutput.generated_text += generation.text;
+      if (chunk.stop_reason) {
+        fullOutput.stop_reason = chunk.stop_reason;
+      }
+      fullOutput.input_token_count += chunk.input_token_count;
+      fullOutput.generated_token_count += chunk.generated_token_count;
+    }
+
+    return fullOutput;
   }
 
   async getNumTokens(input: string): Promise<number> {

@@ -63,7 +63,7 @@
     "example:file": "yarn run example:run examples/file.ts"
   },
   "peerDependencies": {
-    "langchain": ">=0.0.75"
+    "langchain": ">=0.0.155"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.5.1",
@@ -75,12 +75,13 @@
     "@typescript-eslint/eslint-plugin": "^5.56.0",
     "@typescript-eslint/parser": "^5.56.0",
     "@vitest/coverage-c8": "^0.31.2",
+    "compare-versions": "^6.1.0",
     "dotenv-flow": "^3.2.0",
     "eslint": "^8.36.0",
     "eslint-config-prettier": "^8.8.0",
     "husky": "^8.0.0",
     "jest-extended": "^3.2.4",
-    "langchain": "^0.0.75",
+    "langchain": "^0.0.155",
     "lint-staged": "^13.2.0",
     "lodash": "^4.17.21",
     "msw": "^1.2.1",

@@ -1,9 +1,9 @@
 import { BaseChatModel, BaseChatModelParams } from 'langchain/chat_models/base';
 import {
-  BaseChatMessage,
+  BaseMessage,
   ChatResult,
   MessageType,
-  SystemChatMessage,
+  SystemMessage,
 } from 'langchain/schema';
 import { CallbackManagerForLLMRun } from 'langchain/callbacks';
 import { InvalidInputError } from '../errors.js';
@@ -60,7 +60,7 @@ export class GenAIChatModel extends BaseChatModel {
   }
 
   async _generate(
-    messages: BaseChatMessage[],
+    messages: BaseMessage[],
     options: this['ParsedCallOptions'],
     runManager?: CallbackManagerForLLMRun,
   ): Promise<ChatResult> {
@@ -81,7 +81,7 @@ export class GenAIChatModel extends BaseChatModel {
 
     return {
       generations: output.generations.map(([generation]) => ({
-        message: new SystemChatMessage(generation.text),
+        message: new SystemMessage(generation.text),
         generationInfo: generation.generationInfo,
         text: generation.text,
       })),

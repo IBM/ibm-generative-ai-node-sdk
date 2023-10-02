@@ -197,3 +197,25 @@ export function isEmptyObject<T extends Record<any, unknown>>(
   }
   return true;
 }
+
+export async function asyncGeneratorToArray<T, L>(
+  generator: AsyncGenerator<T, L>,
+) {
+  const response = {
+    chunks: [] as T[],
+    output: undefined as L,
+  };
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const { done, value } = await generator.next();
+    if (done) {
+      response.output = value;
+      break;
+    }
+
+    response.chunks.push(value);
+  }
+
+  return response;
+}

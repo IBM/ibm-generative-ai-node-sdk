@@ -210,7 +210,7 @@ export async function asyncGeneratorToArray<T, L>(
   while (true) {
     const { done, value } = await generator.next();
     if (done) {
-      response.output = value as L;
+      response.output = value;
       break;
     }
 

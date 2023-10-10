@@ -1,5 +1,5 @@
 import { IncomingHttpHeaders } from 'node:http';
-import { ErrorExtensions, ErrorResponse } from './api-types.js';
+
 import {
   AxiosHeaders,
   AxiosResponse,
@@ -7,6 +7,8 @@ import {
   isAxiosError,
   isCancel as isAxiosCancel,
 } from 'axios';
+
+import { ErrorExtensions, ErrorResponse } from './api-types.js';
 
 export class BaseError extends Error {}
 

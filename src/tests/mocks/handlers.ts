@@ -1,6 +1,7 @@
+import { randomUUID } from 'node:crypto';
+
 import { DefaultBodyType, MockedRequest, RestHandler, rest } from 'msw';
 import _ from 'lodash';
-import { randomUUID } from 'node:crypto';
 
 export const MOCK_ENDPOINT = 'https://mock';
 

@@ -1,5 +1,6 @@
-import type { PromptTemplateOutput as PromptTemplate } from '../client/types.js';
 import { PromptTemplate as LangChainPromptTemplate } from 'langchain/prompts';
+
+import type { PromptTemplateOutput as PromptTemplate } from '../client/types.js';
 import { InvalidInputError } from '../errors.js';
 
 export class GenAIPromptTemplate {

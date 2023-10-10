@@ -6,11 +6,13 @@ import {
   SystemMessage,
 } from 'langchain/schema';
 import { CallbackManagerForLLMRun } from 'langchain/callbacks';
+
 import { InvalidInputError } from '../errors.js';
-import { GenAIModel, GenAIModelOptions } from './llm.js';
 import { GenerateOutput } from '../client/types.js';
 import { concatUnique } from '../helpers/common.js';
 import type { RequiredPartial } from '../helpers/types.js';
+
+import { GenAIModel, GenAIModelOptions } from './llm.js';
 
 interface GenAILLMOutput {
   tokenUsage: Pick<

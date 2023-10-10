@@ -1,11 +1,12 @@
 // TODO: remove once https://github.com/ai-zen/node-fetch-event-source/pull/1 get merged
+import crossFetch from 'cross-fetch';
+
 import {
   EventSourceMessage,
   getBytes,
   getLines,
   getMessages,
 } from './parse.js';
-import crossFetch from 'cross-fetch';
 
 export { Headers } from 'cross-fetch';
 

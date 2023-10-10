@@ -1,7 +1,8 @@
+import os from 'node:os';
+import path from 'node:path';
+import fs from 'node:fs';
+
 import YAML from 'yaml';
-import os from 'os';
-import path from 'path';
-import fs from 'fs';
 
 export function lookupEndpoint(): string | null {
   return (

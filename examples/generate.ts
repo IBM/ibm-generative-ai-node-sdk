@@ -1,4 +1,5 @@
 import { Client } from '../src/index.js';
+
 import { loadGenerateInput } from './load_input.js';
 
 const client = new Client({

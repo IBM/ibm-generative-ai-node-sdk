@@ -1,5 +1,6 @@
-import { GenAIPromptTemplate } from '../../src/langchain/index.js';
 import { PromptTemplate } from 'langchain/prompts';
+
+import { GenAIPromptTemplate } from '../../src/langchain/index.js';
 
 {
   // Converting the LangChain Prompt Template (f-string) to GenAI Prompt Template'

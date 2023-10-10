@@ -1,4 +1,5 @@
 import { readFileSync } from 'fs';
+
 import { GenerateInputSchema } from '../src/index.js';
 
 export const loadGenerateInput = () =>

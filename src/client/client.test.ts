@@ -1,5 +1,6 @@
-import { Client } from './client.js';
 import { lookupApiKey, lookupEndpoint } from '../helpers/config.js';
+
+import { Client } from './client.js';
 
 vi.mock('../helpers/config.js');
 

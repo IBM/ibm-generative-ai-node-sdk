@@ -1,6 +1,8 @@
-import { GenAIPromptTemplate } from './prompt-template.js';
 import { PromptTemplate } from 'langchain/prompts';
+
 import { InvalidInputError } from '../errors.js';
+
+import { GenAIPromptTemplate } from './prompt-template.js';
 
 describe('Prompt Templates', () => {
   it('throws when unknown template type passed', () => {

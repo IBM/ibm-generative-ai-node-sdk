@@ -5,6 +5,15 @@ __metadata:
   version: 6
   cacheKey: 8
 
+"@ai-zen/node-fetch-event-source@npm:^2.1.2":
+  version: 2.1.2
+  resolution: "@ai-zen/node-fetch-event-source@npm:2.1.2"
+  dependencies:
+    cross-fetch: ^3.1.8
+  checksum: 9a242098797a3118d59210c4898650b8d36d1e1874f6d754253bd0ec2c4fd9b81498a3099e0ef16de33d4e278e7526bd364057612371262abbf8ffd407e1823b
+  languageName: node
+  linkType: hard
+
 "@ampproject/remapping@npm:^2.2.1":
   version: 2.2.1
   resolution: "@ampproject/remapping@npm:2.2.1"
@@ -657,11 +666,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@ibm-generative-ai/node-sdk@workspace:."
   dependencies:
+    "@ai-zen/node-fetch-event-source": ^2.1.2
     "@commitlint/cli": ^17.5.1
     "@commitlint/config-conventional": ^17.4.4
     "@types/lodash": ^4.14.194
     "@types/node": ^18.15.5
-    "@types/node-fetch": ^2.6.4
     "@types/promise-retry": ^1.1.3
     "@typescript-eslint/eslint-plugin": ^5.56.0
     "@typescript-eslint/parser": ^5.56.0
@@ -669,7 +678,6 @@ __metadata:
     axios: ^1.3.4
     axios-cache-interceptor: ^1.0.1
     compare-versions: ^6.1.0
-    cross-fetch: ^3.1.6
     dotenv-flow: ^3.2.0
     eslint: ^8.36.0
     eslint-config-prettier: ^8.8.0
@@ -2205,12 +2213,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-fetch@npm:^3.1.6":
-  version: 3.1.6
-  resolution: "cross-fetch@npm:3.1.6"
+"cross-fetch@npm:^3.1.8":
+  version: 3.1.8
+  resolution: "cross-fetch@npm:3.1.8"
   dependencies:
-    node-fetch: ^2.6.11
-  checksum: 704b3519ab7de488328cc49a52cf1aa14132ec748382be5b9557b22398c33ffa7f8c2530e8a97ed8cb55da52b0a9740a9791d361271c4591910501682d981d9c
+    node-fetch: ^2.6.12
+  checksum: 78f993fa099eaaa041122ab037fe9503ecbbcb9daef234d1d2e0b9230a983f64d645d088c464e21a247b825a08dc444a6e7064adfa93536d3a9454b4745b3632
   languageName: node
   linkType: hard
 
@@ -5309,7 +5317,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-fetch@npm:^2.6.11, node-fetch@npm:^2.6.7":
+"node-fetch@npm:^2.6.12":
+  version: 2.7.0
+  resolution: "node-fetch@npm:2.7.0"
+  dependencies:
+    whatwg-url: ^5.0.0
+  peerDependencies:
+    encoding: ^0.1.0
+  peerDependenciesMeta:
+    encoding:
+      optional: true
+  checksum: d76d2f5edb451a3f05b15115ec89fc6be39de37c6089f1b6368df03b91e1633fd379a7e01b7ab05089a25034b2023d959b47e59759cb38d88341b2459e89d6e5
+  languageName: node
+  linkType: hard
+
+"node-fetch@npm:^2.6.7":
   version: 2.6.11
   resolution: "node-fetch@npm:2.6.11"
   dependencies:

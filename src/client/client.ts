@@ -10,8 +10,11 @@ import {
   setupCache,
 } from 'axios-cache-interceptor';
 import promiseRetry from 'promise-retry';
+import {
+  EventStreamContentType,
+  fetchEventSource,
+} from '@ai-zen/node-fetch-event-source';
 import { ZodSchema } from 'zod';
-import { Request } from 'cross-fetch';
 
 import * as ApiTypes from '../api-types.js';
 import {
@@ -37,9 +40,7 @@ import {
 import { TypedReadable } from '../utils/stream.js';
 import { lookupApiKey, lookupEndpoint } from '../helpers/config.js';
 import { RETRY_ATTEMPTS_DEFAULT } from '../constants.js';
-import { EventStreamContentType, fetchEventSource } from '../utils/sse/sse.js';
 
-import { CacheDiscriminator, generateCacheKey } from './cache.js';
 import {
   GenerateConfigInput,
   GenerateConfigOptions,
@@ -92,6 +93,7 @@ import {
   FileDeleteOutput,
   PromptTemplateDeleteOutput,
 } from './types.js';
+import { CacheDiscriminator, generateCacheKey } from './cache.js';
 
 type FetchConfig<R, D> = Omit<CacheRequestConfig<R, D>, 'signal'> & {
   retries?: number;
@@ -216,7 +218,7 @@ export class Client {
         input.url ?? this.#options.endpoint,
         this.#options.endpoint,
       );
-      fetchEventSource(new Request(url), {
+      fetchEventSource(url.toString(), {
         method: 'POST',
         body: JSON.stringify(input.data),
         headers: {

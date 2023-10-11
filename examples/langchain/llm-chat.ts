@@ -1,5 +1,6 @@
-import { GenAIChatModel } from '../../src/langchain/llm-chat.js';
 import { HumanChatMessage } from 'langchain/schema';
+
+import { GenAIChatModel } from '../../src/langchain/llm-chat.js';
 
 const makeClient = (stream?: boolean) =>
   new GenAIChatModel({

@@ -1,6 +1,7 @@
-import { GenAIModel } from '../../../langchain/llm.js';
 import { PromptTemplate } from 'langchain/prompts';
 import { LLMChain } from 'langchain/chains';
+
+import { GenAIModel } from '../../../langchain/llm.js';
 
 describe('Langchain', () => {
   const makeClient = (modelId?: string, stream?: boolean) =>

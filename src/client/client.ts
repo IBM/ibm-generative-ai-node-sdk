@@ -1,3 +1,7 @@
+import http, { IncomingMessage } from 'node:http';
+import https from 'node:https';
+import { Transform, TransformCallback } from 'stream';
+
 import axios, { AxiosError } from 'axios';
 import FormData from 'form-data';
 import {
@@ -6,8 +10,9 @@ import {
   setupCache,
 } from 'axios-cache-interceptor';
 import promiseRetry from 'promise-retry';
-import http, { IncomingMessage } from 'node:http';
-import https from 'node:https';
+import { ZodSchema } from 'zod';
+import { Request } from 'cross-fetch';
+
 import * as ApiTypes from '../api-types.js';
 import {
   errorTransformer,
@@ -16,6 +21,25 @@ import {
   InvalidInputError,
   isRetrievableError,
 } from '../errors.js';
+import type { StrictUnion } from '../types.js';
+import { version } from '../buildInfo.js';
+import {
+  safeParseJson,
+  Unwrap,
+  wait,
+  parseFunctionOverloads,
+  handle,
+  isTypeOf,
+  handleGenerator,
+  paginator,
+  isEmptyObject,
+} from '../helpers/common.js';
+import { TypedReadable } from '../utils/stream.js';
+import { lookupApiKey, lookupEndpoint } from '../helpers/config.js';
+import { RETRY_ATTEMPTS_DEFAULT } from '../constants.js';
+import { EventStreamContentType, fetchEventSource } from '../utils/sse/sse.js';
+
+import { CacheDiscriminator, generateCacheKey } from './cache.js';
 import {
   GenerateConfigInput,
   GenerateConfigOptions,
@@ -68,27 +92,6 @@ import {
   FileDeleteOutput,
   PromptTemplateDeleteOutput,
 } from './types.js';
-import type { StrictUnion } from '../types.js';
-import { version } from '../buildInfo.js';
-import {
-  safeParseJson,
-  Unwrap,
-  wait,
-  parseFunctionOverloads,
-  handle,
-  isTypeOf,
-  handleGenerator,
-  paginator,
-  isEmptyObject,
-} from '../helpers/common.js';
-import { TypedReadable } from '../utils/stream.js';
-import { lookupApiKey, lookupEndpoint } from '../helpers/config.js';
-import { RETRY_ATTEMPTS_DEFAULT } from '../constants.js';
-import { EventStreamContentType, fetchEventSource } from '../utils/sse/sse.js';
-import { Transform, TransformCallback } from 'stream';
-import { ZodSchema } from 'zod';
-import { CacheDiscriminator, generateCacheKey } from './cache.js';
-import { Request } from 'cross-fetch';
 
 type FetchConfig<R, D> = Omit<CacheRequestConfig<R, D>, 'signal'> & {
   retries?: number;

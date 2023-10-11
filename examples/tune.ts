@@ -1,6 +1,7 @@
 import { createWriteStream } from 'node:fs';
-import { Client } from '../src/index.js';
 import { pipeline } from 'node:stream';
+
+import { Client } from '../src/index.js';
 
 const client = new Client({
   apiKey: process.env.GENAI_API_KEY,

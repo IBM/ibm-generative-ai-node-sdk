@@ -65,13 +65,29 @@ import { Client } from '@ibm-generative-ai/node-sdk';
 const client = new Client({ apiKey: 'pak-.....' });
 
 // Single input
-const output = await client.generate(singleInput);
+const input = {
+  model_id: 'google/flan-ul2',
+  input: 'What is the capital of the United Kingdom?',
+  parameters: {
+    decoding_method: 'greedy',
+    min_new_tokens: 1,
+    max_new_tokens: 10,
+  },
+};
+const output = await client.generate(input);
 
 // Multiple inputs, processed in parallel, all resolving at once
-const outputs = await Promise.all(client.generate(multipleInputs));
+const inputs = [
+  {
+    input: 'What is the capital of the United Kingdom?',
+    model_id: 'google/flan-ul2',
+  },
+  { input: 'What is the capital of the Mexico?', model_id: 'google/flan-ul2' },
+];
+const outputs = await Promise.all(client.generate(inputs));
 
 // Multiple inputs, processed in parallel, resolving in the order of respective inputs
-for (const outputPromise of client.generate(multipleInputs)) {
+for (const outputPromise of client.generate(inputs)) {
   try {
     console.log(await outputPromise);
   } catch (err) {
@@ -80,13 +96,13 @@ for (const outputPromise of client.generate(multipleInputs)) {
 }
 
 // Single input using callbacks
-client.generate(singleInput, (err, output) => {
+client.generate(input, (err, output) => {
   if (err) console.error(err);
   else console.log(output);
 });
 
 // Multiple inputs using callbacks, processed in parallel, called in the order of respective inputs
-client.generate(multipleInputs, (err, output) => {
+client.generate(inputs, (err, output) => {
   if (err) console.error(err);
   else console.log(output);
 });
@@ -95,8 +111,13 @@ client.generate(multipleInputs, (err, output) => {
 ### Streams
 
 ```typescript
+const input = {
+  model_id: 'google/flan-ul2',
+  input: 'What is the capital of the United Kingdom?',
+};
+
 // Streaming (callback style)
-client.generate(singleInput, { stream: true }, (err, output) => {
+client.generate(input, { stream: true }, (err, output) => {
   if (err) {
     console.error(err);
   } else if (output === null) {
@@ -110,7 +131,7 @@ client.generate(singleInput, { stream: true }, (err, output) => {
 });
 
 // Streaming (async iterators)
-const stream = client.generate(singleInput, {
+const stream = client.generate(input, {
   stream: true,
 });
 for await (const chunk of stream) {
@@ -121,7 +142,7 @@ for await (const chunk of stream) {
 }
 
 // Streaming (built-in stream methods)
-const stream = client.generate(singleInput, {
+const stream = client.generate(input, {
   stream: true,
 });
 stream.on('data', (chunk) => {

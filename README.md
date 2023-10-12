@@ -1,13 +1,14 @@
-<div align="center">
+# IBM Generative AI Node.js SDK (Tech Preview)
 
-# IBM Generative AI Node.js SDK
+This is not the [watsonx.ai](https://www.ibm.com/products/watsonx-ai) Node.js SDK. This is the Node.js SDK for the Tech Preview program for IBM Foundation Models Studio. This SDK brings IBM Generative AI (GenAI) into Node.js programs and provides useful operations and types.
 
-This library provides convenient access to the Generative AI API from Node.js applications. For a full description of the API, please visit the [Generative AI API Docs](https://workbench.res.ibm.com/docs/api-reference).
+You can start a trial version or request a demo via https://www.ibm.com/products/watsonx-ai.
+
+This library provides convenient access to the Generative AI API from Node.js applications. For a full description of the API, please visit the [Tech Preview API Documentation](https://workbench.res.ibm.com/docs/api-reference).
 
 The SDK supports both TypeScript and JavaScript as well as ESM and CommonJS.
 
-</div>
-
+> Looking for the [watsonx.ai](https://www.ibm.com/products/watsonx-ai) Python SDK? Check out the [documentation](https://ibm.github.io/watson-machine-learning-sdk/foundation_models.html).
 > Looking for the Python version? Check out [IBM Generative AI Python SDK](https://github.com/IBM/ibm-generative-ai).
 > Looking for a command-line interface? Check out [IBM Generative AI CLI](https://github.com/IBM/ibm-generative-ai-cli).
 

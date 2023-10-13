@@ -1,13 +1,14 @@
-<div align="center">
+# IBM Generative AI Node.js SDK (Tech Preview)
 
-# IBM Generative AI Node.js SDK
+This is not the [watsonx.ai](https://www.ibm.com/products/watsonx-ai) Node.js SDK. This is the Node.js SDK for the Tech Preview program for IBM Foundation Models Studio. This SDK brings IBM Generative AI (GenAI) into Node.js programs and provides useful operations and types.
 
-This library provides convenient access to the Generative AI API from Node.js applications. For a full description of the API, please visit the [Generative AI API Docs](https://workbench.res.ibm.com/docs/api-reference).
+You can start a trial version or request a demo via https://www.ibm.com/products/watsonx-ai.
+
+This library provides convenient access to the Generative AI API from Node.js applications. For a full description of the API, please visit the [Tech Preview API Documentation](https://workbench.res.ibm.com/docs/api-reference).
 
 The SDK supports both TypeScript and JavaScript as well as ESM and CommonJS.
 
-</div>
-
+> Looking for the [watsonx.ai](https://www.ibm.com/products/watsonx-ai) Python SDK? Check out the [documentation](https://ibm.github.io/watson-machine-learning-sdk/foundation_models.html).
 > Looking for the Python version? Check out [IBM Generative AI Python SDK](https://github.com/IBM/ibm-generative-ai).
 > Looking for a command-line interface? Check out [IBM Generative AI CLI](https://github.com/IBM/ibm-generative-ai-cli).
 
@@ -64,13 +65,29 @@ import { Client } from '@ibm-generative-ai/node-sdk';
 const client = new Client({ apiKey: 'pak-.....' });
 
 // Single input
-const output = await client.generate(singleInput);
+const input = {
+  model_id: 'google/flan-ul2',
+  input: 'What is the capital of the United Kingdom?',
+  parameters: {
+    decoding_method: 'greedy',
+    min_new_tokens: 1,
+    max_new_tokens: 10,
+  },
+};
+const output = await client.generate(input);
 
 // Multiple inputs, processed in parallel, all resolving at once
-const outputs = await Promise.all(client.generate(multipleInputs));
+const inputs = [
+  {
+    input: 'What is the capital of the United Kingdom?',
+    model_id: 'google/flan-ul2',
+  },
+  { input: 'What is the capital of the Mexico?', model_id: 'google/flan-ul2' },
+];
+const outputs = await Promise.all(client.generate(inputs));
 
 // Multiple inputs, processed in parallel, resolving in the order of respective inputs
-for (const outputPromise of client.generate(multipleInputs)) {
+for (const outputPromise of client.generate(inputs)) {
   try {
     console.log(await outputPromise);
   } catch (err) {
@@ -79,13 +96,13 @@ for (const outputPromise of client.generate(multipleInputs)) {
 }
 
 // Single input using callbacks
-client.generate(singleInput, (err, output) => {
+client.generate(input, (err, output) => {
   if (err) console.error(err);
   else console.log(output);
 });
 
 // Multiple inputs using callbacks, processed in parallel, called in the order of respective inputs
-client.generate(multipleInputs, (err, output) => {
+client.generate(inputs, (err, output) => {
   if (err) console.error(err);
   else console.log(output);
 });
@@ -94,8 +111,13 @@ client.generate(multipleInputs, (err, output) => {
 ### Streams
 
 ```typescript
+const input = {
+  model_id: 'google/flan-ul2',
+  input: 'What is the capital of the United Kingdom?',
+};
+
 // Streaming (callback style)
-client.generate(singleInput, { stream: true }, (err, output) => {
+client.generate(input, { stream: true }, (err, output) => {
   if (err) {
     console.error(err);
   } else if (output === null) {
@@ -109,7 +131,7 @@ client.generate(singleInput, { stream: true }, (err, output) => {
 });
 
 // Streaming (async iterators)
-const stream = client.generate(singleInput, {
+const stream = client.generate(input, {
   stream: true,
 });
 for await (const chunk of stream) {
@@ -120,7 +142,7 @@ for await (const chunk of stream) {
 }
 
 // Streaming (built-in stream methods)
-const stream = client.generate(singleInput, {
+const stream = client.generate(input, {
   stream: true,
 });
 stream.on('data', (chunk) => {

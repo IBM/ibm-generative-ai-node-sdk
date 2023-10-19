@@ -46,23 +46,32 @@ const model_id = 'google/ul2';
   // Chat inteface has the same promise, streaming and callback variants as generate interface
 
   // Promise
-  const data = await client.chat({ model_id, messages: [] });
+  const data = await client.chat({
+    model_id,
+    messages: [{ role: 'user', content: 'How are you?' }],
+  });
   console.log(data.result.generated_text);
   // Callback
-  client.chat({ model_id, messages: [] }, (err, data) => {
-    if (err) console.error(err);
-    else console.log(data.result.generated_text);
-  });
+  client.chat(
+    { model_id, messages: [{ role: 'user', content: 'How are you?' }] },
+    (err, data) => {
+      if (err) console.error(err);
+      else console.log(data.result.generated_text);
+    },
+  );
   // Stream
   for await (const chunk of client.chat(
-    { model_id, messages: [] },
+    { model_id, messages: [{ role: 'user', content: 'How are you?' }] },
     { stream: true },
   )) {
     console.log(chunk.result.generated_text);
   }
   // Streaming callbacks
   client.chat(
-    { model_id: 'foo', messages: [] },
+    {
+      model_id: 'google/ul2',
+      messages: [{ role: 'user', content: 'How are you?' }],
+    },
     { stream: true },
     (err, data) => {
       if (err) console.error(err);

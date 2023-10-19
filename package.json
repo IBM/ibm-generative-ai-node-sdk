@@ -60,7 +60,8 @@
     "example:generate": "yarn run example:run examples/generate.ts",
     "example:tune": "yarn run example:run examples/tune.ts",
     "example:prompt-template": "yarn run example:run examples/prompt-templates.ts",
-    "example:file": "yarn run example:run examples/file.ts"
+    "example:file": "yarn run example:run examples/file.ts",
+    "example:chat": "yarn run example:run examples/chat.ts"
   },
   "peerDependencies": {
     "langchain": ">=0.0.155"

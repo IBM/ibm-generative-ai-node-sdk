@@ -82,7 +82,7 @@ export const GenerateStopReasonSchema = z.enum([
 ]);
 export type GenerateStopReason = z.infer<typeof GenerateStopReasonSchema>;
 
-export const GenerateModerationSchema = z
+const GenerateModerationSchema = z
   .object({
     hap: z.optional(
       z.array(

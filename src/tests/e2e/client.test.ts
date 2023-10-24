@@ -51,13 +51,14 @@ describe('client', () => {
     }, 15_000);
 
     describe('streaming', () => {
-      const makeValidStream = () =>
+      const makeValidStream = (parameters: Record<string, any> = {}) =>
         client.generate(
           {
             model_id: 'google/ul2',
             input: 'Hello, World',
             parameters: {
               max_new_tokens: 10,
+              ...parameters,
             },
           },
           {
@@ -73,6 +74,10 @@ describe('client', () => {
         expect(chunk.generated_token_count).not.toBeNegative();
         expect(chunk.input_token_count).not.toBeNegative();
         expect(chunk.stop_reason).toSatisfy(isNumberOrNull);
+        expect(chunk.moderation).toBeOneOf([
+          undefined,
+          expect.objectContaining({ hap: expect.any(Array) }),
+        ]);
       };
 
       test('should throw for multiple inputs', () => {
@@ -93,6 +98,27 @@ describe('client', () => {
             },
           ),
         ).toThrowError('Cannot do streaming for more than one input!');
+      });
+
+      test('should correctly process moderation chunks during streaming', async () => {
+        const stream = makeValidStream({
+          moderations: {
+            min_new_tokens: 1,
+            max_new_tokens: 5,
+            hap: {
+              input: true,
+              threshold: 0.01,
+            },
+          },
+        });
+
+        for await (const chunk of stream) {
+          validateStreamChunk(chunk);
+          if (chunk.moderation) {
+            return;
+          }
+        }
+        throw Error('No moderation chunks has been retrieved from the API');
       });
 
       test('should return valid stream for a single input', async () => {

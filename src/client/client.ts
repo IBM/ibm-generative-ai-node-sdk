@@ -457,13 +457,18 @@ export class Client {
               stop_reason = null,
               input_token_count = 0,
               generated_token_count = 0,
-            } = chunk.results[0];
+              ...props
+            } = (chunk.results || [{}])[0];
 
             callback(null, {
               generated_text,
               stop_reason,
               input_token_count,
               generated_token_count,
+              ...(chunk.moderation && {
+                moderation: chunk.moderation,
+              }),
+              ...props,
             } as GenerateOutput);
           } catch (e) {
             const err = (chunk || e) as unknown as Error;

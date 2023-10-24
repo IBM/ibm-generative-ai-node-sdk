@@ -1,6 +1,6 @@
 {
   "name": "@ibm-generative-ai/node-sdk",
-  "version": "1.4.3",
+  "version": "1.5.0",
   "description": "IBM Generative AI Node.js SDK (Tech Preview)",
   "keywords": [
     "ai",

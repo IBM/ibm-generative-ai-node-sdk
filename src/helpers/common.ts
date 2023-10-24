@@ -151,23 +151,23 @@ export function callbackifyGenerator<T>(generatorFn: () => AsyncGenerator<T>) {
   };
 }
 
-export function callbackifyStream<T>(
-  stream: Readable,
-  callbackFn: Callback<T>,
-) {
-  stream.on('data', (data) => callbackFn(null, data));
-  stream.on('error', (err) => (callbackFn as ErrorCallback)(err));
-  stream.on('finish', () => (callbackFn as DataCallback<T | null>)(null, null));
+export function callbackifyStream<T>(stream: Readable) {
+  return (callbackFn: Callback<T>) => {
+    stream.on('data', (data) => callbackFn(null, data));
+    stream.on('error', (err) => (callbackFn as ErrorCallback)(err));
+    stream.on('finish', () =>
+      (callbackFn as DataCallback<T | null>)(null, null),
+    );
+  };
 }
 
-export function callbackifyPromise<T>(
-  promise: Promise<T>,
-  callbackFn: Callback<T>,
-) {
-  promise.then(
-    (data) => callbackFn(null, data),
-    (err) => (callbackFn as ErrorCallback)(err),
-  );
+export function callbackifyPromise<T>(promise: Promise<T>) {
+  return (callbackFn: Callback<T>) => {
+    promise.then(
+      (data) => callbackFn(null, data),
+      (err) => (callbackFn as ErrorCallback)(err),
+    );
+  };
 }
 
 export async function* paginator<T>(

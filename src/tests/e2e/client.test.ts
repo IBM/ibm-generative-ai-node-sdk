@@ -206,19 +206,11 @@ describe('client', () => {
       test('should return valid stream', async () => {
         const stream = makeValidStream();
 
-        const chunks = await new Promise<ChatOutput[]>((resolve, reject) => {
-          const chunks: ChatOutput[] = [];
-          stream.on('data', (chunk) => {
-            validateStreamChunk(chunk);
-            chunks.push(chunk);
-          });
-          stream.on('close', () => {
-            resolve(chunks);
-          });
-          stream.on('error', (err) => {
-            reject(err);
-          });
-        });
+        const chunks: ChatOutput[] = [];
+        for await (const chunk of stream) {
+          validateStreamChunk(chunk);
+          chunks.push(chunk);
+        }
 
         expect(chunks.length).toBeGreaterThan(0);
       }, 15_000);

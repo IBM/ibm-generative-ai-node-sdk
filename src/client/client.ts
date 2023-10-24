@@ -489,7 +489,7 @@ export class Client {
         return stream;
       }
 
-      callbackifyStream<GenerateOutput>(stream, callback);
+      callbackifyStream<GenerateOutput>(stream)(callback);
       return;
     }
 
@@ -549,7 +549,7 @@ export class Client {
     });
 
     if (callback) {
-      promises.forEach((promise) => callbackifyPromise(promise, callback));
+      promises.forEach((promise) => callbackifyPromise(promise)(callback));
     } else {
       return Array.isArray(input) ? promises : promises[0];
     }
@@ -1380,7 +1380,7 @@ export class Client {
         .pipe(stream);
 
       if (cb) {
-        callbackifyStream(stream, cb);
+        callbackifyStream<ChatStreamOutput>(stream)(cb);
         return;
       } else {
         return stream;
@@ -1407,7 +1407,7 @@ export class Client {
       })();
 
       if (cb) {
-        callbackifyPromise(promise, cb);
+        callbackifyPromise(promise)(cb);
         return;
       } else {
         return promise;

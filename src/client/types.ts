@@ -44,7 +44,7 @@ export const GenerateInputSchema = z.union([
 ]);
 export type GenerateInput = z.infer<typeof GenerateInputSchema>;
 export type GenerateOutput = ApiTypes.GenerateOutput['results'][number] & {
-  moderation: ApiTypes.GenerateOutput['moderation'];
+  moderation?: ApiTypes.GenerateOutput['moderation'];
 };
 
 export const GenerateConfigInputSchema = ApiTypes.GenerateConfigInputSchema;

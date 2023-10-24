@@ -84,6 +84,26 @@ export const GenerateStopReasonSchema = z.enum([
 ]);
 export type GenerateStopReason = z.infer<typeof GenerateStopReasonSchema>;
 
+const GenerateModerationSchema = z
+  .object({
+    hap: z.optional(
+      z.array(
+        z
+          .object({
+            success: z.boolean(),
+            flagged: z.boolean(),
+            score: z.number().min(0).max(1),
+            position: z.object({
+              start: z.number().int().min(0),
+              stop: z.number().int().min(0),
+            }),
+          })
+          .passthrough(),
+      ),
+    ),
+  })
+  .passthrough();
+
 export const GenerateResultSchema = z
   .object({
     generated_text: z.string(),
@@ -99,6 +119,7 @@ export const GenerateOutputSchema = z
     model_id: z.string(),
     created_at: z.coerce.date(),
     results: z.array(GenerateResultSchema),
+    moderation: GenerateModerationSchema.optional(),
   })
   .passthrough();
 export type GenerateOutput = z.infer<typeof GenerateOutputSchema>;

@@ -130,11 +130,22 @@ export const resetHistoryStore = () => {
     }));
 };
 
+export const chatStore = new Map<string, { role: string; content: string }[]>();
+export const resetChatStore = () => {
+  chatStore.clear();
+  chatStore.set(randomUUID(), [
+    { role: 'system', content: 'instruction' },
+    { role: 'user', content: 'hello' },
+    { role: 'assistant', content: 'hi' },
+  ]);
+};
+
 export const resetStores = () => {
   resetGenerateConfigStore();
   resetTunesStore();
   resetPromptTemplateStore();
   resetHistoryStore();
+  resetChatStore();
 };
 resetStores();
 
@@ -398,6 +409,27 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
       ctx.json({
         results: historyStore.slice(offset, limit),
         totalCount: historyStore.length,
+      }),
+    );
+  }),
+
+  // Chat
+  rest.post(`${MOCK_ENDPOINT}/v0/generate/chat`, async (req, res, ctx) => {
+    const body = await req.json();
+    const conversation_id = body.conversation_id ?? randomUUID();
+    if (!chatStore.has(conversation_id)) {
+      chatStore.set(conversation_id, body.messages);
+    } else {
+      chatStore.get(conversation_id)?.push(...body.messages);
+    }
+    const conversation = chatStore.get(conversation_id);
+    return res(
+      ctx.status(200),
+      ctx.json({
+        conversation_id,
+        results: conversation
+          ?.slice(-1)
+          .map(({ role, content }) => ({ role, generated_text: content })),
       }),
     );
   }),

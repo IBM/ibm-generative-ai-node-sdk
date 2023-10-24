@@ -1,6 +1,6 @@
 import http, { IncomingMessage } from 'node:http';
 import https from 'node:https';
-import { Transform, TransformCallback } from 'stream';
+import { Transform, TransformCallback } from 'node:stream';
 
 import axios, { AxiosError } from 'axios';
 import FormData from 'form-data';
@@ -36,10 +36,13 @@ import {
   handleGenerator,
   paginator,
   isEmptyObject,
+  callbackifyStream,
+  callbackifyPromise,
 } from '../helpers/common.js';
 import { TypedReadable } from '../utils/stream.js';
 import { lookupApiKey, lookupEndpoint } from '../helpers/config.js';
 import { RETRY_ATTEMPTS_DEFAULT } from '../constants.js';
+import { Callback } from '../helpers/types.js';
 
 import {
   GenerateConfigInput,
@@ -92,6 +95,12 @@ import {
   FilesInput,
   FileDeleteOutput,
   PromptTemplateDeleteOutput,
+  ChatInput,
+  ChatOutput,
+  ChatOptions,
+  ChatStreamOptions,
+  ChatStreamInput,
+  ChatStreamOutput,
 } from './types.js';
 import { CacheDiscriminator, generateCacheKey } from './cache.js';
 
@@ -115,10 +124,6 @@ export interface Configuration {
   headers?: RawHeaders;
   retries?: HttpHandlerOptions['retries'];
 }
-
-type ErrorCallback = (err: unknown) => void;
-type DataCallback<T> = (err: unknown, result: T) => void;
-export type Callback<T> = ErrorCallback | DataCallback<T>;
 
 export class Client {
   readonly #client: AxiosCacheInstance;
@@ -484,12 +489,7 @@ export class Client {
         return stream;
       }
 
-      stream.on('data', (data) => callback(null, data));
-      stream.on('error', (err) => (callback as ErrorCallback)(err));
-      stream.on('finish', () =>
-        (callback as DataCallback<GenerateOutput | null>)(null, null),
-      );
-
+      callbackifyStream<GenerateOutput>(stream)(callback);
       return;
     }
 
@@ -549,12 +549,7 @@ export class Client {
     });
 
     if (callback) {
-      promises.forEach((promise) =>
-        promise.then(
-          (data) => callback(null as never, data),
-          (err) => (callback as ErrorCallback)(err),
-        ),
-      );
+      promises.forEach((promise) => callbackifyPromise(promise)(callback));
     } else {
       return Array.isArray(input) ? promises : promises[0];
     }
@@ -1319,5 +1314,104 @@ export class Client {
       );
       return transformOutput(result);
     });
+  }
+
+  chat(input: ChatInput, callback: Callback<ChatOutput>): void;
+  chat(
+    input: ChatInput,
+    options: ChatOptions,
+    callback: Callback<ChatOutput>,
+  ): void;
+  chat(
+    input: ChatStreamInput,
+    options: ChatStreamOptions,
+    callback: Callback<ChatStreamOutput | null>,
+  ): void;
+  chat(input: ChatInput, options?: ChatOptions): Promise<ChatOutput>;
+  chat(
+    input: ChatStreamInput,
+    options?: ChatStreamOptions,
+  ): TypedReadable<ChatStreamOutput>;
+  chat(
+    input: ChatInput | ChatStreamInput,
+    optionsOrCallback?:
+      | ChatOptions
+      | ChatStreamOptions
+      | Callback<ChatOutput>
+      | Callback<ChatStreamOutput>,
+    callback?: Callback<ChatOutput>,
+  ): TypedReadable<ChatStreamOutput> | Promise<ChatOutput> | void {
+    const { callback: cb, options } = parseFunctionOverloads(
+      undefined,
+      optionsOrCallback,
+      callback,
+    );
+
+    if (options?.stream) {
+      const stream = new Transform({
+        autoDestroy: true,
+        objectMode: true,
+        transform(
+          chunk: ApiTypes.ChatStreamOutput,
+          encoding: BufferEncoding,
+          callback: TransformCallback,
+        ) {
+          const { results, ...rest } = chunk;
+          callback(null, {
+            ...rest,
+            result: results[0],
+          } as ChatStreamOutput);
+        },
+      });
+      this.#fetcher<ApiTypes.ChatStreamOutput, ApiTypes.ChatStreamInput>({
+        ...options,
+        method: 'POST',
+        url: '/v0/generate/chat',
+        data: {
+          ...input,
+          parameters: {
+            ...input.parameters,
+            stream: true,
+          },
+        },
+        stream: true,
+      })
+        .on('error', (err) => stream.emit('error', errorTransformer(err)))
+        .pipe(stream);
+
+      if (cb) {
+        callbackifyStream<ChatStreamOutput>(stream)(cb);
+        return;
+      } else {
+        return stream;
+      }
+    } else {
+      const promise = (async () => {
+        const { results, ...rest } = await this.#fetcher<
+          ApiTypes.ChatOutput,
+          ApiTypes.ChatInput
+        >(
+          {
+            ...options,
+            method: 'POST',
+            url: '/v0/generate/chat',
+            data: input,
+            stream: false,
+          },
+          ApiTypes.ChatOutputSchema,
+        );
+        if (results.length !== 1) {
+          throw new InternalError('Unexpected number of results');
+        }
+        return { ...rest, result: results[0] };
+      })();
+
+      if (cb) {
+        callbackifyPromise(promise)(cb);
+        return;
+      } else {
+        return promise;
+      }
+    }
   }
 }

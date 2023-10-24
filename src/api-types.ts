@@ -61,11 +61,13 @@ export interface UserGenerateDefaultOutput {
 
 // GENERATE
 
+const ParametersSchema = z.record(z.any());
+
 export const GenerateInputSchema = z.object({
   model_id: z.string().nullish(),
   prompt_id: z.string().nullish(),
   inputs: z.array(z.string()),
-  parameters: z.optional(z.record(z.any())),
+  parameters: z.optional(ParametersSchema),
   use_default: z.optional(z.boolean()),
 });
 export type GenerateInput = z.infer<typeof GenerateInputSchema>;
@@ -399,3 +401,39 @@ export const FilesOutputSchema = PaginationOutputSchema.extend({
   results: z.array(SingleFileOutputSchema),
 });
 export type FilesOutput = z.output<typeof FilesOutputSchema>;
+
+// CHAT
+
+export const ChatRoleSchema = z.enum(['user', 'system', 'assistant']);
+export type ChatRole = z.infer<typeof ChatRoleSchema>;
+
+export const ChatInputSchema = z.object({
+  model_id: z.string(),
+  messages: z.array(
+    z.object({
+      role: ChatRoleSchema,
+      content: z.string(),
+    }),
+  ),
+  conversation_id: z.string().nullish(),
+  parent_id: z.string().nullish(),
+  prompt_id: z.string().nullish(),
+  parameters: ParametersSchema.nullish(),
+});
+export type ChatInput = z.input<typeof ChatInputSchema>;
+export const ChatOutputSchema = z.object({
+  conversation_id: z.string(),
+  results: z.array(
+    z
+      .object({
+        generated_text: z.string(),
+      })
+      .partial(),
+  ),
+});
+export type ChatOutput = z.output<typeof ChatOutputSchema>;
+
+export const ChatStreamInputSchema = ChatInputSchema;
+export type ChatStreamInput = z.input<typeof ChatStreamInputSchema>;
+export const ChatStreamOutputSchema = ChatOutputSchema;
+export type ChatStreamOutput = z.output<typeof ChatStreamOutputSchema>;

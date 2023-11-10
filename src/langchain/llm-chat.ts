@@ -74,7 +74,7 @@ export class GenAIChatModel extends BaseChatModel {
             `Unsupported message type "${msg._getType()}"`,
           );
         }
-        return `${type.stopSequence}${msg.text}`;
+        return `${type.stopSequence}${msg.content}`;
       })
       .join('\n')
       .concat(this.#rolesMapping.system.stopSequence);

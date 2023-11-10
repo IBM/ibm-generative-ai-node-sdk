@@ -1,4 +1,4 @@
-import { HumanChatMessage, SystemChatMessage } from 'langchain/schema';
+import { HumanMessage, SystemMessage } from 'langchain/schema';
 
 import { GenAIChatModel } from '../../../langchain/index.js';
 import { describeIf } from '../../utils.js';
@@ -47,21 +47,21 @@ describeIf(process.env.RUN_LANGCHAIN_CHAT_TESTS === 'true')(
         const chat = makeClient();
 
         const response = await chat.call([
-          new HumanChatMessage(
+          new HumanMessage(
             'What is a good name for a company that makes colorful socks?',
           ),
         ]);
-        expectIsNonEmptyString(response.text);
+        expectIsNonEmptyString(response.content);
       });
 
       test('should handle question with additional hint', async () => {
         const chat = makeClient();
 
         const response = await chat.call([
-          new SystemChatMessage(SYSTEM_MESSAGE),
-          new HumanChatMessage('I love programming.'),
+          new SystemMessage(SYSTEM_MESSAGE),
+          new HumanMessage('I love programming.'),
         ]);
-        expectIsNonEmptyString(response.text);
+        expectIsNonEmptyString(response.content);
       });
 
       test('should handle multiple questions', async () => {
@@ -69,12 +69,12 @@ describeIf(process.env.RUN_LANGCHAIN_CHAT_TESTS === 'true')(
 
         const response = await chat.generate([
           [
-            new SystemChatMessage(SYSTEM_MESSAGE),
-            new HumanChatMessage('I love programming.'),
+            new SystemMessage(SYSTEM_MESSAGE),
+            new HumanMessage('I love programming.'),
           ],
           [
-            new SystemChatMessage(SYSTEM_MESSAGE),
-            new HumanChatMessage('I love artificial intelligence.'),
+            new SystemMessage(SYSTEM_MESSAGE),
+            new HumanMessage('I love artificial intelligence.'),
           ],
         ]);
 
@@ -95,7 +95,7 @@ describeIf(process.env.RUN_LANGCHAIN_CHAT_TESTS === 'true')(
         });
 
         const output = await chat.call(
-          [new HumanChatMessage('Tell me a joke.')],
+          [new HumanMessage('Tell me a joke.')],
           undefined,
           [
             {
@@ -105,8 +105,8 @@ describeIf(process.env.RUN_LANGCHAIN_CHAT_TESTS === 'true')(
         );
 
         expect(handleNewToken).toHaveBeenCalled();
-        expectIsNonEmptyString(output.text);
-        expect(tokens.join('')).toStrictEqual(output.text);
+        expectIsNonEmptyString(output.content);
+        expect(tokens.join('')).toStrictEqual(output.content);
       });
     });
   },

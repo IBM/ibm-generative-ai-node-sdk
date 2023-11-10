@@ -58,7 +58,7 @@ describe('client', () => {
       const makeValidStream = (parameters: Record<string, any> = {}) =>
         client.generate(
           {
-            model_id: 'google/ul2',
+            model_id: 'google/flan-ul2',
             input: 'Hello, World',
             parameters: {
               max_new_tokens: 10,
@@ -89,11 +89,11 @@ describe('client', () => {
           client.generate(
             [
               {
-                model_id: 'google/ul2',
+                model_id: 'google/flan-ul2',
                 input: 'Hello, World',
               },
               {
-                model_id: 'google/ul2',
+                model_id: 'google/flan-ul2',
                 input: 'Hello, World',
               },
             ] as unknown as GenerateInput,
@@ -153,7 +153,7 @@ describe('client', () => {
             const chunks: GenerateOutput[] = [];
             client.generate(
               {
-                model_id: 'google/ul2',
+                model_id: 'google/flan-ul2',
                 input: 'Hello, World',
                 parameters: {},
               },
@@ -215,7 +215,7 @@ describe('client', () => {
       const makeValidStream = () =>
         client.chat(
           {
-            model_id: 'google/ul2',
+            model_id: 'google/flan-ul2',
             messages: [{ role: 'user', content: 'Hello World!' }],
           },
           {
@@ -246,7 +246,7 @@ describe('client', () => {
           const chunks: ChatOutput[] = [];
           client.chat(
             {
-              model_id: 'google/ul2',
+              model_id: 'google/flan-ul2',
               messages: [{ role: 'user', content: 'Hello World!' }],
             },
             {

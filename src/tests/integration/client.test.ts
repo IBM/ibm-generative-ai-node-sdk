@@ -71,7 +71,7 @@ describe('client', () => {
 
       test('should replace the config', async () => {
         const input = {
-          model_id: 'google/ul2',
+          model_id: 'google/flan-ul2',
           parameters: {
             decoding_method: 'greedy',
             random_seed: 8,
@@ -98,7 +98,7 @@ describe('client', () => {
 
       test('should set and reset the config', async () => {
         const input = {
-          model_id: 'google/ul2',
+          model_id: 'google/flan-ul2',
           parameters: {
             decoding_method: 'greedy',
             random_seed: 8,

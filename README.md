@@ -177,7 +177,7 @@ The following example showcases how you can integrate GenAI into your project.
 import { GenAIModel } from '@ibm-generative-ai/node-sdk/langchain';
 
 const model = new GenAIModel({
-  modelId: 'google/ul2',
+  modelId: 'google/flan-ul2',
   parameters: {},
   configuration: {
     apiKey: 'pak-.....',
@@ -222,7 +222,7 @@ console.log(text); // ArcticAegis
 import { GenAIModel } from '@ibm-generative-ai/node-sdk/langchain';
 
 const model = new GenAIModel({
-  modelId: 'google/ul2',
+  modelId: 'google/flan-ul2',
   stream: true,
   parameters: {},
   configuration: {
@@ -245,7 +245,7 @@ await model.call('Tell me a joke.', undefined, [
 import { GenAIChatModel } from '@ibm-generative-ai/node-sdk/langchain';
 
 const client = new GenAIChatModel({
-  modelId: 'togethercomputer/gpt-neoxt-chat-base-20b',
+  modelId: 'eleutherai/gpt-neox-20b',
   stream: false,
   configuration: {
     endpoint: process.env.ENDPOINT,

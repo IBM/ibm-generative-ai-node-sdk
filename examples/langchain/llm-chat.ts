@@ -4,7 +4,7 @@ import { GenAIChatModel } from '../../src/langchain/llm-chat.js';
 
 const makeClient = (stream?: boolean) =>
   new GenAIChatModel({
-    modelId: 'togethercomputer/gpt-neoxt-chat-base-20b',
+    modelId: 'eleutherai/gpt-neox-20b',
     stream,
     configuration: {
       endpoint: process.env.ENDPOINT,

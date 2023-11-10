@@ -243,6 +243,7 @@ await model.call('Tell me a joke.', undefined, [
 
 ```typescript
 import { GenAIChatModel } from '@ibm-generative-ai/node-sdk/langchain';
+import { SystemMessage, HumanMessage } from 'langchain/schema';
 
 const client = new GenAIChatModel({
   modelId: 'eleutherai/gpt-neox-20b',
@@ -268,13 +269,13 @@ const client = new GenAIChatModel({
 });
 
 const response = await client.call([
-  new SystemChatMessage(
+  new SystemMessage(
     'You are a helpful assistant that translates English to Spanish.',
   ),
-  new HumanChatMessage('I love programming.'),
+  new HumanMessage('I love programming.'),
 ]);
 
-console.info(response.text); // "Me encanta la programación."
+console.info(response.content); // "Me encanta la programación."
 ```
 
 #### Prompt Templates (GenAI x LangChain)

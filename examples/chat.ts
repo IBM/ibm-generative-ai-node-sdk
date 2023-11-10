@@ -4,7 +4,7 @@ const client = new Client({
   apiKey: process.env.GENAI_API_KEY,
 });
 
-const model_id = 'google/ul2';
+const model_id = 'google/flan-ul2';
 
 {
   // Start a conversation
@@ -69,7 +69,7 @@ const model_id = 'google/ul2';
   // Streaming callbacks
   client.chat(
     {
-      model_id: 'google/ul2',
+      model_id: 'google/flan-ul2',
       messages: [{ role: 'user', content: 'How are you?' }],
     },
     { stream: true },

@@ -3,3 +3,5 @@ node_modules/
 .yarn/
 yarn.lock
 .pnp.*
+
+/src/api/schema.d.ts

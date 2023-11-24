@@ -8,7 +8,7 @@ import {
   promptTemplatesStore,
   historyStore,
 } from '../mocks/handlers.js';
-import { Client } from '../../client/client.js';
+import { Client } from '../../client.js';
 
 const dummyTune = {
   name: 'newTune',
@@ -63,57 +63,6 @@ describe('client', () => {
   });
 
   describe('generate', () => {
-    describe('config', () => {
-      test('should read the config', async () => {
-        const config = await client.generateConfig();
-        expect(config).toMatchObject({ model_id: 'foobar' });
-      });
-
-      test('should replace the config', async () => {
-        const input = {
-          model_id: 'google/flan-ul2',
-          parameters: {
-            decoding_method: 'greedy',
-            random_seed: 8,
-          },
-        };
-        const config = await client.generateConfig(input, {
-          strategy: 'replace',
-        });
-        expect(config).toMatchObject(input);
-      });
-
-      test('should merge the config', async () => {
-        const input = {
-          parameters: {
-            decoding_method: 'greedy',
-            random_seed: 8,
-          },
-        };
-        const config = await client.generateConfig(input, {
-          strategy: 'merge',
-        });
-        expect(config).toMatchObject({ model_id: 'foobar', ...input });
-      });
-
-      test('should set and reset the config', async () => {
-        const input = {
-          model_id: 'google/flan-ul2',
-          parameters: {
-            decoding_method: 'greedy',
-            random_seed: 8,
-          },
-        };
-        const replacedConfig = await client.generateConfig(input, {
-          strategy: 'replace',
-        });
-        expect(replacedConfig).toMatchObject(input);
-
-        const config = await client.generateConfig({ reset: true });
-        expect(config).toMatchObject({ model_id: 'foobar' });
-      });
-    });
-
     test('should return single output for a single input', async () => {
       const data = await client.generate({
         model_id: 'bigscience/bloom',

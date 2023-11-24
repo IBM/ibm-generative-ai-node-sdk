@@ -436,4 +436,16 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
       }),
     );
   }),
+
+  // ERROR
+  rest.get(`${MOCK_ENDPOINT}/error`, async (req, res, ctx) =>
+    res(
+      ctx.status(500),
+      ctx.json({
+        error: 'Any error',
+        message: 'Any message',
+        status_code: 500,
+      }),
+    ),
+  ),
 ];

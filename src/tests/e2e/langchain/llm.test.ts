@@ -1,4 +1,4 @@
-import { PromptTemplate } from 'langchain/prompts';
+import { PromptTemplate } from '@langchain/core/prompts';
 import { LLMChain } from 'langchain/chains';
 
 import { GenAIModel } from '../../../langchain/llm.js';
@@ -39,14 +39,14 @@ describe('Langchain', () => {
     test.skip('should handle empty modelId', async () => {
       const client = makeClient();
 
-      const data = await client.call('Who are you?');
+      const data = await client.invoke('Who are you?');
       expectIsString(data);
     }, 15_000);
 
     test('should return correct response for a single input', async () => {
       const client = makeClient('google/flan-ul2');
 
-      const data = await client.call('Hello, World');
+      const data = await client.invoke('Hello, World');
       expectIsString(data);
     }, 15_000);
 
@@ -97,7 +97,7 @@ describe('Langchain', () => {
       const model = makeClient('google/flan-ul2');
 
       await expect(
-        model.call('Hello, World', { timeout: 10 }),
+        model.invoke('Hello, World', { timeout: 10 }),
       ).rejects.toThrow();
     });
 
@@ -109,11 +109,13 @@ describe('Langchain', () => {
         tokens.push(token);
       });
 
-      const output = await client.call('Tell me a joke.', undefined, [
-        {
-          handleLLMNewToken: handleNewToken,
-        },
-      ]);
+      const output = await client.invoke('Tell me a joke.', {
+        callbacks: [
+          {
+            handleLLMNewToken: handleNewToken,
+          },
+        ],
+      });
 
       expect(handleNewToken).toHaveBeenCalled();
       expectIsString(output);
@@ -131,7 +133,7 @@ describe('Langchain', () => {
       });
 
       const chain = new LLMChain({ llm: model, prompt: prompt });
-      const { text } = await chain.call({ product: 'colorful socks' });
+      const { text } = await chain.invoke({ product: 'colorful socks' });
       expectIsString(text);
     }, 20_000);
   });

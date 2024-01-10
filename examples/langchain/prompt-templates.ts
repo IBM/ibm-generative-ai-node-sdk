@@ -1,4 +1,4 @@
-import { PromptTemplate } from 'langchain/prompts';
+import { PromptTemplate } from '@langchain/core/prompts';
 
 import { GenAIPromptTemplate } from '../../src/langchain/index.js';
 

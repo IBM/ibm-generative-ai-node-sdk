@@ -1,11 +1,14 @@
-import { BaseChatModel, BaseChatModelParams } from 'langchain/chat_models/base';
+import {
+  BaseChatModel,
+  BaseChatModelParams,
+} from '@langchain/core/language_models/chat_models';
 import {
   BaseMessage,
-  ChatResult,
   MessageType,
   SystemMessage,
-} from 'langchain/schema';
-import { CallbackManagerForLLMRun } from 'langchain/callbacks';
+} from '@langchain/core/messages';
+import { CallbackManagerForLLMRun } from '@langchain/core/callbacks/manager';
+import { ChatResult } from '@langchain/core/outputs';
 
 import { InvalidInputError } from '../errors.js';
 import { GenerateOutput } from '../client/types.js';

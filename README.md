@@ -188,7 +188,7 @@ const model = new GenAIModel({
 #### Basic usage
 
 ```typescript
-const response = await model.call(
+const response = await model.invoke(
   'What would be a good company name a company that makes colorful socks?',
 );
 
@@ -198,7 +198,7 @@ console.log(response); // Fantasy Sockery
 #### LLM Chain + Prompt Template
 
 ```typescript
-import { PromptTemplate } from 'langchain/prompts';
+import { PromptTemplate } from '@langchain/core/prompts';
 import { LLMChain } from 'langchain/chains';
 
 const prompt = new PromptTemplate({
@@ -230,20 +230,22 @@ const model = new GenAIModel({
   },
 });
 
-await model.call('Tell me a joke.', undefined, [
-  {
-    handleLLMNewToken(token: string) {
-      console.log(token);
+await model.invoke('Tell me a joke.', {
+  callbacks: [
+    {
+      handleLLMNewToken(token) {
+        console.log(token);
+      },
     },
-  },
-]);
+  ],
+});
 ```
 
 #### Chat support
 
 ```typescript
 import { GenAIChatModel } from '@ibm-generative-ai/node-sdk/langchain';
-import { SystemMessage, HumanMessage } from 'langchain/schema';
+import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 
 const client = new GenAIChatModel({
   modelId: 'eleutherai/gpt-neox-20b',
@@ -285,7 +287,7 @@ This can be done via helper classes provided within our SDK.
 
 ```typescript
 import { GenAIPromptTemplate } from '@ibm-generative-ai/node-sdk/langchain';
-import { PromptTemplate } from 'langchain/prompts';
+import { PromptTemplate } from '@langchain/core/prompts';
 
 // Converting the LangChain Prompt Template (f-string) to GenAI Prompt Template'
 const promptTemplate = GenAIPromptTemplate.fromLangChain(

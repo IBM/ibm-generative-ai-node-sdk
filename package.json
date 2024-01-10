@@ -32,11 +32,6 @@
       "types": "./dist/langchain/index.d.ts",
       "import": "./dist/langchain/index.js",
       "require": "./dist/langchain/index.cjs"
-    },
-    "./@langchain/core": {
-      "types": "./dist/@langchain/core/index.d.ts",
-      "import": "./dist/@langchain/core/index.js",
-      "require": "./dist/@langchain/core/index.cjs"
     }
   },
   "typesVersions": {
@@ -46,9 +41,6 @@
       ],
       "langchain": [
         "dist/langchain/index.d.ts"
-      ],
-      "@langchain/core": [
-        "dist/@langchain/core/index.d.ts"
       ]
     }
   },
@@ -72,7 +64,7 @@
     "example:chat": "yarn run example:run examples/chat.ts"
   },
   "peerDependencies": {
-    "langchain": ">=0.1.11"
+    "@langchain/core": ">=0.1.11"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.0.0",
@@ -92,7 +84,6 @@
     "eslint-plugin-import": "^2.29.0",
     "husky": "^8.0.3",
     "jest-extended": "^4.0.2",
-    "langchain": "^0.1.1",
     "lint-staged": "^15.0.2",
     "lodash": "^4.17.21",
     "msw": "^1.3.2",

@@ -1,5 +1,5 @@
 import { PromptTemplate } from '@langchain/core/prompts';
-import { LLMChain } from 'langchain/chains';
+import { StringOutputParser } from '@langchain/core/output_parsers';
 
 import { GenAIModel } from '../../../langchain/llm.js';
 
@@ -131,9 +131,10 @@ describe('Langchain', () => {
         template: 'What is a good name for a company that makes {product}?',
         inputVariables: ['product'],
       });
+      const outputParser = new StringOutputParser();
 
-      const chain = new LLMChain({ llm: model, prompt: prompt });
-      const { text } = await chain.invoke({ product: 'colorful socks' });
+      const chain = prompt.pipe(model).pipe(outputParser);
+      const text = await chain.invoke({ product: 'colorful socks' });
       expectIsString(text);
     }, 20_000);
   });

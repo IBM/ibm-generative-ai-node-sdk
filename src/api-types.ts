@@ -442,16 +442,21 @@ export const ChatInputSchema = z.object({
   parameters: ParametersSchema.nullish(),
 });
 export type ChatInput = z.input<typeof ChatInputSchema>;
-export const ChatOutputSchema = z.object({
-  conversation_id: z.string(),
-  results: z.array(
-    z
-      .object({
-        generated_text: z.string(),
-      })
-      .partial(),
-  ),
-});
+export const ChatOutputSchema = z
+  .object({
+    id: z.string(),
+    model_id: z.string(),
+    created_at: z.coerce.date(),
+    conversation_id: z.string(),
+    results: z.array(
+      z
+        .object({
+          generated_text: z.string(),
+        })
+        .partial(),
+    ),
+  })
+  .passthrough();
 export type ChatOutput = z.output<typeof ChatOutputSchema>;
 
 export const ChatStreamInputSchema = ChatInputSchema;

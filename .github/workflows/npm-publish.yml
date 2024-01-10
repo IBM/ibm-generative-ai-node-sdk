@@ -1,5 +1,8 @@
 name: Publish on Release
 
+permissions:
+  contents: write
+
 on:
   release:
     types: [created]
@@ -18,11 +21,16 @@ jobs:
           node-version: 16
           registry-url: https://registry.npmjs.org/
       - run: yarn install --frozen-lockfile
-      - run: |
+      - name: Bump package.json version
+        run: |
           git config --global user.email "bot@github.com"
           git config --global user.name "Github Action"
-      - run: |
-          yarn version --new-version ${{github.ref_name}} --no-git-tag-version --no-commit-hooks
+          git tag --delete ${{github.ref_name}}
+          git push --delete origin ${{github.ref_name}}
+          git checkout -b tmp
+          yarn version --new-version `echo -n ${{github.ref_name}} | tr -d "v"` --no-commit-hooks
+          git push origin tmp:main
+          git push origin ${{github.ref_name}}
       - run: yarn npm publish --access public
         env:
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

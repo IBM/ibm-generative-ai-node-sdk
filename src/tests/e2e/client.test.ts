@@ -6,8 +6,6 @@ import {
 import { Client } from '../../client/client.js';
 import { RequestCanceledError } from '../../errors.js';
 
-console.log(process.env.ENDPOINT, process.env.API_KEY, 'process.env.ENDPOINT');
-
 describe('client', () => {
   let client: Client;
   beforeAll(() => {

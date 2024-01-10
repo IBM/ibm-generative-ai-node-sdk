@@ -426,6 +426,9 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
     return res(
       ctx.status(200),
       ctx.json({
+        id: randomUUID(),
+        model_id: body.model_id,
+        created_at: new Date('2022-12-19T22:53:22.000Z'),
         conversation_id,
         results: conversation
           ?.slice(-1)

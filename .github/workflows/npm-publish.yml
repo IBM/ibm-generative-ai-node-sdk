@@ -20,9 +20,7 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
-      - run: |
-          yarn plugin import version
-          yarn install --frozen-lockfile
+      - run: yarn install --immutable
       - name: Bump package.json version
         run: |
           git config --global user.email "bot@github.com"
@@ -30,7 +28,9 @@ jobs:
           git tag --delete ${{github.ref_name}}
           git push --delete origin ${{github.ref_name}}
           git checkout -b tmp
-          yarn version --new-version `echo -n ${{github.ref_name}} | tr -d "v"` --no-commit-hooks
+          yarn version --immediate `echo -n ${{github.ref_name}} | tr -d "v"`
+          git add .
+          git commit -m "${{github.ref_name}}" --no-verify
           git push origin tmp:main
           git push origin ${{github.ref_name}}
       - run: yarn npm publish --access public

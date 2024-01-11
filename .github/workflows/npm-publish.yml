@@ -1,8 +1,5 @@
 name: Publish on Release
 
-permissions:
-  contents: write
-
 on:
   release:
     types: [created]
@@ -16,25 +13,11 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
       - uses: actions/setup-node@v3
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
       - run: yarn install --immutable
-      - name: Bump package.json version
-        run: |
-          git config --global user.email "bot@github.com"
-          git config --global user.name "Github Action"
-          git tag --delete ${{github.ref_name}}
-          git push --delete origin ${{github.ref_name}}
-          git checkout -b tmp
-          yarn version --immediate `echo -n ${{github.ref_name}} | tr -d "v"`
-          git add .
-          git commit -m "${{github.ref_name}}" --no-verify
-          git push origin tmp:main
-          git push origin ${{github.ref_name}}
       - run: yarn npm publish --access public
         env:
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

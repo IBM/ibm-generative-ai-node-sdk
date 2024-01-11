@@ -20,7 +20,9 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
-      - run: yarn install --frozen-lockfile
+      - run: |
+          yarn plugin import version
+          yarn install --frozen-lockfile
       - name: Bump package.json version
         run: |
           git config --global user.email "bot@github.com"

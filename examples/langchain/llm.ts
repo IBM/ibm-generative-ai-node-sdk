@@ -23,7 +23,7 @@ const makeClient = (stream?: boolean) =>
 
   const prompt = 'What is a good name for a company that makes colorful socks?';
   console.info(`Request: ${prompt}`);
-  const response = await model.call(prompt);
+  const response = await model.invoke(prompt);
   console.log(`Response: ${response}`);
 }
 

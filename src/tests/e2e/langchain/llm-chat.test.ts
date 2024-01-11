@@ -1,4 +1,4 @@
-import { HumanMessage, SystemMessage } from 'langchain/schema';
+import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 
 import { GenAIChatModel } from '../../../langchain/index.js';
 import { describeIf } from '../../utils.js';
@@ -46,7 +46,7 @@ describeIf(process.env.RUN_LANGCHAIN_CHAT_TESTS === 'true')(
       test('should handle single question', async () => {
         const chat = makeClient();
 
-        const response = await chat.call([
+        const response = await chat.invoke([
           new HumanMessage(
             'What is a good name for a company that makes colorful socks?',
           ),
@@ -57,7 +57,7 @@ describeIf(process.env.RUN_LANGCHAIN_CHAT_TESTS === 'true')(
       test('should handle question with additional hint', async () => {
         const chat = makeClient();
 
-        const response = await chat.call([
+        const response = await chat.invoke([
           new SystemMessage(SYSTEM_MESSAGE),
           new HumanMessage('I love programming.'),
         ]);
@@ -94,14 +94,11 @@ describeIf(process.env.RUN_LANGCHAIN_CHAT_TESTS === 'true')(
           tokens.push(token);
         });
 
-        const output = await chat.call(
+        const output = await chat.invoke(
           [new HumanMessage('Tell me a joke.')],
-          undefined,
-          [
-            {
-              handleLLMNewToken: handleNewToken,
-            },
-          ],
+          {
+            callbacks: [{ handleLLMNewToken: handleNewToken }],
+          },
         );
 
         expect(handleNewToken).toHaveBeenCalled();

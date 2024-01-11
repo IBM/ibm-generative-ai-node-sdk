@@ -106,9 +106,9 @@ describe('client', () => {
 
       test('should correctly process moderation chunks during streaming', async () => {
         const stream = makeValidStream({
+          min_new_tokens: 1,
+          max_new_tokens: 5,
           moderations: {
-            min_new_tokens: 1,
-            max_new_tokens: 5,
             hap: {
               input: true,
               threshold: 0.01,

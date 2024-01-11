@@ -1,7 +1,7 @@
-import { BaseLLM, BaseLLMParams } from 'langchain/llms/base';
-import { CallbackManagerForLLMRun } from 'langchain/callbacks';
-import type { LLMResult, Generation } from 'langchain/schema';
-import { GenerationChunk } from 'langchain/schema';
+import { BaseLLM, BaseLLMParams } from '@langchain/core/language_models/llms';
+import { CallbackManagerForLLMRun } from '@langchain/core/callbacks/manager';
+import type { LLMResult, Generation } from '@langchain/core/outputs';
+import { GenerationChunk } from '@langchain/core/outputs';
 
 import { Client, Configuration } from '../client/client.js';
 import {

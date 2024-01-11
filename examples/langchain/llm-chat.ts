@@ -1,4 +1,4 @@
-import { HumanMessage } from 'langchain/schema';
+import { HumanMessage } from '@langchain/core/messages';
 
 import { GenAIChatModel } from '../../src/langchain/llm-chat.js';
 
@@ -30,7 +30,7 @@ const makeClient = (stream?: boolean) =>
   // Basic
   const chat = makeClient();
 
-  const response = await chat.call([
+  const response = await chat.invoke([
     new HumanMessage(
       'What is a good name for a company that makes colorful socks?',
     ),
@@ -43,11 +43,13 @@ const makeClient = (stream?: boolean) =>
   // Streaming
   const chat = makeClient(true);
 
-  await chat.call([new HumanMessage('Tell me a joke.')], undefined, [
-    {
-      handleLLMNewToken(token) {
-        console.log(token);
+  await chat.invoke([new HumanMessage('Tell me a joke.')], {
+    callbacks: [
+      {
+        handleLLMNewToken(token) {
+          console.log(token);
+        },
       },
-    },
-  ]);
+    ],
+  });
 }

@@ -3,7 +3,7 @@ import { CallbackManagerForLLMRun } from '@langchain/core/callbacks/manager';
 import type { LLMResult, Generation } from '@langchain/core/outputs';
 import { GenerationChunk } from '@langchain/core/outputs';
 
-import { Client, Configuration } from '../client/client.js';
+import { Client, Configuration } from '../client.js';
 import {
   isNotEmptyArray,
   concatUnique,

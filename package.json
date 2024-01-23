@@ -8,7 +8,7 @@
     "genai",
     "ibm"
   ],
-  "homepage": "https://workbench.res.ibm.com",
+  "homepage": "https://bam.res.ibm.com",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -56,12 +56,14 @@
     "prepack": "yarn build && pinst --disable",
     "postinstall": "husky install",
     "postpack": "pinst --enable",
+    "generate": "./scripts/generate.sh",
     "example:run": "ts-node -r dotenv-flow/config",
     "example:generate": "yarn run example:run examples/generate.ts",
     "example:tune": "yarn run example:run examples/tune.ts",
     "example:prompt-template": "yarn run example:run examples/prompt-templates.ts",
     "example:file": "yarn run example:run examples/file.ts",
-    "example:chat": "yarn run example:run examples/chat.ts"
+    "example:chat": "yarn run example:run examples/chat.ts",
+    "example:models": "yarn run example:run examples/models.ts"
   },
   "peerDependencies": {
     "@langchain/core": ">=0.1.11"
@@ -71,8 +73,7 @@
     "@commitlint/config-conventional": "^18.0.0",
     "@langchain/core": "^0.1.11",
     "@types/lodash": "^4.14.200",
-    "@types/node": "^20.8.8",
-    "@types/promise-retry": "^1.1.5",
+    "@types/node": "18.18.2",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "@vitest/coverage-c8": "^0.31.2",
@@ -87,6 +88,7 @@
     "lint-staged": "^15.0.2",
     "lodash": "^4.17.21",
     "msw": "^1.3.2",
+    "openapi-typescript": "^6.7.1",
     "pinst": "^3.0.0",
     "prettier": "^3.0.3",
     "ts-node": "^10.9.1",
@@ -96,15 +98,11 @@
   },
   "dependencies": {
     "@ai-zen/node-fetch-event-source": "^2.1.2",
-    "axios": "^1.5.1",
-    "axios-cache-interceptor": "^1.3.2",
-    "form-data": "^4.0.0",
-    "promise-retry": "^2.0.1",
+    "cross-fetch": "^4.0.0",
+    "fetch-retry": "^5.0.6",
+    "openapi-fetch": "^0.8.1",
     "yaml": "^2.3.3",
     "zod": "^3.22.4"
-  },
-  "engines": {
-    "node": ">=16.10.0"
   },
   "lint-staged": {
     "*.{cjs,js,jsx,ts,tsx}": [

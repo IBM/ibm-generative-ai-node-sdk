@@ -2,3 +2,6 @@
 /dist/**/*
 .eslintrc.cjs
 tsup.config.ts
+
+# generated files
+/src/api/schema.d.ts

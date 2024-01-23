@@ -1,1 +1,0 @@
-export const RETRY_ATTEMPTS_DEFAULT = 3;

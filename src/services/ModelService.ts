@@ -1,17 +1,19 @@
-import { OmitVersion } from '../utils/types.js';
-import { ApiClientOptions } from '../api/client.js';
 import { clientErrorWrapper } from '../utils/errors.js';
 import { Options } from '../client.js';
+import {
+  ModelServiceListInput,
+  ModelServiceListOutput,
+  ModelServiceRetrieveInput,
+  ModelServiceRetrieveOutput,
+} from '../schema.js';
 
 import { BaseService } from './BaseService.js';
 
 export class ModelService extends BaseService {
   async list(
-    input: OmitVersion<
-      ApiClientOptions<'GET', '/v2/models'>['params']['query']
-    >,
+    input: ModelServiceListInput,
     opts?: Options,
-  ) {
+  ): Promise<ModelServiceListOutput> {
     return await clientErrorWrapper(
       this._client.GET('/v2/models', {
         ...opts,
@@ -26,9 +28,9 @@ export class ModelService extends BaseService {
   }
 
   async retrieve(
-    input: ApiClientOptions<'GET', '/v2/models/{id}'>['params']['path'],
+    input: ModelServiceRetrieveInput,
     opts?: Options,
-  ) {
+  ): Promise<ModelServiceRetrieveOutput> {
     return clientErrorWrapper(
       this._client.GET('/v2/models/{id}', {
         ...opts,

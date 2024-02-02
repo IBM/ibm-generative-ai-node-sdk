@@ -1,30 +1,35 @@
 import { Transform, TransformCallback } from 'node:stream';
 
 import { BaseService } from '../BaseService.js';
-import { ApiClientOptions, ApiClientResponse } from '../../api/client.js';
 import { Options } from '../../client.js';
-
-export type CreateInput = ApiClientOptions<
-  'POST',
-  '/v2/text/generation'
->['body'];
-export type CreateOutput = ApiClientResponse<
-  'POST',
-  '/v2/text/generation'
->['data'];
+import { clientErrorWrapper } from '../../utils/errors.js';
+import {
+  TextGenerationCreateInput,
+  TextGenerationCreateOuput,
+  TextGenerationCreateStreamInput,
+  TextGenerationCreateStreamOuput,
+} from '../../schema.js';
+import { TypedReadable } from '../../utils/stream.js';
 
 export class TextGenerationService extends BaseService {
-  create(input: CreateInput, opts?: Options): Promise<CreateOutput> {
-    throw new Error('TODO: not implemented!');
+  create(
+    input: TextGenerationCreateInput,
+    opts?: Options,
+  ): Promise<TextGenerationCreateOuput> {
+    return clientErrorWrapper(
+      this._client.POST('/v2/text/generation', {
+        ...opts,
+        params: { query: { version: '2024-01-10' } },
+        body: input,
+      }),
+    );
   }
 
   create_stream(
-    input: ApiClientOptions<'POST', '/v2/text/generation_stream'>['body'],
+    input: TextGenerationCreateStreamInput,
     opts?: Options,
-  ) {
-    type EventMessage = Required<
-      ApiClientResponse<'POST', '/v2/text/generation_stream'>
-    >['data'];
+  ): TypedReadable<TextGenerationCreateStreamOuput> {
+    type EventMessage = TextGenerationCreateStreamOuput;
 
     const stream = new Transform({
       autoDestroy: true,

@@ -2,16 +2,24 @@ import { OmitVersion } from '../utils/types.js';
 import { ApiClientOptions } from '../api/client.js';
 import { Options } from '../client.js';
 import { clientErrorWrapper } from '../utils/errors.js';
+import {
+  PromptServiceCreateInput,
+  PromptServiceCreateOutput,
+  PromptServiceDeleteInput,
+  PromptServiceDeleteOutput,
+  PromptServiceListInput,
+  PromptServiceListOutput,
+  PromptServiceRetrieveInput,
+  PromptServiceRetrieveOutput,
+} from '../schema.js';
 
 import { BaseService } from './BaseService.js';
 
 export class PromptService extends BaseService {
   async list(
-    input: OmitVersion<
-      ApiClientOptions<'GET', '/v2/prompts'>['params']['query']
-    >,
+    input: PromptServiceListInput,
     opts?: Options,
-  ) {
+  ): Promise<PromptServiceListOutput> {
     return clientErrorWrapper(
       this._client.GET('/v2/prompts', {
         ...opts,
@@ -26,11 +34,9 @@ export class PromptService extends BaseService {
   }
 
   async retrieve(
-    input: OmitVersion<
-      ApiClientOptions<'GET', '/v2/prompts/{id}'>['params']['path']
-    >,
+    input: PromptServiceRetrieveInput,
     opts?: Options,
-  ) {
+  ): Promise<PromptServiceRetrieveOutput> {
     return clientErrorWrapper(
       this._client.GET('/v2/prompts/{id}', {
         ...opts,
@@ -45,11 +51,12 @@ export class PromptService extends BaseService {
   }
 
   async create(
-    input: OmitVersion<ApiClientOptions<'POST', '/v2/prompts'>['body']>,
+    input: PromptServiceCreateInput,
     opts?: Options,
-  ) {
+  ): Promise<PromptServiceCreateOutput> {
     return clientErrorWrapper(
       this._client.POST('/v2/prompts', {
+        ...opts,
         body: input,
         params: {
           query: {
@@ -61,11 +68,9 @@ export class PromptService extends BaseService {
   }
 
   async delete(
-    input: OmitVersion<
-      ApiClientOptions<'DELETE', '/v2/prompts/{id}'>['params']['path']
-    >,
+    input: PromptServiceDeleteInput,
     opts?: Options,
-  ) {
+  ): Promise<PromptServiceDeleteOutput> {
     return clientErrorWrapper(
       this._client.DELETE('/v2/prompts/{id}', {
         ...opts,

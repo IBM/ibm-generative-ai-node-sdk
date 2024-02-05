@@ -30,6 +30,22 @@ export type TextTokenizationCreateOutput = OutputWrapper<
   ApiClientResponse<'POST', '/v2/text/tokenization'>['data']
 >;
 
+// TextChatService
+
+export type TextChatCreateInput = InputBodyWrapper<
+  ApiClientOptions<'POST', '/v2/text/chat'>['body']
+>;
+export type TextChatCreateOutput = OutputWrapper<
+  ApiClientResponse<'POST', '/v2/text/chat'>['data']
+>;
+
+export type TextChatCreateStreamInput = InputBodyWrapper<
+  ApiClientOptions<'POST', '/v2/text/chat_stream'>['body']
+>;
+export type TextChatCreateStreamOutput = OutputWrapper<
+  ApiClientResponse<'POST', '/v2/text/chat_stream'>['data']
+>;
+
 // TextEmbeddingService
 
 export type TextEmbeddingCreateInput = InputBodyWrapper<
@@ -111,4 +127,49 @@ export type PromptServiceDeleteInput = ApiClientOptions<
 >['params']['path'];
 export type PromptServiceDeleteOutput = OutputWrapper<
   ApiClientResponse<'DELETE', '/v2/prompts/{id}'>['data']
+>;
+
+// TuneService
+
+export type TuneServiceListInput = InputQueryWrapper<
+  ApiClientOptions<'GET', '/v2/tunes'>['params']['query']
+>;
+export type TuneServiceListOutput = OutputWrapper<
+  ApiClientResponse<'GET', '/v2/tunes'>['data']
+>;
+
+export type TuneServiceReadInput = ApiClientOptions<
+  'GET',
+  '/v2/tunes/{id}/content/{type}'
+>['params']['path'];
+export type TuneServiceReadOutput = OutputWrapper<
+  ApiClientResponse<'GET', '/v2/tunes/{id}/content/{type}'>['data']
+>;
+
+export type TuneServiceRetrieveInput = ApiClientOptions<
+  'GET',
+  '/v2/tunes/{id}'
+>['params']['path'];
+export type TuneServiceRetrieveOutput = OutputWrapper<
+  ApiClientResponse<'GET', '/v2/tunes/{id}'>['data']
+>;
+
+export type TuneServiceCreateInput = InputBodyWrapper<
+  ApiClientOptions<'POST', '/v2/tunes'>['body']
+>;
+export type TuneServiceCreateOutput = OutputWrapper<
+  ApiClientResponse<'POST', '/v2/tunes'>['data']
+>;
+
+export type TuneServiceDeleteInput = ApiClientOptions<
+  'DELETE',
+  '/v2/tunes/{id}'
+>['params']['path'];
+export type TuneServiceDeleteOutput = OutputWrapper<
+  ApiClientResponse<'DELETE', '/v2/tunes/{id}'>['data']
+>;
+
+export type TuneServiceTypesInput = Record<string, never>;
+export type TuneServiceTypesOutput = OutputWrapper<
+  ApiClientResponse<'GET', '/v2/tuning_types'>['data']
 >;

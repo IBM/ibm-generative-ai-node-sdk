@@ -10,6 +10,7 @@ import { TextService } from './services/text/TextService.js';
 import { ModelService } from './services/ModelService.js';
 import { PromptService } from './services/PromptService.js';
 import { RequestService } from './services/RequestService.js';
+import { TuneService } from './services/TuneService.js';
 
 export interface Configuration {
   apiKey?: string;
@@ -24,6 +25,7 @@ export class Client {
   public readonly model: ModelService;
   public readonly request: RequestService;
   public readonly prompt: PromptService;
+  public readonly tune: TuneService;
 
   constructor(config: Configuration = {}) {
     const endpoint = config.endpoint ?? lookupEndpoint();
@@ -57,5 +59,6 @@ export class Client {
     this.model = new ModelService(_client, _streamingClient);
     this.request = new RequestService(_client, _streamingClient);
     this.prompt = new PromptService(_client, _streamingClient);
+    this.tune = new TuneService(_client, _streamingClient);
   }
 }

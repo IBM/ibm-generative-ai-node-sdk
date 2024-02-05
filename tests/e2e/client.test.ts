@@ -3,8 +3,8 @@ import {
   GenerateInput,
   GenerateOutput,
 } from '../../client/types.js';
-import { Client } from '../../client.js';
-import { RequestCanceledError } from '../../errors.js';
+import { Client } from '../../src/client.js';
+import { RequestCanceledError } from '../../src/errors.js';
 
 describe('client', () => {
   let client: Client;

@@ -80,24 +80,6 @@ export const tuneMethodsStore = [
   { id: 'bar', name: 'Bar' },
 ];
 
-export let promptTemplatesStore: any[];
-export const resetPromptTemplateStore = () => {
-  promptTemplatesStore = [
-    {
-      id: 'foo',
-      name: 'Foo',
-      value: '{{instruction}}\n{{#examples}}\n{{input}}',
-      created_at: new Date('2023-07-01'),
-    },
-    {
-      id: 'bar',
-      name: 'Bar',
-      value: '{{name}}',
-      created_at: new Date('2023-07-01'),
-    },
-  ];
-};
-
 export let historyStore: any[];
 export const resetHistoryStore = () => {
   historyStore = Array(2)
@@ -143,30 +125,12 @@ export const resetChatStore = () => {
 export const resetStores = () => {
   resetGenerateConfigStore();
   resetTunesStore();
-  resetPromptTemplateStore();
   resetHistoryStore();
   resetChatStore();
 };
 resetStores();
 
 export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
-  // Generate Config
-  rest.get(`${MOCK_ENDPOINT}/v1/generate/config`, (req, res, ctx) =>
-    res(ctx.status(200), ctx.json(generateConfigStore)),
-  ),
-  rest.delete(`${MOCK_ENDPOINT}/v1/generate/config`, (req, res, ctx) => {
-    resetGenerateConfigStore();
-    return res(ctx.status(200), ctx.json(generateConfigStore));
-  }),
-  rest.put(`${MOCK_ENDPOINT}/v1/generate/config`, async (req, res, ctx) => {
-    generateConfigStore = await req.json();
-    return res(ctx.status(200), ctx.json(generateConfigStore));
-  }),
-  rest.patch(`${MOCK_ENDPOINT}/v1/generate/config`, async (req, res, ctx) => {
-    generateConfigStore = _.merge({}, generateConfigStore, await req.json());
-    return res(ctx.status(200), ctx.json(generateConfigStore));
-  }),
-
   // Generate Limits
   rest.get(`${MOCK_ENDPOINT}/v1/generate/limits`, (req, res, ctx) =>
     res(
@@ -179,7 +143,7 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
   ),
 
   // Generate
-  rest.post(`${MOCK_ENDPOINT}/v1/generate`, async (req, res, ctx) => {
+  rest.post(`${MOCK_ENDPOINT}/v2/text/generation`, async (req, res, ctx) => {
     const body = await req.json();
     return res(
       ctx.status(200),
@@ -190,7 +154,7 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
   }),
 
   // Tokenize
-  rest.post(`${MOCK_ENDPOINT}/v1/tokenize`, async (req, res, ctx) =>
+  rest.post(`${MOCK_ENDPOINT}/v2/text/tokenization`, async (req, res, ctx) =>
     res(
       ctx.status(200),
       ctx.json({
@@ -200,7 +164,7 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
   ),
 
   // Models
-  rest.get(`${MOCK_ENDPOINT}/v1/models`, async (req, res, ctx) =>
+  rest.get(`${MOCK_ENDPOINT}/v2/models`, async (req, res, ctx) =>
     res(
       ctx.status(200),
       ctx.json({
@@ -215,7 +179,7 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
       }),
     ),
   ),
-  rest.get(`${MOCK_ENDPOINT}/v1/models/:id`, async (req, res, ctx) => {
+  rest.get(`${MOCK_ENDPOINT}/v2/models/:id`, async (req, res, ctx) => {
     const model = [...modelsStore, ...tunesStore].find(
       (model) => model.id === req.params.id,
     );
@@ -225,13 +189,13 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
     return res(
       ctx.status(200),
       ctx.json({
-        results: model,
+        result: model,
       }),
     );
   }),
 
   // Tunes
-  rest.get(`${MOCK_ENDPOINT}/v1/tune_methods`, async (req, res, ctx) =>
+  rest.get(`${MOCK_ENDPOINT}/v2/tuning_types`, async (req, res, ctx) =>
     res(
       ctx.status(200),
       ctx.json({
@@ -239,7 +203,7 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
       }),
     ),
   ),
-  rest.get(`${MOCK_ENDPOINT}/v1/tunes`, async (req, res, ctx) => {
+  rest.get(`${MOCK_ENDPOINT}/v2/tunes`, async (req, res, ctx) => {
     const offset = parseInt(req.url.searchParams.get('offset') ?? '0');
     const singleTune = tunesStore[offset];
     if (!singleTune) {
@@ -253,18 +217,18 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
       }),
     );
   }),
-  rest.post(`${MOCK_ENDPOINT}/v1/tunes`, async (req, res, ctx) => {
+  rest.post(`${MOCK_ENDPOINT}/v2/tunes`, async (req, res, ctx) => {
     const body = await req.json();
     const newTune = { ...body, id: randomUUID() };
     tunesStore.push(newTune);
     return res(
       ctx.status(200),
       ctx.json({
-        results: newTune,
+        result: newTune,
       }),
     );
   }),
-  rest.get(`${MOCK_ENDPOINT}/v1/tunes/:id`, async (req, res, ctx) => {
+  rest.get(`${MOCK_ENDPOINT}/v2/tunes/:id`, async (req, res, ctx) => {
     const tune = tunesStore.find((tune: any) => tune.id === req.params.id);
     if (!tune) {
       return res(ctx.status(404));
@@ -276,7 +240,7 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
       }),
     );
   }),
-  rest.delete(`${MOCK_ENDPOINT}/v1/tunes/:id`, async (req, res, ctx) => {
+  rest.delete(`${MOCK_ENDPOINT}/v2/tunes/:id`, async (req, res, ctx) => {
     const tunesCount = tunesStore.length;
     tunesStore = tunesStore.filter((tune: any) => tune.id !== req.params.id);
     if (tunesCount === tunesStore.length) {
@@ -285,7 +249,7 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
     return res(ctx.status(204));
   }),
   rest.get(
-    `${MOCK_ENDPOINT}/v1/tunes/:id/content/:type`,
+    `${MOCK_ENDPOINT}/v2/tunes/:id/content/:type`,
     async (req, res, ctx) => {
       const tune = tunesStore.find((tune: any) => tune.id === req.params.id);
       if (!tune) {
@@ -299,108 +263,8 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
     },
   ),
 
-  // Prompt templates
-  rest.get(`${MOCK_ENDPOINT}/v1/prompt_templates`, (req, res, ctx) => {
-    const offset = parseInt(req.url.searchParams.get('offset') ?? '0');
-    const limit = parseInt(req.url.searchParams.get('limit') ?? '1');
-
-    return res(
-      ctx.status(200),
-      ctx.json({
-        results: promptTemplatesStore.slice(offset, limit),
-        totalCount: promptTemplatesStore.length,
-      }),
-    );
-  }),
-  rest.post(`${MOCK_ENDPOINT}/v1/prompt_templates`, async (req, res, ctx) => {
-    const body = await req.json();
-    const newTemplate = {
-      ...body,
-      id: randomUUID(),
-      created_at: new Date('2023-07-01'),
-    };
-    promptTemplatesStore.push(newTemplate);
-    return res(
-      ctx.status(200),
-      ctx.json({
-        results: newTemplate,
-      }),
-    );
-  }),
-  rest.get(
-    `${MOCK_ENDPOINT}/v1/prompt_templates/:id`,
-    async (req, res, ctx) => {
-      const template = promptTemplatesStore.find(
-        ({ id }) => id === req.params.id,
-      );
-      if (!template) {
-        return res(ctx.status(404));
-      }
-      return res(
-        ctx.status(200),
-        ctx.json({
-          results: template,
-        }),
-      );
-    },
-  ),
-  rest.delete(
-    `${MOCK_ENDPOINT}/v1/prompt_templates/:id`,
-    async (req, res, ctx) => {
-      const index = promptTemplatesStore.findIndex(
-        ({ id }) => id === req.params.id,
-      );
-      if (index === -1) {
-        res(ctx.status(404));
-      }
-      promptTemplatesStore.splice(index, 1);
-      return res(ctx.status(204));
-    },
-  ),
-  rest.put(
-    `${MOCK_ENDPOINT}/v1/prompt_templates/:id`,
-    async (req, res, ctx) => {
-      const template = promptTemplatesStore.find(
-        ({ id }) => id === req.params.id,
-      );
-      if (!template) {
-        res(ctx.status(404));
-      }
-
-      Object.assign(template, await req.json());
-
-      return res(
-        ctx.status(200),
-        ctx.json({
-          results: template,
-        }),
-      );
-    },
-  ),
-
-  rest.post(
-    `${MOCK_ENDPOINT}/v1/prompt_templates/output`,
-    async (req, res, ctx) => {
-      const { inputs, template } = await req.json();
-      const results = inputs.map((input: string) => {
-        let str = template.value;
-        for (const [key, value] of Object.entries(template.data ?? {})) {
-          str = str.replace(`{{${key}}}`, value);
-        }
-        return str.replace('{{input}}', input);
-      });
-
-      return res(
-        ctx.status(200),
-        ctx.json({
-          results,
-        }),
-      );
-    },
-  ),
-
   // History
-  rest.get(`${MOCK_ENDPOINT}/v1/requests`, (req, res, ctx) => {
+  rest.get(`${MOCK_ENDPOINT}/v2/requests`, (req, res, ctx) => {
     const offset = parseInt(req.url.searchParams.get('offset') ?? '0');
     const limit = parseInt(req.url.searchParams.get('limit') ?? '1');
 
@@ -414,7 +278,7 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
   }),
 
   // Chat
-  rest.post(`${MOCK_ENDPOINT}/v0/generate/chat`, async (req, res, ctx) => {
+  rest.post(`${MOCK_ENDPOINT}/v2/text/chat`, async (req, res, ctx) => {
     const body = await req.json();
     const conversation_id = body.conversation_id ?? randomUUID();
     if (!chatStore.has(conversation_id)) {

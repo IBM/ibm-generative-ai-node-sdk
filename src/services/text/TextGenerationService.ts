@@ -5,9 +5,9 @@ import { Options } from '../../client.js';
 import { clientErrorWrapper } from '../../utils/errors.js';
 import {
   TextGenerationCreateInput,
-  TextGenerationCreateOuput,
+  TextGenerationCreateOutput,
   TextGenerationCreateStreamInput,
-  TextGenerationCreateStreamOuput,
+  TextGenerationCreateStreamOutput,
 } from '../../schema.js';
 import { TypedReadable } from '../../utils/stream.js';
 
@@ -15,7 +15,7 @@ export class TextGenerationService extends BaseService {
   create(
     input: TextGenerationCreateInput,
     opts?: Options,
-  ): Promise<TextGenerationCreateOuput> {
+  ): Promise<TextGenerationCreateOutput> {
     return clientErrorWrapper(
       this._client.POST('/v2/text/generation', {
         ...opts,
@@ -28,8 +28,8 @@ export class TextGenerationService extends BaseService {
   create_stream(
     input: TextGenerationCreateStreamInput,
     opts?: Options,
-  ): TypedReadable<TextGenerationCreateStreamOuput> {
-    type EventMessage = TextGenerationCreateStreamOuput;
+  ): TypedReadable<TextGenerationCreateStreamOutput> {
+    type EventMessage = TextGenerationCreateStreamOutput;
 
     const stream = new Transform({
       autoDestroy: true,

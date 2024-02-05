@@ -10,15 +10,33 @@ type OutputWrapper<T> = NonNullable<T>; // clientErrorWrapper ensures the output
 export type TextGenerationCreateInput = InputBodyWrapper<
   ApiClientOptions<'POST', '/v2/text/generation'>['body']
 >;
-export type TextGenerationCreateOuput = OutputWrapper<
+export type TextGenerationCreateOutput = OutputWrapper<
   ApiClientResponse<'POST', '/v2/text/generation'>['data']
 >;
 
 export type TextGenerationCreateStreamInput = InputBodyWrapper<
   ApiClientOptions<'POST', '/v2/text/generation_stream'>['body']
 >;
-export type TextGenerationCreateStreamOuput = OutputWrapper<
+export type TextGenerationCreateStreamOutput = OutputWrapper<
   ApiClientResponse<'POST', '/v2/text/generation_stream'>['data']
+>;
+
+// TextTokenizationService
+
+export type TextTokenizationCreateInput = InputBodyWrapper<
+  ApiClientOptions<'POST', '/v2/text/tokenization'>['body']
+>;
+export type TextTokenizationCreateOutput = OutputWrapper<
+  ApiClientResponse<'POST', '/v2/text/tokenization'>['data']
+>;
+
+// TextEmbeddingService
+
+export type TextEmbeddingCreateInput = InputBodyWrapper<
+  ApiClientOptions<'POST', '/v2/text/embeddings'>['body']
+>;
+export type TextEmbeddingCreateOutput = OutputWrapper<
+  ApiClientResponse<'POST', '/v2/text/embeddings'>['data']
 >;
 
 // ModelService
@@ -36,6 +54,31 @@ export type ModelServiceRetrieveInput = ApiClientOptions<
 >['params']['path'];
 export type ModelServiceRetrieveOutput = OutputWrapper<
   ApiClientResponse<'GET', '/v2/models/{id}'>['data']
+>;
+
+// RequestService
+
+export type RequestServiceListInput = InputQueryWrapper<
+  ApiClientOptions<'GET', '/v2/requests'>['params']['query']
+>;
+export type RequestServiceListOutput = OutputWrapper<
+  ApiClientResponse<'GET', '/v2/requests'>['data']
+>;
+
+export type RequestServiceDeleteInput = ApiClientOptions<
+  'DELETE',
+  '/v2/requests/{id}'
+>['params']['path'];
+export type RequestServiceDeleteOutput = OutputWrapper<
+  ApiClientResponse<'DELETE', '/v2/requests/{id}'>['data']
+>;
+
+export type RequestServiceChatInput = ApiClientOptions<
+  'GET',
+  '/v2/requests/chat/{conversationId}'
+>['params']['path'];
+export type RequestServiceChatOutput = OutputWrapper<
+  ApiClientResponse<'GET', '/v2/requests/chat/{conversationId}'>['data']
 >;
 
 // PromptService

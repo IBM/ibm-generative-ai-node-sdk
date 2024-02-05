@@ -9,6 +9,7 @@ import { createStreamingApiClient } from './api/streaming-client.js';
 import { TextService } from './services/text/TextService.js';
 import { ModelService } from './services/ModelService.js';
 import { PromptService } from './services/PromptService.js';
+import { RequestService } from './services/RequestService.js';
 
 export interface Configuration {
   apiKey?: string;
@@ -21,6 +22,7 @@ export type Options = { signal?: AbortSignal };
 export class Client {
   public readonly text: TextService;
   public readonly model: ModelService;
+  public readonly request: RequestService;
   public readonly prompt: PromptService;
 
   constructor(config: Configuration = {}) {
@@ -53,6 +55,7 @@ export class Client {
 
     this.text = new TextService(_client, _streamingClient);
     this.model = new ModelService(_client, _streamingClient);
+    this.request = new RequestService(_client, _streamingClient);
     this.prompt = new PromptService(_client, _streamingClient);
   }
 }

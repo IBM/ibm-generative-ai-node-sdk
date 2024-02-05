@@ -1,5 +1,3 @@
-import { OmitVersion } from '../utils/types.js';
-import { ApiClientOptions } from '../api/client.js';
 import { Options } from '../client.js';
 import { clientErrorWrapper } from '../utils/errors.js';
 import {

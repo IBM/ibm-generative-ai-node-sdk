@@ -39,29 +39,7 @@ export class TextChatService extends BaseService {
         encoding: BufferEncoding,
         callback: TransformCallback,
       ) {
-        try {
-          const {
-            generated_text = '',
-            stop_reason = null,
-            input_token_count = 0,
-            generated_token_count = 0,
-            ...props
-          } = (chunk.results || [{}])[0];
-
-          callback(null, {
-            generated_text,
-            stop_reason,
-            input_token_count,
-            generated_token_count,
-            ...(chunk.moderation && {
-              moderation: chunk.moderation,
-            }),
-            ...props,
-          });
-        } catch (e) {
-          const err = (chunk || e) as unknown as Error;
-          callback(err, null);
-        }
+        callback(null, chunk as EventMessage);
       },
     });
 

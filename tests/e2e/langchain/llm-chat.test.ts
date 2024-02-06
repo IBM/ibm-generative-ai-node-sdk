@@ -1,6 +1,6 @@
 import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 
-import { GenAIChatModel } from '../../../langchain/index.js';
+import { GenAIChatModel } from '../../../src/langchain/index.js';
 import { describeIf } from '../../utils.js';
 
 // Remove once some chat models will be supported in target env

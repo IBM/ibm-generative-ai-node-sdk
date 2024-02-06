@@ -1,8 +1,8 @@
 import fetch from 'cross-fetch';
 
-import { createApiClient } from '../../api/client.js';
-import { BaseError, HttpError, NetworkError } from '../../errors.js';
-import { clientErrorWrapper } from '../../utils/errors.js';
+import { createApiClient } from '../../src/api/client.js';
+import { BaseError, HttpError, NetworkError } from '../../src/errors.js';
+import { clientErrorWrapper } from '../../src/utils/errors.js';
 import { MOCK_ENDPOINT } from '../mocks/handlers.js';
 
 describe('errors', () => {

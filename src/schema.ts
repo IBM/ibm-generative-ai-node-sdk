@@ -1,5 +1,7 @@
-import { ApiClientOptions, ApiClientResponse } from './api/client.js';
-import { OmitVersion } from './utils/types.js';
+import type { Readable } from 'node:stream';
+
+import type { ApiClientOptions, ApiClientResponse } from './api/client.js';
+import type { OmitVersion } from './utils/types.js';
 
 type InputQueryWrapper<T> = OmitVersion<T>; // For some reason, `requestBody` is optional in the generated schema
 type InputBodyWrapper<T> = NonNullable<T>; // For some reason, `requestBody` is optional in the generated schema
@@ -142,9 +144,7 @@ export type TuneServiceReadInput = ApiClientOptions<
   'GET',
   '/v2/tunes/{id}/content/{type}'
 >['params']['path'];
-export type TuneServiceReadOutput = OutputWrapper<
-  ApiClientResponse<'GET', '/v2/tunes/{id}/content/{type}'>['data']
->;
+export type TuneServiceReadOutput = Readable;
 
 export type TuneServiceRetrieveInput = ApiClientOptions<
   'GET',

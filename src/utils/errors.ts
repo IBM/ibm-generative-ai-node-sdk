@@ -26,7 +26,7 @@ export async function clientErrorWrapper<T>(
 ): Promise<Exclude<FetchResponse<T>, { data?: never }>['data']> {
   try {
     const response = await request;
-    if (response.error) {
+    if (response.error != undefined) {
       throw new HttpError(
         response.error as Exclude<typeof response.error, object>,
       );

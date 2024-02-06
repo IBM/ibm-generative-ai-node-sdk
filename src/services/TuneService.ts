@@ -1,3 +1,5 @@
+import { Readable } from 'node:stream';
+
 import { clientErrorWrapper } from '../utils/errors.js';
 import { Options } from '../client.js';
 import {
@@ -39,8 +41,9 @@ export class TuneService extends BaseService {
       this._client.GET('/v2/tunes/{id}/content/{type}', {
         ...opts,
         params: { path: input, query: { version: '2023-12-15' } },
+        parseAs: 'stream',
       }),
-    );
+    ) as unknown as Promise<TuneServiceReadOutput>;
   }
 
   async retrieve(

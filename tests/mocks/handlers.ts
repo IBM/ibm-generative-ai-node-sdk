@@ -64,7 +64,7 @@ export const resetTunesStore = () => {
       id: 'foo',
       status: 'COMPLETED',
       assets: {
-        encoder: 'encoderContent',
+        vectors: 'encoderContent',
         logs: 'logsContent',
       },
     },
@@ -145,10 +145,11 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
   // Generate
   rest.post(`${MOCK_ENDPOINT}/v2/text/generation`, async (req, res, ctx) => {
     const body = await req.json();
+    const inputs = Array.isArray(body.input) ? body.input : [body.input];
     return res(
       ctx.status(200),
       ctx.json({
-        results: new Array(body.inputs.length).fill(generateStore),
+        results: new Array(inputs.length).fill(generateStore),
       }),
     );
   }),
@@ -205,15 +206,13 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
   ),
   rest.get(`${MOCK_ENDPOINT}/v2/tunes`, async (req, res, ctx) => {
     const offset = parseInt(req.url.searchParams.get('offset') ?? '0');
-    const singleTune = tunesStore[offset];
-    if (!singleTune) {
-      return res(ctx.status(404));
-    }
+    const limit = parseInt(req.url.searchParams.get('limit') ?? '100');
+    const tunes = tunesStore.slice(offset, limit);
     return res(
       ctx.status(200),
       ctx.json({
-        results: [singleTune],
-        totalCount: tunesStore.length,
+        results: tunes,
+        total_count: tunes.length,
       }),
     );
   }),
@@ -236,7 +235,7 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
     return res(
       ctx.status(200),
       ctx.json({
-        results: tune,
+        result: tune,
       }),
     );
   }),
@@ -256,7 +255,7 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
         return res(ctx.status(404));
       }
       const type = req.params.type as string;
-      if (!['encoder', 'logger'].includes(type)) {
+      if (!['vectors', 'logger'].includes(type)) {
         return res(ctx.status(404));
       }
       return res(ctx.status(200), ctx.body(tune.assets[type]));
@@ -272,7 +271,7 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
       ctx.status(200),
       ctx.json({
         results: historyStore.slice(offset, limit),
-        totalCount: historyStore.length,
+        total_count: historyStore.length,
       }),
     );
   }),

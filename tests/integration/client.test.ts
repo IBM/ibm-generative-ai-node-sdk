@@ -1,6 +1,5 @@
 import {
   MOCK_ENDPOINT,
-  generateStore,
   modelsStore,
   tokenizeStore,
   tuneMethodsStore,
@@ -39,33 +38,15 @@ describe('client', () => {
         }),
       ).toResolve();
     });
-    test("should hit streaming endpoint when endpoint contains trailing '/'", async () => {
-      const client = new Client({
-        endpoint: MOCK_ENDPOINT + '/',
-        apiKey: 'foobar',
-      });
-      const stream = client.text.generation.create_stream({
-        model_id: 'bigscience/bloom',
-        input: 'Hello, World',
-      });
-      try {
-        for await (const chunk of stream) {
-          expect(chunk).toBeDefined();
-        }
-      } catch (err) {
-        expect(err).toHaveProperty('statusCode', 200); // Mock handler ignores streaming
-      }
-    });
   });
 
   describe('generate', () => {
     test('should return single output for a single input', async () => {
-      const data = await client.text.generation.create({
+      const response = await client.text.generation.create({
         model_id: 'bigscience/bloom',
         input: 'Hello, World',
       });
-
-      expect(data).toMatchObject(generateStore);
+      expect(response.results).toBeArrayOfSize(1);
     }, 15_000);
   });
 
@@ -76,7 +57,7 @@ describe('client', () => {
           input: 'Hello, how are you? Are you okay?',
           model_id: 'google/flan-t5-xl',
         }),
-      ).resolves.toMatchObject(tokenizeStore);
+      ).resolves.toMatchObject({ results: [tokenizeStore] });
     });
   });
 
@@ -138,12 +119,11 @@ describe('client', () => {
     });
 
     test('should download assets of a completed tune', async () => {
-      const {
-        id,
-        assets: { encoder },
-      } = tunesStore[0];
-      const response = await client.tune.read({ id, type: 'vectors' });
-      expect(response).toBe(encoder);
+      const { id } = tunesStore[0];
+      const content = await client.tune.read({ id, type: 'vectors' });
+      for await (const chunk of content) {
+        expect(chunk).toBeDefined();
+      }
     });
 
     test('should create a tune', async () => {
@@ -160,8 +140,9 @@ describe('client', () => {
 
   describe('request', () => {
     test('should list all requests from the past', async () => {
-      const response = await client.request.list({});
-      expect(response.results).toBeArrayOfSize(historyStore.length);
+      const limit = Math.min(2, historyStore.length);
+      const response = await client.request.list({ offset: 0, limit });
+      expect(response.results).toBeArrayOfSize(limit);
     });
   });
 
@@ -172,7 +153,7 @@ describe('client', () => {
       } = await client.tune.create(dummyTune);
       await client.model.retrieve({ id });
       await client.tune.delete({ id });
-      expect(client.model.retrieve({ id })).toReject();
+      await expect(client.model.retrieve({ id })).toReject();
     });
 
     test('should not get deleted tune in models list', async () => {

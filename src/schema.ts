@@ -1,7 +1,7 @@
-import type { Readable } from 'node:stream';
+import { Readable } from 'node:stream';
 
 import type { ApiClientOptions, ApiClientResponse } from './api/client.js';
-import type { OmitVersion } from './utils/types.js';
+import type { Empty, OmitVersion } from './utils/types.js';
 
 type InputQueryWrapper<T> = OmitVersion<T>; // For some reason, `requestBody` is optional in the generated schema
 type InputBodyWrapper<T> = NonNullable<T>; // For some reason, `requestBody` is optional in the generated schema
@@ -169,7 +169,64 @@ export type TuneServiceDeleteOutput = OutputWrapper<
   ApiClientResponse<'DELETE', '/v2/tunes/{id}'>['data']
 >;
 
-export type TuneServiceTypesInput = Record<string, never>;
+export type TuneServiceTypesInput = Empty;
 export type TuneServiceTypesOutput = OutputWrapper<
   ApiClientResponse<'GET', '/v2/tuning_types'>['data']
+>;
+
+// UserService
+
+export type UserServiceCreateInput = InputBodyWrapper<
+  ApiClientOptions<'POST', '/v2/user'>['body']
+>;
+export type UserServiceCreateOutput = OutputWrapper<
+  ApiClientResponse<'POST', '/v2/user'>['data']
+>;
+
+export type UserServiceRetrieveInput = Empty;
+export type UserServiceRetrieveOutput = OutputWrapper<
+  ApiClientResponse<'GET', '/v2/user'>['data']
+>;
+
+export type UserServiceUpdateInput = InputBodyWrapper<
+  ApiClientOptions<'PATCH', '/v2/user'>['body']
+>;
+export type UserServiceUpdateOutput = OutputWrapper<
+  ApiClientResponse<'PATCH', '/v2/user'>['data']
+>;
+
+export type UserServiceDeleteInput = Empty;
+export type UserServiceDeleteOutput = OutputWrapper<
+  ApiClientResponse<'DELETE', '/v2/user'>['data']
+>;
+
+// UserService
+
+export type FileServiceCreateInput = InputBodyWrapper<
+  ApiClientOptions<'POST', '/v2/files'>['body']
+>;
+export type FileServiceCreateOutput = OutputWrapper<
+  ApiClientResponse<'POST', '/v2/files'>['data']
+>;
+
+export type FileServiceRetrieveInput = ApiClientOptions<
+  'GET',
+  '/v2/files/{id}'
+>['params']['path'];
+export type FileServiceRetrieveOutput = OutputWrapper<
+  ApiClientResponse<'GET', '/v2/files/{id}'>['data']
+>;
+
+export type FileServiceReadInput = ApiClientOptions<
+  'GET',
+  '/v2/files/{id}/content'
+>['params']['path'];
+export type FileServiceReadOutput = Readable; // TODO Replace with proper derivation
+
+export type FileServiceDeleteInput = ApiClientOptions<
+  'DELETE',
+  '/v2/files/{id}'
+>['params']['path'];
+export type FileServiceDeleteOutput = OutputWrapper<
+  ApiClientResponse<'DELETE', '/v2/files/{id}'>['data']
 >;

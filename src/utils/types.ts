@@ -9,3 +9,5 @@ export type FilterKeys<Obj, Matchers> = {
 }[keyof Obj];
 
 export type OmitVersion<T> = Omit<T, 'version'>;
+
+export type Empty = Record<string, never>;

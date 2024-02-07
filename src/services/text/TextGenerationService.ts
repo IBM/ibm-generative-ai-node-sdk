@@ -9,9 +9,20 @@ import {
   TextGenerationCreateStreamOutput,
 } from '../../schema.js';
 import { TypedReadable } from '../../utils/stream.js';
-import { LimitedService } from '../LimitedService.js';
+import { ApiClient } from '../../api/client.js';
+import { SteamingApiClient } from '../../api/streaming-client.js';
+import { ConcurrencyLimiter } from '../../utils/concurrency.js';
+import { BaseService } from '../BaseService.js';
 
-export class TextGenerationService extends LimitedService {
+export class TextGenerationService extends BaseService {
+  constructor(
+    protected readonly _client: ApiClient,
+    protected readonly _streamingClient: SteamingApiClient,
+    protected readonly _limiter: ConcurrencyLimiter,
+  ) {
+    super(_client, _streamingClient);
+  }
+
   async create(
     input: TextGenerationCreateInput,
     opts?: Options,

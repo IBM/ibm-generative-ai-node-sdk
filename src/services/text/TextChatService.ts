@@ -9,9 +9,20 @@ import {
   TextChatCreateStreamOutput,
 } from '../../schema.js';
 import { TypedReadable } from '../../utils/stream.js';
-import { LimitedService } from '../LimitedService.js';
+import { BaseService } from '../BaseService.js';
+import { ApiClient } from '../../api/client.js';
+import { SteamingApiClient } from '../../api/streaming-client.js';
+import { ConcurrencyLimiter } from '../../utils/concurrency.js';
 
-export class TextChatService extends LimitedService {
+export class TextChatService extends BaseService {
+  constructor(
+    protected readonly _client: ApiClient,
+    protected readonly _streamingClient: SteamingApiClient,
+    protected readonly _limiter: ConcurrencyLimiter,
+  ) {
+    super(_client, _streamingClient);
+  }
+
   create(
     input: TextChatCreateInput,
     opts?: Options,

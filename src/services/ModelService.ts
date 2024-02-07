@@ -37,7 +37,7 @@ export class ModelService extends BaseService {
         params: {
           path: input,
           query: {
-            version: '2024-01-10',
+            version: '2024-01-30',
           },
         },
       }),

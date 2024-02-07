@@ -2234,7 +2234,7 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: {
-            "application/octet-stream": Readable;
+            "application/octet-stream": Blob;
           };
         };
         /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
@@ -2482,7 +2482,7 @@ export interface paths {
             /** @enum {string} */
             purpose: "tune" | "template" | "tune_import" | "extraction";
             /** Format: binary */
-            file: Readable;
+            file: Blob;
           };
         };
       };
@@ -5276,7 +5276,7 @@ export interface paths {
         /** @description Default Response */
         200: {
           content: {
-            "application/octet-stream": Readable;
+            "application/octet-stream": Blob;
           };
         };
         /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */

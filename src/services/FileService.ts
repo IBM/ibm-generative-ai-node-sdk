@@ -27,7 +27,7 @@ export class FileService extends BaseService {
         bodySerializer(body) {
           const formData = new FormData();
           formData.append('purpose', body.purpose);
-          formData.append('file', body.file, { body.filename });
+          formData.append('file', body.file, (body.file as File).name);
           return formData;
         },
         params: {
@@ -69,9 +69,9 @@ export class FileService extends BaseService {
             version: '2023-11-22',
           },
         },
-        parseAs: 'stream',
+        parseAs: 'blob',
       }),
-    ) as unknown as Promise<Readable>;
+    );
   }
 
   async delete(

@@ -41,9 +41,9 @@ export class TuneService extends BaseService {
       this._client.GET('/v2/tunes/{id}/content/{type}', {
         ...opts,
         params: { path: input, query: { version: '2023-12-15' } },
-        parseAs: 'stream',
+        parseAs: 'blob',
       }),
-    ) as unknown as Promise<TuneServiceReadOutput>;
+    );
   }
 
   async retrieve(
@@ -89,7 +89,7 @@ export class TuneService extends BaseService {
     return clientErrorWrapper(
       this._client.GET('/v2/tuning_types', {
         ...opts,
-        params: { query: { version: '2023-11-22' } },
+        params: { query: { version: '2024-01-30' } },
       }),
     );
   }

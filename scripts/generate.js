@@ -7,7 +7,7 @@ const contents = await openapiTS(
   {
     transform(schemaObject, metadata) {
       if ('format' in schemaObject && schemaObject.format === 'binary') {
-        return schemaObject.nullable ? 'Readable | null' : 'Readable';
+        return schemaObject.nullable ? 'Blob | null' : 'Blob';
       }
     },
   },

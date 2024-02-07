@@ -144,7 +144,7 @@ export type TuneServiceReadInput = ApiClientOptions<
   'GET',
   '/v2/tunes/{id}/content/{type}'
 >['params']['path'];
-export type TuneServiceReadOutput = Readable;
+export type TuneServiceReadOutput = Blob; // TODO proper derivation
 
 export type TuneServiceRetrieveInput = ApiClientOptions<
   'GET',
@@ -221,7 +221,7 @@ export type FileServiceReadInput = ApiClientOptions<
   'GET',
   '/v2/files/{id}/content'
 >['params']['path'];
-export type FileServiceReadOutput = Readable; // TODO Replace with proper derivation
+export type FileServiceReadOutput = Blob; // TODO Replace with proper derivation
 
 export type FileServiceDeleteInput = ApiClientOptions<
   'DELETE',

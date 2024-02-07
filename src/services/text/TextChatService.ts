@@ -16,14 +16,16 @@ export class TextChatService extends LimitedService {
     input: TextChatCreateInput,
     opts?: Options,
   ): Promise<TextChatCreateOutput> {
-    return this._limiter.execute(() =>
-      clientErrorWrapper(
-        this._client.POST('/v2/text/chat', {
-          ...opts,
-          params: { query: { version: '2024-01-10' } },
-          body: input,
-        }),
-      ),
+    return this._limiter.execute(
+      () =>
+        clientErrorWrapper(
+          this._client.POST('/v2/text/chat', {
+            ...opts,
+            params: { query: { version: '2024-01-10' } },
+            body: input,
+          }),
+        ),
+      { signal: opts?.signal },
     );
   }
 
@@ -31,12 +33,14 @@ export class TextChatService extends LimitedService {
     input: TextChatCreateStreamInput,
     opts?: Options,
   ): Promise<TypedReadable<TextChatCreateStreamOutput>> {
-    return this._limiter.execute(async () =>
-      this._streamingClient.stream({
-        url: '/v2/text/chat_stream?version=2024-01-10',
-        body: input,
-        signal: opts?.signal,
-      }),
+    return this._limiter.execute(
+      async () =>
+        this._streamingClient.stream({
+          url: '/v2/text/chat_stream?version=2024-01-10',
+          body: input,
+          signal: opts?.signal,
+        }),
+      { signal: opts?.signal },
     );
   }
 }

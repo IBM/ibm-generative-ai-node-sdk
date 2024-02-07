@@ -33,12 +33,14 @@ export class TextGenerationService extends LimitedService {
     input: TextGenerationCreateStreamInput,
     opts?: Options,
   ): Promise<TypedReadable<TextGenerationCreateStreamOutput>> {
-    return this._limiter.execute(async () =>
-      this._streamingClient.stream({
-        url: '/v2/text/generation_stream?version=2023-11-22',
-        body: input,
-        signal: opts?.signal,
-      }),
+    return this._limiter.execute(
+      async () =>
+        this._streamingClient.stream({
+          url: '/v2/text/generation_stream?version=2023-11-22',
+          body: input,
+          signal: opts?.signal,
+        }),
+      { signal: opts?.signal },
     );
   }
 }

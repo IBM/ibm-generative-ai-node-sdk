@@ -11,14 +11,16 @@ export class TextEmbeddingService extends LimitedService {
     input: TextEmbeddingCreateInput,
     opts?: Options,
   ): Promise<TextEmbeddingCreateOutput> {
-    return this._limiter.execute(() =>
-      clientErrorWrapper(
-        this._client.POST('/v2/text/embeddings', {
-          ...opts,
-          params: { query: { version: '2023-11-22' } },
-          body: input,
-        }),
-      ),
+    return this._limiter.execute(
+      () =>
+        clientErrorWrapper(
+          this._client.POST('/v2/text/embeddings', {
+            ...opts,
+            params: { query: { version: '2023-11-22' } },
+            body: input,
+          }),
+        ),
+      { signal: opts?.signal },
     );
   }
 }

@@ -1,5 +1,3 @@
-import { Readable } from 'node:stream';
-
 import type { ApiClientOptions, ApiClientResponse } from './api/client.js';
 import type { Empty, OmitVersion } from './utils/types.js';
 
@@ -229,4 +227,45 @@ export type FileServiceDeleteInput = ApiClientOptions<
 >['params']['path'];
 export type FileServiceDeleteOutput = OutputWrapper<
   ApiClientResponse<'DELETE', '/v2/files/{id}'>['data']
+>;
+
+// SystemPromptService
+
+export type SystemPromptServiceCreateInput = InputBodyWrapper<
+  ApiClientOptions<'POST', '/v2/system_prompts'>['body']
+>;
+export type SystemPromptServiceCreateOutput = OutputWrapper<
+  ApiClientResponse<'POST', '/v2/system_prompts'>['data']
+>;
+
+export type SystemPromptServiceRetrieveInput = ApiClientOptions<
+  'GET',
+  '/v2/system_prompts/{id}'
+>['params']['path'];
+export type SystemPromptServiceRetrieveOutput = OutputWrapper<
+  ApiClientResponse<'GET', '/v2/system_prompts/{id}'>['data']
+>;
+
+export type SystemPromptServiceUpdateInput = ApiClientOptions<
+  'PUT',
+  '/v2/system_prompts/{id}'
+>['params']['path'] &
+  InputBodyWrapper<ApiClientOptions<'PUT', '/v2/system_prompts/{id}'>['body']>;
+export type SystemPromptServiceUpdateOutput = OutputWrapper<
+  ApiClientResponse<'PUT', '/v2/system_prompts/{id}'>['data']
+>;
+
+export type SystemPromptServiceDeleteInput = ApiClientOptions<
+  'DELETE',
+  '/v2/system_prompts/{id}'
+>['params']['path'];
+export type SystemPromptServiceDeleteOutput = OutputWrapper<
+  ApiClientResponse<'DELETE', '/v2/system_prompts/{id}'>['data']
+>;
+
+export type SystemPromptServiceListInput = InputQueryWrapper<
+  ApiClientOptions<'GET', '/v2/system_prompts'>['params']['query']
+>;
+export type SystemPromptServiceListOutput = OutputWrapper<
+  ApiClientResponse<'GET', '/v2/system_prompts'>['data']
 >;

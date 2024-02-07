@@ -12,6 +12,8 @@ import { PromptService } from './services/PromptService.js';
 import { RequestService } from './services/RequestService.js';
 import { TuneService } from './services/TuneService.js';
 import { UserService } from './services/UserService.js';
+import { FileService } from './services/FileService.js';
+import { SystemPromptService } from './services/SystemPromptService.js';
 
 export interface Configuration {
   apiKey?: string;
@@ -28,6 +30,8 @@ export class Client {
   public readonly prompt: PromptService;
   public readonly tune: TuneService;
   public readonly user: UserService;
+  public readonly file: FileService;
+  public readonly systemPrompt: SystemPromptService;
 
   constructor(config: Configuration = {}) {
     const endpoint = config.endpoint ?? lookupEndpoint();
@@ -63,5 +67,7 @@ export class Client {
     this.prompt = new PromptService(_client, _streamingClient);
     this.tune = new TuneService(_client, _streamingClient);
     this.user = new UserService(_client, _streamingClient);
+    this.file = new FileService(_client, _streamingClient);
+    this.systemPrompt = new SystemPromptService(_client, _streamingClient);
   }
 }

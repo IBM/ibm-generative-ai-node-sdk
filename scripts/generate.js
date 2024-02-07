@@ -2,6 +2,7 @@ import fs from 'node:fs';
 
 import openapiTS from 'openapi-typescript';
 
+// https://openapi-ts.pages.dev/6.x/node#example-blob-types
 const contents = await openapiTS(
   new URL(process.env.SCHEMA_URL, import.meta.url),
   {

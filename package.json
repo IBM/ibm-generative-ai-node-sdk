@@ -74,7 +74,6 @@
     "@commitlint/config-conventional": "^18.0.0",
     "@langchain/core": "^0.1.11",
     "@types/lodash": "^4.14.200",
-    "@types/node": "18.18.2",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "@vitest/coverage-c8": "^0.31.2",
@@ -99,12 +98,10 @@
   },
   "dependencies": {
     "@ai-zen/node-fetch-event-source": "^2.1.2",
-    "cross-fetch": "^4.0.0",
     "fetch-retry": "^5.0.6",
     "openapi-fetch": "^0.8.2",
     "p-queue": "^8.0.1",
-    "yaml": "^2.3.3",
-    "zod": "^3.22.4"
+    "yaml": "^2.3.3"
   },
   "lint-staged": {
     "*.{cjs,js,jsx,ts,tsx}": [

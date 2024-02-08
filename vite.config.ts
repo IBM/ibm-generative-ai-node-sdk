@@ -1,7 +1,4 @@
 import { defineConfig, defaultExclude } from 'vitest/config';
-import { compareVersions } from 'compare-versions';
-
-const ignoreLangChain = compareVersions(process.version, '18.16.0') === -1;
 
 export default defineConfig({
   test: {
@@ -10,9 +7,6 @@ export default defineConfig({
     coverage: {
       exclude: ['**/__mocks__/**'],
     },
-    exclude: [
-      ...defaultExclude,
-      ...(ignoreLangChain ? ['**/langchain/**'] : []),
-    ],
+    exclude: [...defaultExclude],
   },
 });

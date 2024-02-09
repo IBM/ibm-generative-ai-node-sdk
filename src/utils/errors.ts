@@ -23,11 +23,15 @@ function isServiceError(err: unknown) {
 
 export async function clientErrorWrapper<T>(
   request: Promise<FetchResponse<T>>,
-) {
+): Promise<Exclude<FetchResponse<T>, { data?: never }>['data']> {
   try {
-    const { data, error } = await request;
-    if (error) throw new HttpError(error as Exclude<typeof error, object>);
-    return data;
+    const response = await request;
+    if (response.error != undefined) {
+      throw new HttpError(
+        response.error as Exclude<typeof response.error, object>,
+      );
+    }
+    return response.data!;
   } catch (err) {
     if (err instanceof HttpError) throw err;
     if (isAbortError(err)) throw err;

@@ -10,8 +10,7 @@ import {
   isNullish,
   asyncGeneratorToArray,
 } from '../helpers/common.js';
-import type { GenerateOutput } from '../client/types.js';
-import { GenerateInput } from '../client/types.js';
+import { CreateInput, CreateOutput } from '../services/text/TextGenerationService.js';
 
 interface BaseGenAIModelOptions {
   stream?: boolean;
@@ -55,7 +54,7 @@ export class GenAIModel extends BaseLLM {
   #createPayload(
     prompts: string[],
     options: this['ParsedCallOptions'],
-  ): GenerateInput[] {
+  ): CreateInput[] {
     const stopSequences = concatUnique(this.parameters.stop, options.stop);
 
     return prompts.map((input) => ({
@@ -81,13 +80,13 @@ export class GenAIModel extends BaseLLM {
   async #execute(
     prompts: string[],
     options: this['ParsedCallOptions'],
-  ): Promise<GenerateOutput[]> {
+  ): Promise<CreateOutput[]> {
     return await Promise.all(
-      this.#client.generate(this.#createPayload(prompts, options), {
-        signal: options.signal,
-        timeout: this.timeout,
-        stream: false,
-      }),
+      this.#createPayload(prompts, options).map((input) =>
+        this.#client.text.generation.create(input, {
+          signal: options.signal,
+        }),
+      ),
     );
   }
 

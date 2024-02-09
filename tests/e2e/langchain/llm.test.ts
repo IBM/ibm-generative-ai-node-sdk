@@ -1,9 +1,10 @@
 import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 
-import { GenAIModel } from '../../../langchain/llm.js';
+import { GenAIModel } from '../../../src/langchain/llm.js';
+import { describeIf } from '../../utils.js';
 
-describe('Langchain', () => {
+describeIf(process.env.RUN_LANGCHAIN_CHAT_TESTS === 'true')('Langchain', () => {
   const makeClient = (modelId?: string, stream?: boolean) =>
     new GenAIModel({
       modelId,

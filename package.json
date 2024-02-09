@@ -102,6 +102,7 @@
     "cross-fetch": "^4.0.0",
     "fetch-retry": "^5.0.6",
     "openapi-fetch": "^0.8.2",
+    "p-queue": "^8.0.1",
     "yaml": "^2.3.3",
     "zod": "^3.22.4"
   },

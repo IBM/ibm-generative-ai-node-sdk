@@ -17,7 +17,7 @@ export class ConcurrencyLimiter {
   constructor(private readonly limiter: Limiter) {}
 
   async execute<T>(task: Task<T>, options?: Partial<QueueAddOptions>) {
-    if (!this._queue) this._queue = await this._createQueue();
+    await this._initQueue();
     // eslint-disable-next-line no-constant-condition
     while (true) {
       try {
@@ -32,8 +32,11 @@ export class ConcurrencyLimiter {
     }
   }
 
-  protected async _createQueue(): Promise<PQueue> {
+  protected async _initQueue(): Promise<void> {
+    if (this._queue) return;
+
+    this._queue = new PQueue({ concurrency: 0 });
     const { limit } = await this.limiter();
-    return new PQueue({ concurrency: limit });
+    this._queue.concurrency = limit;
   }
 }

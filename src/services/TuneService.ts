@@ -1,5 +1,3 @@
-import { Readable } from 'node:stream';
-
 import { clientErrorWrapper } from '../utils/errors.js';
 import { Options } from '../client.js';
 import {

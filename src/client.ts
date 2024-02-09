@@ -1,5 +1,4 @@
 import fetchRetry from 'fetch-retry';
-import fetch from 'cross-fetch';
 
 import { InvalidInputError } from './errors.js';
 import { version } from './buildInfo.js';

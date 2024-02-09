@@ -11,3 +11,5 @@ export type FilterKeys<Obj, Matchers> = {
 export type OmitVersion<T> = Omit<T, 'version'>;
 
 export type Empty = Record<never, never>;
+
+export type Replace<T, U> = Omit<T, keyof U> & U;

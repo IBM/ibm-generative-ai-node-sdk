@@ -1,5 +1,5 @@
 import type { ApiClientOptions, ApiClientResponse } from './api/client.js';
-import type { Empty, OmitVersion } from './utils/types.js';
+import type { Empty, OmitVersion, Replace } from './utils/types.js';
 
 type InputQueryWrapper<T> = OmitVersion<T>; // For some reason, `requestBody` is optional in the generated schema
 type InputBodyWrapper<T> = NonNullable<T>; // For some reason, `requestBody` is optional in the generated schema
@@ -200,8 +200,9 @@ export type UserServiceDeleteOutput = OutputWrapper<
 
 // FileService
 
-export type FileServiceCreateInput = InputBodyWrapper<
-  ApiClientOptions<'POST', '/v2/files'>['body']
+export type FileServiceCreateInput = Replace<
+  InputBodyWrapper<ApiClientOptions<'POST', '/v2/files'>['body']>,
+  { file: { content: Blob; name: string } }
 >;
 export type FileServiceCreateOutput = OutputWrapper<
   ApiClientResponse<'POST', '/v2/files'>['data']

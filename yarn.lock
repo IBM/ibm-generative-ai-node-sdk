@@ -669,12 +669,10 @@ __metadata:
     "@commitlint/config-conventional": ^18.0.0
     "@langchain/core": ^0.1.11
     "@types/lodash": ^4.14.200
-    "@types/node": 18.18.2
     "@typescript-eslint/eslint-plugin": ^6.9.0
     "@typescript-eslint/parser": ^6.9.0
     "@vitest/coverage-c8": ^0.31.2
     compare-versions: ^6.1.0
-    cross-fetch: ^4.0.0
     dotenv-flow: ^4.0.0
     eslint: ^8.52.0
     eslint-config-prettier: ^9.0.0
@@ -696,7 +694,6 @@ __metadata:
     typescript: ^5.3.3
     vitest: ^0.34.6
     yaml: ^2.3.3
-    zod: ^3.22.4
   peerDependencies:
     "@langchain/core": ">=0.1.11"
   languageName: unknown
@@ -1086,13 +1083,6 @@ __metadata:
   version: 18.15.5
   resolution: "@types/node@npm:18.15.5"
   checksum: 5fbf3453bd5ce1402bb2964e55d928fc8a8a7de5451b1b0fe66587fecb8a3eb86854ca9cefa5076a5971e2cff00e1773ceeb5d872a54f6c6ddfbbc1064b4e91a
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:18.18.2":
-  version: 18.18.2
-  resolution: "@types/node@npm:18.18.2"
-  checksum: 252a90e351e6e8631e5eb66d826b6a80fe191fcf94d8cc8ace5263afeb2da0b25d80a4bdae59fa7ec1b2dc6f03f5fb9a1f23c310dac72789b03935c7ba901853
   languageName: node
   linkType: hard
 
@@ -2229,15 +2219,6 @@ __metadata:
   dependencies:
     node-fetch: ^2.6.12
   checksum: 78f993fa099eaaa041122ab037fe9503ecbbcb9daef234d1d2e0b9230a983f64d645d088c464e21a247b825a08dc444a6e7064adfa93536d3a9454b4745b3632
-  languageName: node
-  linkType: hard
-
-"cross-fetch@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "cross-fetch@npm:4.0.0"
-  dependencies:
-    node-fetch: ^2.6.12
-  checksum: ecca4f37ffa0e8283e7a8a590926b66713a7ef7892757aa36c2d20ffa27b0ac5c60dcf453119c809abe5923fc0bae3702a4d896bfb406ef1077b0d0018213e24
   languageName: node
   linkType: hard
 
@@ -7343,7 +7324,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.22.3, zod@npm:^3.22.4":
+"zod@npm:^3.22.3":
   version: 3.22.4
   resolution: "zod@npm:3.22.4"
   checksum: 80bfd7f8039b24fddeb0718a2ec7c02aa9856e4838d6aa4864335a047b6b37a3273b191ef335bf0b2002e5c514ef261ffcda5a589fb084a48c336ffc4cdbab7f

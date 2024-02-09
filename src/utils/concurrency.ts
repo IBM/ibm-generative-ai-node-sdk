@@ -21,7 +21,10 @@ export class ConcurrencyLimiter {
     // eslint-disable-next-line no-constant-condition
     while (true) {
       try {
-        return this._queue!.add(task, { ...options, throwOnTimeout: true });
+        return await this._queue!.add(task, {
+          ...options,
+          throwOnTimeout: true,
+        });
       } catch (err) {
         if (isConcurrencyLimitError(err)) continue;
         throw err;

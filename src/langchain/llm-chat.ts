@@ -92,16 +92,18 @@ export class GenAIChatModel extends BaseChatModel {
       .flatMap((output) => output.results?.at(0) ?? [])
       .reduce(
         (acc, gen) => {
-          acc.tokenUsage.generated_token_count +=
-            gen.generated_token_count || 0;
-          acc.tokenUsage.input_token_count += gen.input_token_count || 0;
+          acc.tokenUsage.completionTokens += gen.generated_token_count || 0;
+          acc.tokenUsage.promptTokens += gen.input_token_count || 0;
+          acc.tokenUsage.totalTokens =
+            acc.tokenUsage.promptTokens + acc.tokenUsage.completionTokens;
 
           return acc;
         },
         {
           tokenUsage: {
-            generated_token_count: 0,
-            input_token_count: 0,
+            completionTokens: 0,
+            promptTokens: 0,
+            totalTokens: 0,
           },
         },
       );

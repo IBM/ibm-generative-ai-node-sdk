@@ -198,7 +198,7 @@ export type UserServiceDeleteOutput = OutputWrapper<
   ApiClientResponse<'DELETE', '/v2/user'>['data']
 >;
 
-// UserService
+// FileService
 
 export type FileServiceCreateInput = InputBodyWrapper<
   ApiClientOptions<'POST', '/v2/files'>['body']

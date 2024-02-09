@@ -29,51 +29,10 @@ export class TextGenerationService extends BaseService {
     input: TextGenerationCreateStreamInput,
     opts?: Options,
   ): TypedReadable<TextGenerationCreateStreamOutput> {
-    type EventMessage = TextGenerationCreateStreamOutput;
-
-    const stream = new Transform({
-      autoDestroy: true,
-      objectMode: true,
-      transform(
-        chunk: EventMessage,
-        encoding: BufferEncoding,
-        callback: TransformCallback,
-      ) {
-        try {
-          const {
-            generated_text = '',
-            stop_reason = null,
-            input_token_count = 0,
-            generated_token_count = 0,
-            ...props
-          } = (chunk.results || [{}])[0];
-
-          callback(null, {
-            generated_text,
-            stop_reason,
-            input_token_count,
-            generated_token_count,
-            ...(chunk.moderation && {
-              moderation: chunk.moderation,
-            }),
-            ...props,
-          });
-        } catch (e) {
-          const err = (chunk || e) as unknown as Error;
-          callback(err, null);
-        }
-      },
+    return this._streamingClient.stream({
+      url: '/v2/text/generation_stream?version=2023-11-22',
+      body: input,
+      signal: opts?.signal,
     });
-
-    this._streamingClient
-      .stream<EventMessage>({
-        url: '/v2/text/generation_stream?version=2023-11-22',
-        body: input,
-        signal: opts?.signal,
-      })
-      .on('error', (err) => stream.emit('error', err))
-      .pipe(stream);
-
-    return stream;
   }
 }

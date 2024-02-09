@@ -29,29 +29,10 @@ export class TextChatService extends BaseService {
     input: TextChatCreateStreamInput,
     opts?: Options,
   ): TypedReadable<TextChatCreateStreamOutput> {
-    type EventMessage = TextChatCreateStreamOutput;
-
-    const stream = new Transform({
-      autoDestroy: true,
-      objectMode: true,
-      transform(
-        chunk: EventMessage,
-        encoding: BufferEncoding,
-        callback: TransformCallback,
-      ) {
-        callback(null, chunk as EventMessage);
-      },
+    return this._streamingClient.stream({
+      url: '/v2/text/chat_stream?version=2024-01-10',
+      body: input,
+      signal: opts?.signal,
     });
-
-    this._streamingClient
-      .stream<EventMessage>({
-        url: '/v2/text/chat_stream?version=2024-01-10',
-        body: input,
-        signal: opts?.signal,
-      })
-      .on('error', (err) => stream.emit('error', err))
-      .pipe(stream);
-
-    return stream;
   }
 }

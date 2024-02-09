@@ -13,6 +13,7 @@ function isConcurrencyLimitError(err: unknown): err is HttpError {
 
 export class ConcurrencyLimiter {
   private _queue?: PQueue;
+  private _limiterPromise?: ReturnType<Limiter>;
 
   constructor(private readonly limiter: Limiter) {}
 
@@ -34,9 +35,13 @@ export class ConcurrencyLimiter {
 
   protected async _initQueue(): Promise<void> {
     if (this._queue) return;
+    if (this._limiterPromise) {
+      await this._limiterPromise;
+      return;
+    }
 
-    this._queue = new PQueue({ concurrency: 0 });
-    const { limit } = await this.limiter();
-    this._queue.concurrency = limit;
+    this._limiterPromise = this.limiter();
+    const { limit } = await this._limiterPromise;
+    this._queue = new PQueue({ concurrency: limit });
   }
 }

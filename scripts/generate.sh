@@ -1,4 +1,4 @@
 #!/bin/bash
 
 source .env
-openapi-typescript $GENAI_DEFAULT_ENDPOINT/docs/json -o ./src/api/schema.d.ts
+SCHEMA_URL=$GENAI_DEFAULT_ENDPOINT/docs/json node ./scripts/generate.js

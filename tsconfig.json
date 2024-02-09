@@ -20,7 +20,8 @@
   },
   "include": [
     "src",
-    "examples"
+    "examples",
+    "tests"
   ],
   "files": [
     "vite.config.ts"

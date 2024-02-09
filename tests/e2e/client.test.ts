@@ -15,7 +15,7 @@ describe('client', () => {
   });
 
   describe('generate', () => {
-    test.skip('should handle concurrency limits', async () => {
+    test('should handle concurrency limits', async () => {
       const inputs = [...Array(20).keys()].map(() => ({
         model_id: 'google/flan-ul2',
         input: 'Hello, World',
@@ -27,17 +27,7 @@ describe('client', () => {
 
       expect.assertions(requests.length);
       for (const request of requests) {
-        try {
-          const output = await request;
-          expect(output).toBeTruthy();
-        } catch (err) {
-          expect(err).not.toMatchObject({
-            extensions: {
-              code: 'TOO_MANY_REQUESTS',
-              reason: 'CONCURRENCY_LIMIT',
-            },
-          });
-        }
+        await expect(request).toResolve();
       }
     }, 200_000);
 
@@ -70,7 +60,7 @@ describe('client', () => {
       };
 
       test('should correctly process moderation chunks during streaming', async () => {
-        const stream = makeValidStream({
+        const stream = await makeValidStream({
           min_new_tokens: 1,
           max_new_tokens: 5,
           moderations: {
@@ -91,7 +81,7 @@ describe('client', () => {
       });
 
       test('should return valid stream for a single input', async () => {
-        const stream = makeValidStream();
+        const stream = await makeValidStream();
 
         const chunks = await new Promise<TextGenerationCreateStreamOutput[]>(
           (resolve, reject) => {
@@ -113,7 +103,7 @@ describe('client', () => {
       }, 15_000);
 
       test('should handle errors', async () => {
-        const stream = client.text.generation.create_stream({
+        const stream = await client.text.generation.create_stream({
           model_id: 'XXX/XXX',
           input: 'Hello, World',
         });
@@ -142,7 +132,7 @@ describe('client', () => {
       };
 
       test('should return valid stream', async () => {
-        const stream = makeValidStream();
+        const stream = await makeValidStream();
 
         const chunks: TextChatCreateStreamOutput[] = [];
         for await (const chunk of stream) {
@@ -154,7 +144,7 @@ describe('client', () => {
       }, 15_000);
 
       test('should handle errors', async () => {
-        const stream = client.text.chat.create_stream({
+        const stream = await client.text.chat.create_stream({
           model_id: 'XXX/XXX',
           messages: [{ role: 'user', content: 'Hello World!' }],
         });
@@ -206,7 +196,7 @@ describe('client', () => {
       }, 50);
 
       await expect(async () => {
-        const stream = client.text.generation.create_stream(
+        const stream = await client.text.generation.create_stream(
           {
             model_id: 'google/flan-ul2',
             input: 'Hello, World',

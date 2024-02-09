@@ -1,5 +1,3 @@
-import { Readable } from 'node:stream';
-
 import { Options } from '../client.js';
 import { clientErrorWrapper } from '../utils/errors.js';
 import {
@@ -23,11 +21,11 @@ export class FileService extends BaseService {
     return clientErrorWrapper(
       this._client.POST('/v2/files', {
         ...opts,
-        body: input,
+        body: { ...input, file: input.file.content }, // file is supplied just to avoid typecast
         bodySerializer(body) {
           const formData = new FormData();
           formData.append('purpose', body.purpose);
-          formData.append('file', body.file, (body.file as File).name);
+          formData.append('file', input.file.content, input.file.name);
           return formData;
         },
         params: {

@@ -154,6 +154,22 @@ export const handlers: RestHandler<MockedRequest<DefaultBodyType>>[] = [
     );
   }),
 
+  rest.get(
+    `${MOCK_ENDPOINT}/v2/text/generation/limits`,
+    async (req, res, ctx) =>
+      res(
+        ctx.status(200),
+        ctx.json({
+          result: {
+            concurrency: {
+              limit: 100,
+              remaining: 100,
+            },
+          },
+        }),
+      ),
+  ),
+
   // Tokenize
   rest.post(`${MOCK_ENDPOINT}/v2/text/tokenization`, async (req, res, ctx) =>
     res(

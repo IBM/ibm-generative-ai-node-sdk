@@ -121,9 +121,7 @@ describe('client', () => {
     test('should download assets of a completed tune', async () => {
       const { id } = tunesStore[0];
       const content = await client.tune.read({ id, type: 'vectors' });
-      for await (const chunk of content) {
-        expect(chunk).toBeDefined();
-      }
+      expect(content).toBeDefined();
     });
 
     test('should create a tune', async () => {

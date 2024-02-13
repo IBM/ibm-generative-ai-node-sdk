@@ -2,9 +2,8 @@ import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 
 import { GenAIModel } from '../../../src/langchain/llm.js';
-import { describeIf } from '../../utils.js';
 
-describeIf(process.env.RUN_LANGCHAIN_CHAT_TESTS === 'true')('Langchain', () => {
+describe('Langchain', () => {
   const makeClient = (modelId?: string, stream?: boolean) =>
     new GenAIModel({
       modelId,
@@ -86,11 +85,9 @@ describeIf(process.env.RUN_LANGCHAIN_CHAT_TESTS === 'true')('Langchain', () => {
         controller.abort();
       }, 50);
 
-      await expect(generatePromise).rejects.toEqual(
-        expect.objectContaining({
-          code: 'ERR_CANCELED',
-          message: 'canceled',
-        }),
+      await expect(generatePromise).rejects.toHaveProperty(
+        'name',
+        'AbortError',
       );
     });
 

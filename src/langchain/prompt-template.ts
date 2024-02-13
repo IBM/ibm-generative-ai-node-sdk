@@ -15,6 +15,9 @@ export class GenAIPromptTemplate {
   }
 
   static fromLangChain(template: LangChainPromptTemplate): string {
+    if (typeof template.template !== 'string')
+      throw new Error('Unsupported template type');
+
     return template.template.replace(
       GenAIPromptTemplate.getTemplateMatcher(template.templateFormat),
       '{{$1}}',

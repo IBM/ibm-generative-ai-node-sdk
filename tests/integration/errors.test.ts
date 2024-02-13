@@ -8,15 +8,6 @@ import { MOCK_ENDPOINT } from '../mocks/handlers.js';
 describe('errors', () => {
   test('should fail with network error', async () => {
     const client = createApiClient({ baseUrl: 'http://invalidhost', fetch });
-    try {
-      await clientErrorWrapper(
-        client.GET('/v2/models', {
-          params: { query: { limit: 100, offset: 0, version: '2023-11-22' } },
-        }),
-      );
-    } catch (err) {
-      console.log(err);
-    }
     await expect(
       clientErrorWrapper(
         client.GET('/v2/models', {

@@ -15,6 +15,7 @@ const ServiceUnavailableErrorCodes = new Set([
   'ENETUNREACH', // macOS
   'EHOSTUNREACH', // Linux
   'UND_ERR_CONNECT_TIMEOUT',
+  'EAI_AGAIN',
 ]);
 function isServiceError(err: unknown) {
   const code = (err as any)?.code;

@@ -2,10 +2,9 @@ import { HumanMessage } from '@langchain/core/messages';
 
 import { GenAIChatModel } from '../../src/langchain/llm-chat.js';
 
-const makeClient = (stream?: boolean) =>
+const makeClient = () =>
   new GenAIChatModel({
     modelId: 'meta-llama/llama-2-70b-chat',
-    stream,
     configuration: {
       endpoint: process.env.ENDPOINT,
       apiKey: process.env.API_KEY,
@@ -15,14 +14,6 @@ const makeClient = (stream?: boolean) =>
       min_new_tokens: 1,
       max_new_tokens: 25,
       repetition_penalty: 1.5,
-    },
-    rolesMapping: {
-      human: {
-        stopSequence: '<human>:',
-      },
-      system: {
-        stopSequence: '<bot>:',
-      },
     },
   });
 
@@ -41,7 +32,7 @@ const makeClient = (stream?: boolean) =>
 
 {
   // Streaming
-  const chat = makeClient(true);
+  const chat = makeClient();
 
   await chat.invoke([new HumanMessage('Tell me a joke.')], {
     callbacks: [

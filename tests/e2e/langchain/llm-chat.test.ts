@@ -4,10 +4,9 @@ import { GenAIChatModel } from '../../../src/langchain/index.js';
 
 // Remove once some chat models will be supported in target env
 describe('LangChain Chat', () => {
-  const makeClient = (stream?: boolean) =>
+  const makeClient = () =>
     new GenAIChatModel({
-      modelId: 'meta-llama/llama-2-70b-chat',
-      stream,
+      model_id: 'meta-llama/llama-2-70b-chat',
       configuration: {
         endpoint: process.env.ENDPOINT,
         apiKey: process.env.API_KEY,
@@ -17,14 +16,6 @@ describe('LangChain Chat', () => {
         min_new_tokens: 1,
         max_new_tokens: 25,
         repetition_penalty: 2,
-      },
-      rolesMapping: {
-        human: {
-          stopSequence: '<human>:',
-        },
-        system: {
-          stopSequence: '<bot>:',
-        },
       },
     });
 
@@ -43,12 +34,33 @@ describe('LangChain Chat', () => {
     test('should handle single question', async () => {
       const chat = makeClient();
 
-      const response = await chat.invoke([
+      const response = await chat.invoke(
+        [
+          new HumanMessage(
+            'What is a good name for a company that makes colorful socks?',
+          ),
+        ],
+        { parameters: { decoding_method: 'sample' } },
+      );
+      expectIsNonEmptyString(response.content);
+    });
+
+    test('should handle two consecutive questions', async () => {
+      const chat = makeClient();
+
+      const response1 = await chat.invoke([
         new HumanMessage(
           'What is a good name for a company that makes colorful socks?',
         ),
       ]);
-      expectIsNonEmptyString(response.content);
+      expectIsNonEmptyString(response1.content);
+
+      const response2 = await chat.invoke([
+        new HumanMessage(
+          'What is a good name for a company that makes colorful socks?',
+        ),
+      ]);
+      expectIsNonEmptyString(response2.content);
     });
 
     test('should handle question with additional hint', async () => {
@@ -84,20 +96,26 @@ describe('LangChain Chat', () => {
     });
 
     test('should handle streaming', async () => {
-      const chat = makeClient(true);
+      const chat = makeClient();
 
       const tokens: string[] = [];
-      const handleNewToken = vi.fn((token: string) => {
+      const handleText = vi.fn((token: string) => {
         tokens.push(token);
       });
 
-      const output = await chat.invoke([new HumanMessage('Tell me a joke.')], {
-        callbacks: [{ handleLLMNewToken: handleNewToken }],
-      });
-
-      expect(handleNewToken).toHaveBeenCalled();
-      expectIsNonEmptyString(output.content);
-      expect(tokens.join('')).toStrictEqual(output.content);
+      const outputStream = await chat.stream(
+        [new HumanMessage('Tell me a joke.')],
+        {
+          callbacks: [{ handleText: handleText }],
+        },
+      );
+      const contents = [];
+      for await (const output of outputStream) {
+        expect(output.content).toBeString();
+        contents.push(output.content as string);
+      }
+      expect(handleText).toBeCalledTimes(contents.length);
+      expect(tokens).toStrictEqual(contents);
     });
   });
 });

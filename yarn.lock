@@ -667,7 +667,7 @@ __metadata:
     "@ai-zen/node-fetch-event-source": ^2.1.2
     "@commitlint/cli": ^18.0.0
     "@commitlint/config-conventional": ^18.0.0
-    "@langchain/core": ^0.1.11
+    "@langchain/core": ^0.1.28
     "@types/lodash": ^4.14.200
     "@typescript-eslint/eslint-plugin": ^6.9.0
     "@typescript-eslint/parser": ^6.9.0
@@ -774,9 +774,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@langchain/core@npm:^0.1.11":
-  version: 0.1.12
-  resolution: "@langchain/core@npm:0.1.12"
+"@langchain/core@npm:^0.1.28":
+  version: 0.1.28
+  resolution: "@langchain/core@npm:0.1.28"
   dependencies:
     ansi-styles: ^5.0.0
     camelcase: 6
@@ -787,8 +787,9 @@ __metadata:
     p-queue: ^6.6.2
     p-retry: 4
     uuid: ^9.0.0
-    zod: ^3.22.3
-  checksum: bed15e8047fd1e9316243064886b10e851c6b660cd49d719b3ea0fc3c5060b4e07f853b27ee7574efe139166160744f04dceb31a9d9482599a087e5aaf491105
+    zod: ^3.22.4
+    zod-to-json-schema: ^3.22.3
+  checksum: 8ef96614c0dfdf18fd8e37d4ee39b954628f3847dc9af51ecebb18f3bc60a5963aa769508f691d72a899aecc0f48df9b1bc0c8eddf33c8e37c2ff3e2616030ec
   languageName: node
   linkType: hard
 
@@ -7324,7 +7325,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.22.3":
+"zod-to-json-schema@npm:^3.22.3":
+  version: 3.22.4
+  resolution: "zod-to-json-schema@npm:3.22.4"
+  peerDependencies:
+    zod: ^3.22.4
+  checksum: 22f89d505cc3d93020de38e4471362fbecd73a8df58017553ad57fb14e69b6f2f88bcdfe9f84b291442ed0654f97344d517af291d23848e43e6e208ee23dac2b
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.22.4":
   version: 3.22.4
   resolution: "zod@npm:3.22.4"
   checksum: 80bfd7f8039b24fddeb0718a2ec7c02aa9856e4838d6aa4864335a047b6b37a3273b191ef335bf0b2002e5c514ef261ffcda5a589fb084a48c336ffc4cdbab7f

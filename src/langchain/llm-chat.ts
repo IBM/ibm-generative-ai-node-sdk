@@ -3,58 +3,61 @@ import {
   BaseChatModelParams,
 } from '@langchain/core/language_models/chat_models';
 import {
+  AIMessage,
+  AIMessageChunk,
   BaseMessage,
-  MessageType,
-  SystemMessage,
 } from '@langchain/core/messages';
 import { CallbackManagerForLLMRun } from '@langchain/core/callbacks/manager';
-import { ChatResult } from '@langchain/core/outputs';
+import { ChatGenerationChunk, ChatResult } from '@langchain/core/outputs';
+import { BaseLanguageModelCallOptions } from '@langchain/core/language_models/base';
+import merge from 'lodash/merge.js';
 
-import { InvalidInputError } from '../errors.js';
-import { concatUnique } from '../helpers/common.js';
-import type { RequiredPartial } from '../helpers/types.js';
-import { TextGenerationCreateOutput } from '../schema.js';
+import { Client, Configuration } from '../client.js';
+import {
+  TextChatCreateInput,
+  TextChatCreateStreamInput,
+  TextGenerationCreateInput,
+} from '../schema.js';
+import { InternalError, InvalidInputError } from '../errors.js';
 
-import { GenAIModel, GenAIModelOptions } from './llm.js';
+export type GenAIChatModelParams = BaseChatModelParams &
+  Pick<
+    TextGenerationCreateInput & TextChatCreateStreamInput,
+    'model_id' | 'prompt_id' | 'parameters'
+  > & { configuration?: Configuration };
+export type GenAIChatModelOptions = BaseLanguageModelCallOptions &
+  Pick<GenAIChatModelParams, 'parameters'>;
 
-export type RolesMapping = RequiredPartial<
-  Record<
-    MessageType,
-    {
-      stopSequence: string;
-    }
-  >,
-  'system'
->;
+export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
+  protected readonly client: Client;
 
-type Options = BaseChatModelParams &
-  GenAIModelOptions & {
-    rolesMapping: RolesMapping;
-  };
+  protected readonly modelId?: string;
+  protected readonly promptId?: string;
+  protected parameters?: TextChatCreateInput['parameters'] &
+    TextChatCreateStreamInput['parameters'];
 
-export class GenAIChatModel extends BaseChatModel {
-  readonly #model: GenAIModel;
-  readonly #rolesMapping: RolesMapping;
+  protected conversation: string | null = null;
 
-  constructor(options: Options) {
+  constructor({
+    model_id,
+    prompt_id,
+    parameters,
+    configuration,
+    ...options
+  }: GenAIChatModelParams) {
     super(options);
 
-    this.#rolesMapping = options.rolesMapping;
+    this.modelId = model_id;
+    this.promptId = prompt_id;
+    this.parameters = parameters;
+    this.client = new Client(configuration);
+  }
 
-    this.#model = new GenAIModel({
-      ...options,
-      parameters: {
-        ...options.parameters,
-        stop_sequences: concatUnique(
-          options.parameters?.stop_sequences,
-          Object.values(options.rolesMapping).map((role) => role.stopSequence),
-        ),
-      },
-      configuration: {
-        ...options.configuration,
-        // retries: options.maxRetries ?? options.configuration?.retries, TODO reintroduce when client has support
-      },
-    });
+  /**
+   * Clears the chat history
+   */
+  clear() {
+    this.conversation = null;
   }
 
   async _generate(
@@ -62,51 +65,103 @@ export class GenAIChatModel extends BaseChatModel {
     options: this['ParsedCallOptions'],
     runManager?: CallbackManagerForLLMRun,
   ): Promise<ChatResult> {
-    const message = messages
-      .map((msg) => {
-        const type = this.#rolesMapping[msg._getType()];
-        if (!type) {
-          throw new InvalidInputError(
-            `Unsupported message type "${msg._getType()}"`,
-          );
-        }
-        return `${type.stopSequence}${msg.content}`;
-      })
-      .join('\n')
-      .concat(this.#rolesMapping.system.stopSequence);
-
-    const output = await this.#model._generate([message], options, runManager);
-
+    const output = await this.client.text.chat.create(
+      {
+        ...(this.conversation
+          ? { conversation_id: this.conversation }
+          : { model_id: this.modelId, prompt_id: this.promptId }),
+        messages: this._convertMessages(messages),
+        parameters: merge(this.parameters, options.parameters),
+      },
+      { signal: options.signal },
+    );
+    if (output.results.length !== 1) throw new InternalError('Invalid result');
+    const result = output.results[0];
+    if (result.input_token_count == null)
+      throw new InternalError('Missing token count');
+    this.conversation = output.conversation_id;
     return {
-      generations: output.generations.map(([generation]) => ({
-        message: new SystemMessage(generation.text),
-        generationInfo: generation.generationInfo,
-        text: generation.text,
-      })),
-      llmOutput: output.llmOutput,
+      generations: [
+        {
+          message: new AIMessage({ content: result.generated_text }),
+          text: result.generated_text,
+          generationInfo: {
+            inputTokens: result.input_tokens,
+            generatedTokens: result.generated_tokens,
+            seed: result.seed,
+            stopReason: result.stop_reason,
+            stopSequence: result.stop_sequence,
+            moderation: result.moderation,
+          },
+        },
+      ],
+      llmOutput: {
+        tokenUsage: {
+          completionTokens: result.generated_token_count,
+          promptTokens: result.input_token_count,
+          totalTokens: result.generated_token_count + result.input_token_count,
+        },
+      },
     };
   }
 
-  _combineLLMOutput(...llmOutputs: TextGenerationCreateOutput[]) {
-    return llmOutputs
-      .flatMap((output) => output.results?.at(0) ?? [])
-      .reduce(
-        (acc, gen) => {
-          acc.tokenUsage.completionTokens += gen.generated_token_count || 0;
-          acc.tokenUsage.promptTokens += gen.input_token_count || 0;
-          acc.tokenUsage.totalTokens =
-            acc.tokenUsage.promptTokens + acc.tokenUsage.completionTokens;
+  async *_streamResponseChunks(
+    messages: BaseMessage[],
+    options: this['ParsedCallOptions'],
+    runManager?: CallbackManagerForLLMRun,
+  ): AsyncGenerator<ChatGenerationChunk> {
+    const outputStream = await this.client.text.chat.create_stream(
+      {
+        ...(this.conversation
+          ? { conversation_id: this.conversation }
+          : { model_id: this.modelId, prompt_id: this.promptId }),
+        messages: this._convertMessages(messages),
+        parameters: merge(this.parameters, options.parameters),
+      },
+      { signal: options.signal },
+    );
+    for await (const output of outputStream) {
+      if (output.results?.length !== 1)
+        throw new InternalError('Invalid output');
+      const result = output.results[0];
+      this.conversation = output.conversation_id;
+      yield new ChatGenerationChunk({
+        message: new AIMessageChunk({
+          content: result.generated_text,
+        }),
+        text: result.generated_text,
+        generationInfo: {
+          inputTokens: result.input_tokens,
+          generatedTokens: result.generated_tokens,
+          seed: result.seed,
+          stopReason: result.stop_reason,
+          stopSequence: result.stop_sequence,
+          moderation: result.moderation,
+        },
+      });
+      await runManager?.handleText(result.generated_text);
+    }
+  }
 
-          return acc;
-        },
-        {
-          tokenUsage: {
-            completionTokens: 0,
-            promptTokens: 0,
-            totalTokens: 0,
-          },
-        },
-      );
+  _convertMessages(
+    messages: BaseMessage[],
+  ): TextChatCreateInput['messages'] & TextChatCreateStreamInput['messages'] {
+    return messages.map((message) => {
+      const content = message.content;
+      if (typeof content !== 'string')
+        throw new InvalidInputError('Multimodal messages are not supported.');
+      const type = message._getType();
+      switch (type) {
+        case 'system':
+          return { content, role: 'system' };
+        case 'human':
+          return { content, role: 'user' };
+        case 'ai':
+          return { content, role: 'assistant' };
+        default:
+          throw new InvalidInputError(`Unsupported message type "${type}"`);
+      }
+    });
   }
 
   _llmType(): string {
@@ -114,6 +169,6 @@ export class GenAIChatModel extends BaseChatModel {
   }
 
   _modelType(): string {
-    return this.#model._modelType();
+    return this.modelId ?? 'default';
   }
 }

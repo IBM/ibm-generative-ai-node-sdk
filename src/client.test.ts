@@ -1,8 +1,7 @@
-import { lookupApiKey, lookupEndpoint } from '../helpers/config.js';
-
+import { lookupApiKey, lookupEndpoint } from './helpers/config.js';
 import { Client } from './client.js';
 
-vi.mock('../helpers/config.js');
+vi.mock('./helpers/config.js');
 
 describe('client', () => {
   describe('configuration', () => {

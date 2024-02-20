@@ -1,13 +1,9 @@
 import { PromptTemplate as LangChainPromptTemplate } from '@langchain/core/prompts';
 
-import type { PromptTemplateOutput as PromptTemplate } from '../client/types.js';
 import { InvalidInputError } from '../errors.js';
 
 export class GenAIPromptTemplate {
-  static toLangChain(
-    template: PromptTemplate | PromptTemplate['value'],
-  ): LangChainPromptTemplate {
-    const body = typeof template === 'string' ? template : template.value;
+  static toLangChain(body: string): LangChainPromptTemplate {
     const fString = body.replace(
       GenAIPromptTemplate.getTemplateMatcher('mustache'),
       '{$1}',
@@ -18,9 +14,10 @@ export class GenAIPromptTemplate {
     });
   }
 
-  static fromLangChain(
-    template: LangChainPromptTemplate,
-  ): PromptTemplate['value'] {
+  static fromLangChain(template: LangChainPromptTemplate): string {
+    if (typeof template.template !== 'string')
+      throw new Error('Unsupported template type');
+
     return template.template.replace(
       GenAIPromptTemplate.getTemplateMatcher(template.templateFormat),
       '{{$1}}',

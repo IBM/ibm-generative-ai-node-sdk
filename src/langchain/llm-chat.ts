@@ -11,18 +11,11 @@ import { CallbackManagerForLLMRun } from '@langchain/core/callbacks/manager';
 import { ChatResult } from '@langchain/core/outputs';
 
 import { InvalidInputError } from '../errors.js';
-import { GenerateOutput } from '../client/types.js';
 import { concatUnique } from '../helpers/common.js';
 import type { RequiredPartial } from '../helpers/types.js';
+import { TextGenerationCreateOutput } from '../schema.js';
 
 import { GenAIModel, GenAIModelOptions } from './llm.js';
-
-interface GenAILLMOutput {
-  tokenUsage: Pick<
-    GenerateOutput,
-    'input_token_count' | 'generated_token_count'
-  >;
-}
 
 export type RolesMapping = RequiredPartial<
   Record<
@@ -59,7 +52,7 @@ export class GenAIChatModel extends BaseChatModel {
       },
       configuration: {
         ...options.configuration,
-        retries: options.maxRetries ?? options.configuration?.retries,
+        // retries: options.maxRetries ?? options.configuration?.retries, TODO reintroduce when client has support
       },
     });
   }
@@ -94,21 +87,26 @@ export class GenAIChatModel extends BaseChatModel {
     };
   }
 
-  _combineLLMOutput(...llmOutputs: GenerateOutput[]): GenAILLMOutput {
-    return llmOutputs.reduce<GenAILLMOutput>(
-      (acc, gen) => {
-        acc.tokenUsage.generated_token_count += gen.generated_token_count || 0;
-        acc.tokenUsage.input_token_count += gen.input_token_count || 0;
+  _combineLLMOutput(...llmOutputs: TextGenerationCreateOutput[]) {
+    return llmOutputs
+      .flatMap((output) => output.results?.at(0) ?? [])
+      .reduce(
+        (acc, gen) => {
+          acc.tokenUsage.completionTokens += gen.generated_token_count || 0;
+          acc.tokenUsage.promptTokens += gen.input_token_count || 0;
+          acc.tokenUsage.totalTokens =
+            acc.tokenUsage.promptTokens + acc.tokenUsage.completionTokens;
 
-        return acc;
-      },
-      {
-        tokenUsage: {
-          generated_token_count: 0,
-          input_token_count: 0,
+          return acc;
         },
-      },
-    );
+        {
+          tokenUsage: {
+            completionTokens: 0,
+            promptTokens: 0,
+            totalTokens: 0,
+          },
+        },
+      );
   }
 
   _llmType(): string {

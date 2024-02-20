@@ -248,7 +248,7 @@ import { GenAIChatModel } from '@ibm-generative-ai/node-sdk/langchain';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 
 const client = new GenAIChatModel({
-  modelId: 'eleutherai/gpt-neox-20b',
+  modelId: 'meta-llama/llama-2-70b-chat',
   stream: false,
   configuration: {
     endpoint: process.env.ENDPOINT,

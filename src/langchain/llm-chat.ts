@@ -120,13 +120,14 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
         messages: this._convertMessages(messages),
         parameters: merge(this.parameters, options.parameters),
       },
-      { signal: options.signal },
+      { signal: options.signal }
     );
     for await (const output of outputStream) {
-      if (output.results?.length !== 1)
+      this.conversation = output.conversation_id;
+      if (!output.results) continue;
+      if (output.results.length !== 1)
         throw new InternalError('Invalid output');
       const result = output.results[0];
-      this.conversation = output.conversation_id;
       yield new ChatGenerationChunk({
         message: new AIMessageChunk({
           content: result.generated_text,

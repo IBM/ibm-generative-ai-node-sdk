@@ -5,6 +5,8 @@ import {
   FileServiceCreateOutput,
   FileServiceDeleteInput,
   FileServiceDeleteOutput,
+  FileServiceListInput,
+  FileServiceListOutput,
   FileServiceReadInput,
   FileServiceReadOutput,
   FileServiceRetrieveInput,
@@ -83,6 +85,23 @@ export class FileService extends BaseService {
           path: input,
           query: {
             version: '2023-11-22',
+          },
+        },
+      }),
+    );
+  }
+
+  async list(
+    input: FileServiceListInput,
+    opts?: Options,
+  ): Promise<FileServiceListOutput> {
+    return clientErrorWrapper(
+      this._client.GET('/v2/files', {
+        ...opts,
+        params: {
+          query: {
+            ...input,
+            version: '2023-12-15',
           },
         },
       }),

@@ -142,7 +142,7 @@ export type TuneServiceReadInput = ApiClientOptions<
   'GET',
   '/v2/tunes/{id}/content/{type}'
 >['params']['path'];
-export type TuneServiceReadOutput = Blob; // TODO proper derivation
+export type TuneServiceReadOutput = Blob; // TODO Replace with proper derivation
 
 export type TuneServiceRetrieveInput = ApiClientOptions<
   'GET',
@@ -228,6 +228,13 @@ export type FileServiceDeleteInput = ApiClientOptions<
 >['params']['path'];
 export type FileServiceDeleteOutput = OutputWrapper<
   ApiClientResponse<'DELETE', '/v2/files/{id}'>['data']
+>;
+
+export type FileServiceListInput = InputQueryWrapper<
+  ApiClientOptions<'GET', '/v2/files'>['params']['query']
+>;
+export type FileServiceListOutput = OutputWrapper<
+  ApiClientResponse<'GET', '/v2/files'>['data']
 >;
 
 // SystemPromptService

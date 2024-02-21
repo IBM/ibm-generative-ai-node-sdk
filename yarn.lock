@@ -695,7 +695,7 @@ __metadata:
     vitest: ^0.34.6
     yaml: ^2.3.3
   peerDependencies:
-    "@langchain/core": ">=0.1.11"
+    "@langchain/core": ">=0.1.28"
   languageName: unknown
   linkType: soft
 

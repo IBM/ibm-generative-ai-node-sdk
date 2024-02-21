@@ -21,20 +21,22 @@ import {
 import { InternalError, InvalidInputError } from '../errors.js';
 
 export type GenAIChatModelParams = BaseChatModelParams &
+  Required<
+    Pick<TextGenerationCreateInput & TextChatCreateStreamInput, 'model_id'>
+  > &
   Pick<
     TextGenerationCreateInput & TextChatCreateStreamInput,
-    'model_id' | 'prompt_id' | 'parameters'
-  > & { configuration?: Configuration };
+    'prompt_id' | 'parameters'
+  > & { model_id: string; configuration?: Configuration };
 export type GenAIChatModelOptions = BaseLanguageModelCallOptions &
   Pick<GenAIChatModelParams, 'parameters'>;
 
 export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
   protected readonly client: Client;
 
-  protected readonly modelId?: string;
-  protected readonly promptId?: string;
-  protected parameters?: TextChatCreateInput['parameters'] &
-    TextChatCreateStreamInput['parameters'];
+  public readonly modelId: GenAIChatModelParams['model_id'];
+  public readonly promptId: GenAIChatModelParams['prompt_id'];
+  protected parameters: GenAIChatModelParams['parameters'];
 
   protected conversation: string | null = null;
 
@@ -143,7 +145,7 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
     }
   }
 
-  _convertMessages(
+  private _convertMessages(
     messages: BaseMessage[],
   ): TextChatCreateInput['messages'] & TextChatCreateStreamInput['messages'] {
     return messages.map((message) => {
@@ -169,6 +171,6 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
   }
 
   _modelType(): string {
-    return this.modelId ?? 'default';
+    return this.modelId;
   }
 }

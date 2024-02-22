@@ -1,8 +1,5 @@
-import { createReadStream, createWriteStream } from 'node:fs';
-import { pipeline } from 'node:stream/promises';
-import { Readable } from 'node:stream';
+import { createReadStream } from 'node:fs';
 import { blob } from 'node:stream/consumers';
-import { ReadableStream } from 'node:stream/web';
 
 import { Client } from '../src/index.js';
 
@@ -45,10 +42,7 @@ const client = new Client({
 
   // Download the file's content
   const content = await client.file.read({ id: result.id });
-  await pipeline(
-    Readable.fromWeb(content.stream() as ReadableStream),
-    createWriteStream('/dev/null'),
-  );
+  console.log(await content.text());
 
   // Delete the file
   await client.file.delete({ id: result.id });

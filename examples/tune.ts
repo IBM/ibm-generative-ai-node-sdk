@@ -1,7 +1,3 @@
-import { createWriteStream } from 'node:fs';
-import { Readable, pipeline } from 'node:stream';
-import { ReadableStream } from 'node:stream/web';
-
 import { Client } from '../src/index.js';
 
 const client = new Client({
@@ -49,10 +45,7 @@ const client = new Client({
   // Download tune's assets when completed
   if (retrievedTune.status === 'completed') {
     const logs = await client.tune.read({ id: retrievedTune.id, type: 'logs' });
-    pipeline(
-      Readable.fromWeb(logs.stream() as ReadableStream),
-      createWriteStream('/dev/null'),
-    );
+    console.log(await logs.text());
   }
 
   // Delete the tune

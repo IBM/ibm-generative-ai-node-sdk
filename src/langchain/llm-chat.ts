@@ -26,8 +26,8 @@ export type GenAIChatModelParams = BaseChatModelParams &
   > &
   Pick<
     TextGenerationCreateInput & TextChatCreateStreamInput,
-    'prompt_id' | 'parameters'
-  > & { model_id: string; configuration?: Configuration };
+    'prompt_id' | 'conversation_id' | 'parameters'
+  > & { configuration?: Configuration };
 export type GenAIChatModelOptions = BaseLanguageModelCallOptions &
   Pick<GenAIChatModelParams, 'parameters'>;
 
@@ -36,13 +36,13 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
 
   public readonly modelId: GenAIChatModelParams['model_id'];
   public readonly promptId: GenAIChatModelParams['prompt_id'];
+  public readonly conversationId: GenAIChatModelParams['conversation_id'];
   protected parameters: GenAIChatModelParams['parameters'];
-
-  protected conversation: string | null = null;
 
   constructor({
     model_id,
     prompt_id,
+    conversation_id,
     parameters,
     configuration,
     ...options
@@ -51,26 +51,20 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
 
     this.modelId = model_id;
     this.promptId = prompt_id;
+    this.conversationId = conversation_id;
     this.parameters = parameters;
     this.client = new Client(configuration);
-  }
-
-  /**
-   * Clears the chat history
-   */
-  clear() {
-    this.conversation = null;
   }
 
   async _generate(
     messages: BaseMessage[],
     options: this['ParsedCallOptions'],
-    runManager?: CallbackManagerForLLMRun,
+    _runManager?: CallbackManagerForLLMRun,
   ): Promise<ChatResult> {
     const output = await this.client.text.chat.create(
       {
-        ...(this.conversation
-          ? { conversation_id: this.conversation }
+        ...(this.conversationId
+          ? { conversation_id: this.conversationId }
           : { model_id: this.modelId, prompt_id: this.promptId }),
         messages: this._convertMessages(messages),
         parameters: merge(this.parameters, options.parameters),
@@ -81,13 +75,13 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
     const result = output.results[0];
     if (result.input_token_count == null)
       throw new InternalError('Missing token count');
-    this.conversation = output.conversation_id;
     return {
       generations: [
         {
           message: new AIMessage({ content: result.generated_text }),
           text: result.generated_text,
           generationInfo: {
+            conversationId: output.conversation_id,
             inputTokens: result.input_tokens,
             generatedTokens: result.generated_tokens,
             seed: result.seed,
@@ -110,12 +104,12 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
   async *_streamResponseChunks(
     messages: BaseMessage[],
     options: this['ParsedCallOptions'],
-    runManager?: CallbackManagerForLLMRun,
+    _runManager?: CallbackManagerForLLMRun,
   ): AsyncGenerator<ChatGenerationChunk> {
     const outputStream = await this.client.text.chat.create_stream(
       {
-        ...(this.conversation
-          ? { conversation_id: this.conversation }
+        ...(this.conversationId
+          ? { conversation_id: this.conversationId }
           : { model_id: this.modelId, prompt_id: this.promptId }),
         messages: this._convertMessages(messages),
         parameters: merge(this.parameters, options.parameters),
@@ -123,7 +117,6 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
       { signal: options.signal },
     );
     for await (const output of outputStream) {
-      this.conversation = output.conversation_id;
       if (output.results) {
         for (const result of output.results) {
           yield new ChatGenerationChunk({
@@ -132,27 +125,29 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
             }),
             text: result.generated_text,
             generationInfo: {
+              conversationId: output.conversation_id,
               inputTokens: result.input_tokens,
               generatedTokens: result.generated_tokens,
               seed: result.seed,
               stopReason: result.stop_reason,
               stopSequence: result.stop_sequence,
-              moderation: output.moderation,
             },
           });
-          await runManager?.handleText(result.generated_text);
+          await _runManager?.handleText(result.generated_text);
         }
-      } else if (output.moderation) {
+      }
+      if (output.moderation) {
         yield new ChatGenerationChunk({
           message: new AIMessageChunk({
             content: '',
           }),
           text: '',
           generationInfo: {
+            conversationId: output.conversation_id,
             moderation: output.moderation,
           },
         });
-        await runManager?.handleText('');
+        await _runManager?.handleText('');
       }
     }
   }

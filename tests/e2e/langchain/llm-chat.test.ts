@@ -4,9 +4,10 @@ import { GenAIChatModel } from '../../../src/langchain/index.js';
 
 // Remove once some chat models will be supported in target env
 describe('LangChain Chat', () => {
-  const makeClient = () =>
+  const makeModel = (conversation_id?: string) =>
     new GenAIChatModel({
       model_id: 'meta-llama/llama-2-70b-chat',
+      conversation_id,
       configuration: {
         endpoint: process.env.ENDPOINT,
         apiKey: process.env.API_KEY,
@@ -32,7 +33,7 @@ describe('LangChain Chat', () => {
     ].join(' ');
 
     test('should handle single question', async () => {
-      const chat = makeClient();
+      const chat = makeModel();
 
       const response = await chat.invoke(
         [
@@ -45,26 +46,29 @@ describe('LangChain Chat', () => {
       expectIsNonEmptyString(response.content);
     });
 
-    test('should handle two consecutive questions', async () => {
-      const chat = makeClient();
+    test('should handle a conversation', async () => {
+      let chat = makeModel();
+      const { generations } = await chat.generate([
+        [
+          new HumanMessage(
+            'What is a good name for a company that makes colorful socks?',
+          ),
+        ],
+      ]);
+      expectIsNonEmptyString(generations[0][0].text);
+      expectIsNonEmptyString(generations[0][0].generationInfo?.conversationId);
 
-      const response1 = await chat.invoke([
+      chat = makeModel(generations[0][0].generationInfo?.conversationId);
+      const response = await chat.invoke([
         new HumanMessage(
           'What is a good name for a company that makes colorful socks?',
         ),
       ]);
-      expectIsNonEmptyString(response1.content);
-
-      const response2 = await chat.invoke([
-        new HumanMessage(
-          'What is a good name for a company that makes colorful socks?',
-        ),
-      ]);
-      expectIsNonEmptyString(response2.content);
-    });
+      expectIsNonEmptyString(response.content);
+    }, 15_000);
 
     test('should handle question with additional hint', async () => {
-      const chat = makeClient();
+      const chat = makeModel();
 
       const response = await chat.invoke([
         new SystemMessage(SYSTEM_MESSAGE),
@@ -74,7 +78,7 @@ describe('LangChain Chat', () => {
     });
 
     test('should handle multiple questions', async () => {
-      const chat = makeClient();
+      const chat = makeModel();
 
       const response = await chat.generate([
         [
@@ -96,7 +100,7 @@ describe('LangChain Chat', () => {
     });
 
     test('should handle streaming', async () => {
-      const chat = makeClient();
+      const chat = makeModel();
 
       const tokens: string[] = [];
       const handleText = vi.fn((token: string) => {

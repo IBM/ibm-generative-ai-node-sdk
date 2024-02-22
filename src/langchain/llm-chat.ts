@@ -120,29 +120,40 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
         messages: this._convertMessages(messages),
         parameters: merge(this.parameters, options.parameters),
       },
-      { signal: options.signal }
+      { signal: options.signal },
     );
     for await (const output of outputStream) {
       this.conversation = output.conversation_id;
-      if (!output.results) continue;
-      if (output.results.length !== 1)
-        throw new InternalError('Invalid output');
-      const result = output.results[0];
-      yield new ChatGenerationChunk({
-        message: new AIMessageChunk({
-          content: result.generated_text,
-        }),
-        text: result.generated_text,
-        generationInfo: {
-          inputTokens: result.input_tokens,
-          generatedTokens: result.generated_tokens,
-          seed: result.seed,
-          stopReason: result.stop_reason,
-          stopSequence: result.stop_sequence,
-          moderation: result.moderation,
-        },
-      });
-      await runManager?.handleText(result.generated_text);
+      if (output.results) {
+        for (const result of output.results) {
+          yield new ChatGenerationChunk({
+            message: new AIMessageChunk({
+              content: result.generated_text,
+            }),
+            text: result.generated_text,
+            generationInfo: {
+              inputTokens: result.input_tokens,
+              generatedTokens: result.generated_tokens,
+              seed: result.seed,
+              stopReason: result.stop_reason,
+              stopSequence: result.stop_sequence,
+              moderation: output.moderation,
+            },
+          });
+          await runManager?.handleText(result.generated_text);
+        }
+      } else if (output.moderation) {
+        yield new ChatGenerationChunk({
+          message: new AIMessageChunk({
+            content: '',
+          }),
+          text: '',
+          generationInfo: {
+            moderation: output.moderation,
+          },
+        });
+        await runManager?.handleText('');
+      }
     }
   }
 

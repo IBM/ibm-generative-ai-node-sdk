@@ -1,6 +1,3 @@
-import { createWriteStream } from 'node:fs';
-import { pipeline } from 'node:stream';
-
 import { Client } from '../src/index.js';
 
 const client = new Client({
@@ -9,48 +6,48 @@ const client = new Client({
 
 {
   // List all completed tunes
-  for await (const tune of client.tunes({ filters: { status: 'COMPLETED' } })) {
-    console.log(tune);
+  let totalCount = Infinity;
+  const limit = 100;
+  for (let offset = 0; offset < totalCount; offset += limit) {
+    const { results, total_count } = await client.tune.list({
+      limit,
+      offset,
+      status: 'completed',
+    });
+    for (const file of results) {
+      console.log(file);
+    }
+    totalCount = total_count;
   }
-}
-
-{
-  // List all completed tunes via callback interface
-  client.tunes({ filters: { status: 'COMPLETED' } }, (err, tune) => {
-    if (err) console.error(err);
-    console.log(tune);
-  });
 }
 
 {
   // List available tune methods
-  const tuneMethods = await client.tuneMethods();
-  console.log(tuneMethods);
+  const { results: tuneTypes } = await client.tune.types({});
+  console.log(tuneTypes);
 
   // Create a tune
-  const newTune = await client.tune({
+  const { result: createdTune } = await client.tune.create({
     name: 'Awesome Tune',
-    method_id: tuneMethods[0].id,
+    tuning_type: 'prompt_tuning',
     model_id: 'google/flan-t5-xl',
     task_id: 'generation',
     training_file_ids: ['fileId'],
   });
-  console.log(newTune);
+  console.log(createdTune);
 
   // Show details of the tune
-  const tune = await client.tune({ id: newTune.id });
-  console.log(tune);
+  const { result: retrievedTune } = await client.tune.retrieve({
+    id: createdTune.id,
+  });
+  console.log(retrievedTune);
 
   // Download tune's assets when completed
-  if (tune.status === 'COMPLETED') {
-    const encoder = await tune.downloadAsset('encoder');
-    const logs = await tune.downloadAsset('logs');
-    await Promise.all([
-      pipeline(encoder, createWriteStream('/dev/null')),
-      pipeline(logs, createWriteStream('/dev/null')),
-    ]);
+  if (retrievedTune.status === 'completed') {
+    const logs = await client.tune.read({ id: retrievedTune.id, type: 'logs' });
+    console.log(await logs.text());
   }
 
   // Delete the tune
-  await client.tune({ id: tune.id }, { delete: true });
+  await client.tune.delete({ id: createdTune.id });
 }

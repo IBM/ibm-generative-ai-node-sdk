@@ -1,5 +1,5 @@
-import { createReadStream, createWriteStream } from 'node:fs';
-import { pipeline } from 'node:stream/promises';
+import { createReadStream } from 'node:fs';
+import { blob } from 'node:stream/consumers';
 
 import { Client } from '../src/index.js';
 
@@ -9,36 +9,41 @@ const client = new Client({
 
 {
   // List all files
-  for await (const file of client.files()) {
-    console.log(file);
+  let totalCount = Infinity;
+  const limit = 100;
+  for (let offset = 0; offset < totalCount; offset += limit) {
+    const { results, total_count } = await client.file.list({
+      limit,
+      offset,
+    });
+    for (const file of results) {
+      console.log(file);
+    }
+    totalCount = total_count;
   }
 }
 
 {
-  // List all files via callback interface
-  client.files((err, file) => {
-    if (err) console.error(err);
-    console.log(file);
-  });
-}
-
-{
   // Upload a file
-  const newFile = await client.file({
+  const { result } = await client.file.create({
     purpose: 'tune',
-    filename: 'tune_input.jsonl',
-    file: createReadStream('examples/assets/tune_input.jsonl'),
+    file: {
+      name: 'tune_input.jsonl',
+      content: (await blob(
+        createReadStream('examples/assets/tune_input.jsonl'),
+      )) as any,
+    },
   });
-  console.log(newFile);
+  console.log(result);
 
   // Show details of a file
-  const file = await client.file({ id: newFile.id });
+  const file = await client.file.retrieve({ id: result.id });
   console.log(file);
 
   // Download the file's content
-  const content = await file.download();
-  await pipeline(content, createWriteStream('/dev/null'));
+  const content = await client.file.read({ id: result.id });
+  console.log(await content.text());
 
   // Delete the file
-  await client.file({ id: file.id }, { delete: true });
+  await client.file.delete({ id: result.id });
 }

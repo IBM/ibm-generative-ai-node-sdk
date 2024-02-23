@@ -1,18 +1,15 @@
 import { Client } from '../src/index.js';
 
+import { CHAT_MODEL } from './constants.js';
+
 const client = new Client({
   apiKey: process.env.GENAI_API_KEY,
 });
 
-const model_id = 'google/flan-ul2';
-
 {
   // Start a conversation
-  const {
-    conversation_id,
-    result: { generated_text: answer1 },
-  } = await client.chat({
-    model_id,
+  const { conversation_id, results: results1 } = await client.text.chat.create({
+    model_id: CHAT_MODEL,
     messages: [
       {
         role: 'system',
@@ -24,14 +21,12 @@ const model_id = 'google/flan-ul2';
       },
     ],
   });
-  console.log(answer1);
+  console.log(results1[0]);
 
   // Continue the conversation
-  const {
-    result: { generated_text: answer2 },
-  } = await client.chat({
+  const { results: results2 } = await client.text.chat.create({
     conversation_id,
-    model_id,
+    model_id: CHAT_MODEL,
     messages: [
       {
         role: 'user',
@@ -39,44 +34,16 @@ const model_id = 'google/flan-ul2';
       },
     ],
   });
-  console.log(answer2);
+  console.log(results2[0]);
 }
 
 {
-  // Chat inteface has the same promise, streaming and callback variants as generate interface
-
-  // Promise
-  const data = await client.chat({
-    model_id,
+  // Stream
+  const stream = await client.text.chat.create_stream({
+    model_id: CHAT_MODEL,
     messages: [{ role: 'user', content: 'How are you?' }],
   });
-  console.log(data.result.generated_text);
-  // Callback
-  client.chat(
-    { model_id, messages: [{ role: 'user', content: 'How are you?' }] },
-    (err, data) => {
-      if (err) console.error(err);
-      else console.log(data.result.generated_text);
-    },
-  );
-  // Stream
-  for await (const chunk of client.chat(
-    { model_id, messages: [{ role: 'user', content: 'How are you?' }] },
-    { stream: true },
-  )) {
-    console.log(chunk.result.generated_text);
+  for await (const chunk of stream) {
+    console.log(chunk.results?.at(0)?.generated_text);
   }
-  // Streaming callbacks
-  client.chat(
-    {
-      model_id: 'google/flan-ul2',
-      messages: [{ role: 'user', content: 'How are you?' }],
-    },
-    { stream: true },
-    (err, data) => {
-      if (err) console.error(err);
-      else if (data) console.log(data.result.generated_text);
-      else console.log('EOS');
-    },
-  );
 }

@@ -61,7 +61,7 @@
     "example:run": "ts-node -r dotenv-flow/config",
     "example:generate": "yarn run example:run examples/generate.ts",
     "example:tune": "yarn run example:run examples/tune.ts",
-    "example:prompt-template": "yarn run example:run examples/prompt-templates.ts",
+    "example:history": "yarn run example:run examples/history.ts",
     "example:file": "yarn run example:run examples/file.ts",
     "example:chat": "yarn run example:run examples/chat.ts",
     "example:models": "yarn run example:run examples/models.ts"
@@ -74,6 +74,7 @@
     "@commitlint/config-conventional": "^18.0.0",
     "@langchain/core": "^0.1.11",
     "@types/lodash": "^4.14.200",
+    "@types/node": "^20.11.19",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
     "@vitest/coverage-c8": "^0.31.2",

@@ -4,7 +4,7 @@ import { GenAIChatModel } from '../../src/langchain/llm-chat.js';
 
 const makeClient = () =>
   new GenAIChatModel({
-    modelId: 'meta-llama/llama-2-70b-chat',
+    model_id: 'meta-llama/llama-2-70b-chat',
     configuration: {
       endpoint: process.env.ENDPOINT,
       apiKey: process.env.API_KEY,

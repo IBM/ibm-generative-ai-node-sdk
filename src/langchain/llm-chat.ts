@@ -9,27 +9,22 @@ import {
 } from '@langchain/core/messages';
 import { CallbackManagerForLLMRun } from '@langchain/core/callbacks/manager';
 import { ChatGenerationChunk, ChatResult } from '@langchain/core/outputs';
-import { BaseLanguageModelCallOptions } from '@langchain/core/language_models/base';
+import { BaseLanguageModelCallOptions as BaseChatModelCallOptions } from '@langchain/core/language_models/base';
 import merge from 'lodash/merge.js';
 
 import { Client, Configuration } from '../client.js';
-import {
-  TextChatCreateInput,
-  TextChatCreateStreamInput,
-  TextGenerationCreateInput,
-} from '../schema.js';
+import { TextChatCreateInput, TextChatCreateStreamInput } from '../schema.js';
 import { InternalError, InvalidInputError } from '../errors.js';
 
+type TextChatInput = TextChatCreateInput & TextChatCreateStreamInput;
+
 export type GenAIChatModelParams = BaseChatModelParams &
-  Required<
-    Pick<TextGenerationCreateInput & TextChatCreateStreamInput, 'model_id'>
-  > &
-  Pick<
-    TextGenerationCreateInput & TextChatCreateStreamInput,
-    'prompt_id' | 'conversation_id' | 'parameters'
-  > & { configuration?: Configuration };
-export type GenAIChatModelOptions = BaseLanguageModelCallOptions &
-  Pick<GenAIChatModelParams, 'parameters'>;
+  Omit<TextChatInput, 'messages' | 'prompt_template_id'> & {
+    model_id: NonNullable<TextChatInput['model_id']>;
+    configuration?: Configuration;
+  };
+export type GenAIChatModelOptions = BaseChatModelCallOptions &
+  Partial<Omit<GenAIChatModelParams, 'configuration'>>;
 
 export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
   protected readonly client: Client;
@@ -37,13 +32,21 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
   public readonly modelId: GenAIChatModelParams['model_id'];
   public readonly promptId: GenAIChatModelParams['prompt_id'];
   public readonly conversationId: GenAIChatModelParams['conversation_id'];
-  protected parameters: GenAIChatModelParams['parameters'];
+  public readonly parameters: GenAIChatModelParams['parameters'];
+  public readonly moderations: GenAIChatModelParams['moderations'];
+  public readonly useConversationParameters: GenAIChatModelParams['use_conversation_parameters'];
+  public readonly parentId: GenAIChatModelParams['parent_id'];
+  public readonly trimMethod: GenAIChatModelParams['trim_method'];
 
   constructor({
     model_id,
     prompt_id,
     conversation_id,
     parameters,
+    moderations,
+    parent_id,
+    use_conversation_parameters,
+    trim_method,
     configuration,
     ...options
   }: GenAIChatModelParams) {
@@ -53,6 +56,10 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
     this.promptId = prompt_id;
     this.conversationId = conversation_id;
     this.parameters = parameters;
+    this.moderations = moderations;
+    this.parentId = parent_id;
+    this.useConversationParameters = use_conversation_parameters;
+    this.trimMethod = trim_method;
     this.client = new Client(configuration);
   }
 
@@ -107,13 +114,22 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
     _runManager?: CallbackManagerForLLMRun,
   ): AsyncGenerator<ChatGenerationChunk> {
     const outputStream = await this.client.text.chat.create_stream(
-      {
-        ...(this.conversationId
-          ? { conversation_id: this.conversationId }
-          : { model_id: this.modelId, prompt_id: this.promptId }),
-        messages: this._convertMessages(messages),
-        parameters: merge(this.parameters, options.parameters),
-      },
+      GenAIChatModel._prepareRequest(
+        merge(
+          {
+            conversation_id: this.conversationId,
+            model_id: this.modelId,
+            prompt_id: this.promptId,
+            messages: this._convertMessages(messages),
+            moderations: this.moderations,
+            parameters: this.parameters,
+            use_conversation_parameters: this.useConversationParameters,
+            parent_id: this.parentId,
+            trim_method: this.trimMethod,
+          },
+          options,
+        ),
+      ),
       { signal: options.signal },
     );
     for await (const output of outputStream) {
@@ -150,6 +166,30 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
         await _runManager?.handleText('');
       }
     }
+  }
+
+  private static _prepareRequest(
+    request: TextChatCreateInput & TextChatCreateStreamInput,
+  ) {
+    const {
+      conversation_id,
+      model_id,
+      prompt_id,
+      use_conversation_parameters,
+      parameters,
+      ...rest
+    } = request;
+    return {
+      ...(conversation_id
+        ? { conversation_id }
+        : prompt_id
+        ? { prompt_id }
+        : { model_id }),
+      ...(use_conversation_parameters
+        ? { use_conversation_parameters }
+        : { parameters }),
+      ...rest,
+    };
   }
 
   private _convertMessages(

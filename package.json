@@ -67,12 +67,12 @@
     "example:models": "yarn run example:run examples/models.ts"
   },
   "peerDependencies": {
-    "@langchain/core": ">=0.1.28"
+    "@langchain/core": ">=0.1.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^18.0.0",
     "@commitlint/config-conventional": "^18.0.0",
-    "@langchain/core": "^0.1.28",
+    "@langchain/core": "^0.1.0",
     "@types/lodash": "^4.14.200",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",

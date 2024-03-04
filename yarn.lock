@@ -667,7 +667,7 @@ __metadata:
     "@ai-zen/node-fetch-event-source": ^2.1.2
     "@commitlint/cli": ^18.0.0
     "@commitlint/config-conventional": ^18.0.0
-    "@langchain/core": ^0.1.28
+    "@langchain/core": ^0.1.0
     "@types/lodash": ^4.14.200
     "@typescript-eslint/eslint-plugin": ^6.9.0
     "@typescript-eslint/parser": ^6.9.0
@@ -695,7 +695,7 @@ __metadata:
     vitest: ^0.34.6
     yaml: ^2.3.3
   peerDependencies:
-    "@langchain/core": ">=0.1.28"
+    "@langchain/core": ">=0.1.0"
   languageName: unknown
   linkType: soft
 
@@ -774,22 +774,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@langchain/core@npm:^0.1.28":
-  version: 0.1.28
-  resolution: "@langchain/core@npm:0.1.28"
+"@langchain/core@npm:^0.1.0":
+  version: 0.1.40
+  resolution: "@langchain/core@npm:0.1.40"
   dependencies:
     ansi-styles: ^5.0.0
     camelcase: 6
     decamelize: 1.2.0
     js-tiktoken: ^1.0.8
-    langsmith: ~0.0.48
+    langsmith: ~0.1.7
     ml-distance: ^4.0.0
     p-queue: ^6.6.2
     p-retry: 4
     uuid: ^9.0.0
     zod: ^3.22.4
     zod-to-json-schema: ^3.22.3
-  checksum: 8ef96614c0dfdf18fd8e37d4ee39b954628f3847dc9af51ecebb18f3bc60a5963aa769508f691d72a899aecc0f48df9b1bc0c8eddf33c8e37c2ff3e2616030ec
+  checksum: dc3c1a20d3ba8f1e60cadc7d73d011245f35c473e8a30cf0355ec79e9c52069c9d894882220f14eed91f354d53b6c30f61b8bfb35aeceaaeb951fddced8d0037
   languageName: node
   linkType: hard
 
@@ -4278,9 +4278,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langsmith@npm:~0.0.48":
-  version: 0.0.57
-  resolution: "langsmith@npm:0.0.57"
+"langsmith@npm:~0.1.7":
+  version: 0.1.8
+  resolution: "langsmith@npm:0.1.8"
   dependencies:
     "@types/uuid": ^9.0.1
     commander: ^10.0.1
@@ -4289,7 +4289,7 @@ __metadata:
     uuid: ^9.0.0
   bin:
     langsmith: dist/cli/main.cjs
-  checksum: 97a5ce3aa5dbccdc8992c0f598993325967a0967be48d901b08c8c53d6ec2a4064d41beaa9610276f085bd7fd6f518782ae13e003906465468c43c2edd614f78
+  checksum: cfa211ebfbf0b723efe8fa3c85cb2bdb434396256ca210545b4629d06cde6aec92187073d0aaa709955ae79d66aa154469744401975ae324c96d4c6f594c798e
   languageName: node
   linkType: hard
 

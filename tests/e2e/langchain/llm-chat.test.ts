@@ -4,10 +4,10 @@ import { GenAIChatModel } from '../../../src/langchain/index.js';
 
 // Remove once some chat models will be supported in target env
 describe('LangChain Chat', () => {
-  const makeClient = (stream?: boolean) =>
+  const makeModel = (conversation_id?: string) =>
     new GenAIChatModel({
-      modelId: 'meta-llama/llama-2-70b-chat',
-      stream,
+      model_id: 'meta-llama/llama-2-70b-chat',
+      conversation_id,
       configuration: {
         endpoint: process.env.ENDPOINT,
         apiKey: process.env.API_KEY,
@@ -17,14 +17,6 @@ describe('LangChain Chat', () => {
         min_new_tokens: 1,
         max_new_tokens: 25,
         repetition_penalty: 2,
-      },
-      rolesMapping: {
-        human: {
-          stopSequence: '<human>:',
-        },
-        system: {
-          stopSequence: '<bot>:',
-        },
       },
     });
 
@@ -41,18 +33,42 @@ describe('LangChain Chat', () => {
     ].join(' ');
 
     test('should handle single question', async () => {
-      const chat = makeClient();
+      const chat = makeModel();
 
+      const response = await chat.invoke(
+        [
+          new HumanMessage(
+            'What is a good name for a company that makes colorful socks?',
+          ),
+        ],
+        { parameters: { decoding_method: 'sample' } },
+      );
+      expectIsNonEmptyString(response.content);
+    });
+
+    test('should handle a conversation', async () => {
+      let chat = makeModel();
+      const { generations } = await chat.generate([
+        [
+          new HumanMessage(
+            'What is a good name for a company that makes colorful socks?',
+          ),
+        ],
+      ]);
+      expectIsNonEmptyString(generations[0][0].text);
+      expectIsNonEmptyString(generations[0][0].generationInfo?.conversationId);
+
+      chat = makeModel(generations[0][0].generationInfo?.conversationId);
       const response = await chat.invoke([
         new HumanMessage(
           'What is a good name for a company that makes colorful socks?',
         ),
       ]);
       expectIsNonEmptyString(response.content);
-    });
+    }, 15_000);
 
     test('should handle question with additional hint', async () => {
-      const chat = makeClient();
+      const chat = makeModel();
 
       const response = await chat.invoke([
         new SystemMessage(SYSTEM_MESSAGE),
@@ -62,7 +78,7 @@ describe('LangChain Chat', () => {
     });
 
     test('should handle multiple questions', async () => {
-      const chat = makeClient();
+      const chat = makeModel();
 
       const response = await chat.generate([
         [
@@ -84,20 +100,26 @@ describe('LangChain Chat', () => {
     });
 
     test('should handle streaming', async () => {
-      const chat = makeClient(true);
+      const chat = makeModel();
 
       const tokens: string[] = [];
-      const handleNewToken = vi.fn((token: string) => {
+      const handleText = vi.fn((token: string) => {
         tokens.push(token);
       });
 
-      const output = await chat.invoke([new HumanMessage('Tell me a joke.')], {
-        callbacks: [{ handleLLMNewToken: handleNewToken }],
-      });
-
-      expect(handleNewToken).toHaveBeenCalled();
-      expectIsNonEmptyString(output.content);
-      expect(tokens.join('')).toStrictEqual(output.content);
+      const outputStream = await chat.stream(
+        [new HumanMessage('Tell me a joke.')],
+        {
+          callbacks: [{ handleText: handleText }],
+        },
+      );
+      const contents = [];
+      for await (const output of outputStream) {
+        expect(output.content).toBeString();
+        contents.push(output.content as string);
+      }
+      expect(handleText).toBeCalledTimes(contents.length);
+      expect(tokens).toStrictEqual(contents);
     });
   });
 });

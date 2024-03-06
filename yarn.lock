@@ -667,7 +667,7 @@ __metadata:
     "@ai-zen/node-fetch-event-source": ^2.1.2
     "@commitlint/cli": ^18.0.0
     "@commitlint/config-conventional": ^18.0.0
-    "@langchain/core": ^0.1.11
+    "@langchain/core": ^0.1.0
     "@types/lodash": ^4.14.200
     "@types/node": ^20.11.19
     "@typescript-eslint/eslint-plugin": ^6.9.0
@@ -696,7 +696,7 @@ __metadata:
     vitest: ^0.34.6
     yaml: ^2.3.3
   peerDependencies:
-    "@langchain/core": ">=0.1.11"
+    "@langchain/core": ">=0.1.0"
   languageName: unknown
   linkType: soft
 
@@ -775,21 +775,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@langchain/core@npm:^0.1.11":
-  version: 0.1.12
-  resolution: "@langchain/core@npm:0.1.12"
+"@langchain/core@npm:^0.1.0":
+  version: 0.1.40
+  resolution: "@langchain/core@npm:0.1.40"
   dependencies:
     ansi-styles: ^5.0.0
     camelcase: 6
     decamelize: 1.2.0
     js-tiktoken: ^1.0.8
-    langsmith: ~0.0.48
+    langsmith: ~0.1.7
     ml-distance: ^4.0.0
     p-queue: ^6.6.2
     p-retry: 4
     uuid: ^9.0.0
-    zod: ^3.22.3
-  checksum: bed15e8047fd1e9316243064886b10e851c6b660cd49d719b3ea0fc3c5060b4e07f853b27ee7574efe139166160744f04dceb31a9d9482599a087e5aaf491105
+    zod: ^3.22.4
+    zod-to-json-schema: ^3.22.3
+  checksum: dc3c1a20d3ba8f1e60cadc7d73d011245f35c473e8a30cf0355ec79e9c52069c9d894882220f14eed91f354d53b6c30f61b8bfb35aeceaaeb951fddced8d0037
   languageName: node
   linkType: hard
 
@@ -4287,9 +4288,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"langsmith@npm:~0.0.48":
-  version: 0.0.57
-  resolution: "langsmith@npm:0.0.57"
+"langsmith@npm:~0.1.7":
+  version: 0.1.8
+  resolution: "langsmith@npm:0.1.8"
   dependencies:
     "@types/uuid": ^9.0.1
     commander: ^10.0.1
@@ -4298,7 +4299,7 @@ __metadata:
     uuid: ^9.0.0
   bin:
     langsmith: dist/cli/main.cjs
-  checksum: 97a5ce3aa5dbccdc8992c0f598993325967a0967be48d901b08c8c53d6ec2a4064d41beaa9610276f085bd7fd6f518782ae13e003906465468c43c2edd614f78
+  checksum: cfa211ebfbf0b723efe8fa3c85cb2bdb434396256ca210545b4629d06cde6aec92187073d0aaa709955ae79d66aa154469744401975ae324c96d4c6f594c798e
   languageName: node
   linkType: hard
 
@@ -7341,7 +7342,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod@npm:^3.22.3":
+"zod-to-json-schema@npm:^3.22.3":
+  version: 3.22.4
+  resolution: "zod-to-json-schema@npm:3.22.4"
+  peerDependencies:
+    zod: ^3.22.4
+  checksum: 22f89d505cc3d93020de38e4471362fbecd73a8df58017553ad57fb14e69b6f2f88bcdfe9f84b291442ed0654f97344d517af291d23848e43e6e208ee23dac2b
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.22.4":
   version: 3.22.4
   resolution: "zod@npm:3.22.4"
   checksum: 80bfd7f8039b24fddeb0718a2ec7c02aa9856e4838d6aa4864335a047b6b37a3273b191ef335bf0b2002e5c514ef261ffcda5a589fb084a48c336ffc4cdbab7f

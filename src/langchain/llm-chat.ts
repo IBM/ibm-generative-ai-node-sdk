@@ -69,13 +69,7 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
     _runManager?: CallbackManagerForLLMRun,
   ): Promise<ChatResult> {
     const output = await this.client.text.chat.create(
-      {
-        ...(this.conversationId
-          ? { conversation_id: this.conversationId }
-          : { model_id: this.modelId, prompt_id: this.promptId }),
-        messages: this._convertMessages(messages),
-        parameters: merge(this.parameters, options.parameters),
-      },
+      this._prepareRequest(messages, options),
       { signal: options.signal },
     );
     if (output.results.length !== 1) throw new InternalError('Invalid result');
@@ -114,22 +108,7 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
     _runManager?: CallbackManagerForLLMRun,
   ): AsyncGenerator<ChatGenerationChunk> {
     const outputStream = await this.client.text.chat.create_stream(
-      GenAIChatModel._prepareRequest(
-        merge(
-          {
-            conversation_id: this.conversationId,
-            model_id: this.modelId,
-            prompt_id: this.promptId,
-            messages: this._convertMessages(messages),
-            moderations: this.moderations,
-            parameters: this.parameters,
-            use_conversation_parameters: this.useConversationParameters,
-            parent_id: this.parentId,
-            trim_method: this.trimMethod,
-          },
-          options,
-        ),
-      ),
+      this._prepareRequest(messages, options),
       { signal: options.signal },
     );
     for await (const output of outputStream) {
@@ -168,8 +147,9 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
     }
   }
 
-  private static _prepareRequest(
-    request: TextChatCreateInput & TextChatCreateStreamInput,
+  private _prepareRequest(
+    messages: BaseMessage[],
+    options: this['ParsedCallOptions'],
   ) {
     const {
       conversation_id,
@@ -178,7 +158,20 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
       use_conversation_parameters,
       parameters,
       ...rest
-    } = request;
+    } = merge(
+      {
+        conversation_id: this.conversationId,
+        model_id: this.modelId,
+        prompt_id: this.promptId,
+        moderations: this.moderations,
+        parameters: this.parameters,
+        use_conversation_parameters: this.useConversationParameters,
+        parent_id: this.parentId,
+        trim_method: this.trimMethod,
+      },
+      options,
+      { messages: this._convertMessages(messages) },
+    );
     return {
       ...(conversation_id
         ? { conversation_id }

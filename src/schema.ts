@@ -91,10 +91,10 @@ export type RequestServiceDeleteOutput = OutputWrapper<
 
 export type RequestServiceChatInput = ApiClientOptions<
   'GET',
-  '/v2/requests/chat/{conversationId}'
+  '/v2/requests/chat/{conversation_id}'
 >['params']['path'];
 export type RequestServiceChatOutput = OutputWrapper<
-  ApiClientResponse<'GET', '/v2/requests/chat/{conversationId}'>['data']
+  ApiClientResponse<'GET', '/v2/requests/chat/{conversation_id}'>['data']
 >;
 
 // PromptService

@@ -41,7 +41,7 @@ export class RequestService extends BaseService {
     opts?: Options,
   ): Promise<RequestServiceChatOutput> {
     return clientErrorWrapper(
-      this._client.GET('/v2/requests/chat/{conversationId}', {
+      this._client.GET('/v2/requests/chat/{conversation_id}', {
         ...opts,
         params: { path: input, query: { version: '2023-11-22' } },
       }),

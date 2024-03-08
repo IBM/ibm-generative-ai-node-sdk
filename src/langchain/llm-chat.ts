@@ -169,7 +169,16 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
         parent_id: this.parentId,
         trim_method: this.trimMethod,
       },
-      options,
+      {
+        conversation_id: options.conversation_id,
+        model_id: options.model_id,
+        prompt_id: options.prompt_id,
+        moderations: options.moderations,
+        parameters: options.parameters,
+        use_conversation_parameters: options.use_conversation_parameters,
+        parent_id: options.parent_id,
+        trim_method: options.trim_method,
+      },
       { messages: this._convertMessages(messages) },
     );
     return {

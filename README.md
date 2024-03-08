@@ -4,7 +4,7 @@ This is not the [watsonx.ai](https://www.ibm.com/products/watsonx-ai) Node.js SD
 
 You can start a trial version or request a demo via https://www.ibm.com/products/watsonx-ai.
 
-This library provides convenient access to the Generative AI API from Node.js applications. For a full description of the API, please visit the [Tech Preview API Documentation](https://workbench.res.ibm.com/docs/api-reference).
+This library provides convenient access to the Generative AI API from Node.js applications. For a full description of the API, please visit the [Tech Preview API Documentation](https://bam.res.ibm.com/docs/api-reference).
 
 The SDK supports both TypeScript and JavaScript as well as ESM and CommonJS.
 
@@ -30,8 +30,7 @@ The SDK supports both TypeScript and JavaScript as well as ESM and CommonJS.
 - ☀️ Fault-tolerant - retry strategies and overflood protection
 - 🏖️ Worry-free parallel processing - just pass all the data, we take care of the parallel processing
 - 🚦 Handles concurrency limiting - even if you have multiple parallel jobs running
-- ⏩ Requests are always returned in the respective order
-- 🙏 Support both promises and callbacks
+- 📌 Aligned with the REST API - clear structure that mirrors service endpoints
 - Integrations
   - ⛓️ LangChain - build applications with LLMs through composability
 
@@ -57,15 +56,18 @@ yarn add @ibm-generative-ai/node-sdk
 
 ### Usage
 
-To use SDK, first you need to create a client. API key can be passed to the client as parameter or by setting `GENAI_API_KEY` environment variable.
+To use the SDK, first you need to create a client. API key can be passed to the client as parameter or by setting `GENAI_API_KEY` environment variable.
 
 ```typescript
 import { Client } from '@ibm-generative-ai/node-sdk';
 
 const client = new Client({ apiKey: 'pak-.....' });
+```
 
-// Single input
-const input = {
+Client contains various services that mirror the REST API endpoints, select a service you'd like to use and call CRUDL-like methods on it.
+
+```typescript
+const output = await client.text.generation.create({
   model_id: 'google/flan-ul2',
   input: 'What is the capital of the United Kingdom?',
   parameters: {
@@ -73,99 +75,36 @@ const input = {
     min_new_tokens: 1,
     max_new_tokens: 10,
   },
-};
-const output = await client.generate(input);
-
-// Multiple inputs, processed in parallel, all resolving at once
-const inputs = [
-  {
-    input: 'What is the capital of the United Kingdom?',
-    model_id: 'google/flan-ul2',
-  },
-  { input: 'What is the capital of the Mexico?', model_id: 'google/flan-ul2' },
-];
-const outputs = await Promise.all(client.generate(inputs));
-
-// Multiple inputs, processed in parallel, resolving in the order of respective inputs
-for (const outputPromise of client.generate(inputs)) {
-  try {
-    console.log(await outputPromise);
-  } catch (err) {
-    console.error(err);
-  }
-}
-
-// Single input using callbacks
-client.generate(input, (err, output) => {
-  if (err) console.error(err);
-  else console.log(output);
 });
-
-// Multiple inputs using callbacks, processed in parallel, called in the order of respective inputs
-client.generate(inputs, (err, output) => {
-  if (err) console.error(err);
-  else console.log(output);
-});
+console.log(output);
 ```
 
 ### Streams
 
+Some services support output streaming, you can easily recognize streaming methods by their `_stream` suffix.
+
 ```typescript
-const input = {
+const stream = await client.text.generation.create_stream({
   model_id: 'google/flan-ul2',
   input: 'What is the capital of the United Kingdom?',
-};
-
-// Streaming (callback style)
-client.generate(input, { stream: true }, (err, output) => {
-  if (err) {
-    console.error(err);
-  } else if (output === null) {
-    // END of stream
-  } else {
-    console.log(output.stop_reason);
-    console.log(output.generated_token_count);
-    console.log(output.input_token_count);
-    console.log(output.generated_text);
-  }
 });
-
-// Streaming (async iterators)
-const stream = client.generate(input, {
-  stream: true,
-});
-for await (const chunk of stream) {
-  console.log(chunk.stop_reason);
-  console.log(chunk.generated_token_count);
-  console.log(chunk.input_token_count);
-  console.log(chunk.generated_text);
+for await (const output of stream) {
+  console.log(output);
 }
-
-// Streaming (built-in stream methods)
-const stream = client.generate(input, {
-  stream: true,
-});
-stream.on('data', (chunk) => {
-  console.log(chunk.stop_reason);
-  console.log(chunk.generated_token_count);
-  console.log(chunk.input_token_count);
-  console.log(chunk.generated_text);
-});
-stream.on('error', (err) => {
-  console.error('error has occurred', err);
-});
-stream.on('close', () => {
-  console.info('end of stream');
-});
 ```
 
-### Retry
+### Cancellation
 
-Majority of client methods have built-in retry strategy. Number of retries can be configured either when constructing the client or per each method call. If not specified, defaults to 3.
+All service methods support cancellation via [AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal). Use the options argument to pass a signal into the method.
 
 ```typescript
-const client = new Client({ apiKey: 'pak-.....', retries: 5 });
-client.generate(input, { retries: 8 }); // Maximum of 9 attempts will be made for each request the method invokes
+const output = await client.text.generation.create(
+  {
+    model_id: 'google/flan-ul2',
+    input: 'What is the capital of the United Kingdom?',
+  },
+  { signal: AbortSignal.timeout(5000) },
+);
 ```
 
 ### LangChain
@@ -248,8 +187,7 @@ import { GenAIChatModel } from '@ibm-generative-ai/node-sdk/langchain';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 
 const client = new GenAIChatModel({
-  modelId: 'meta-llama/llama-2-70b-chat',
-  stream: false,
+  model_id: 'meta-llama/llama-2-70b-chat',
   configuration: {
     endpoint: process.env.ENDPOINT,
     apiKey: process.env.API_KEY,
@@ -260,17 +198,9 @@ const client = new GenAIChatModel({
     max_new_tokens: 25,
     repetition_penalty: 1.5,
   },
-  rolesMapping: {
-    human: {
-      stopSequence: '<human>:',
-    },
-    system: {
-      stopSequence: '<bot>:',
-    },
-  },
 });
 
-const response = await client.call([
+const response = await client.invoke([
   new SystemMessage(
     'You are a helpful assistant that translates English to Spanish.',
   ),

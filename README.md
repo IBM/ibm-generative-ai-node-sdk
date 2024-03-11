@@ -20,7 +20,8 @@ The SDK supports both TypeScript and JavaScript as well as ESM and CommonJS.
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
 - [Usage](#usage)
-- [Roadmap](#roadmap)
+- [API Reference](#api-reference)
+- [Langchain](#langchain)
 
 ![-----------------------------------------------------](./docs/img/rainbow.png)
 
@@ -28,9 +29,8 @@ The SDK supports both TypeScript and JavaScript as well as ESM and CommonJS.
 
 - ⚡️ Performant - processes 1k of short inputs in about 4 minutes
 - ☀️ Fault-tolerant - retry strategies and overflood protection
-- 🏖️ Worry-free parallel processing - just pass all the data, we take care of the parallel processing
 - 🚦 Handles concurrency limiting - even if you have multiple parallel jobs running
-- 📌 Aligned with the REST API - clear structure that mirrors service endpoints
+- 📌 Aligned with the REST API - clear structure that mirrors service endpoints and data
 - Integrations
   - ⛓️ LangChain - build applications with LLMs through composability
 
@@ -64,22 +64,16 @@ import { Client } from '@ibm-generative-ai/node-sdk';
 const client = new Client({ apiKey: 'pak-.....' });
 ```
 
-Client contains various services that mirror the REST API endpoints, select a service you'd like to use and call CRUDL-like methods on it.
+Client contains various services backed by the REST API endpoints, select a service you'd like to use and call CRUDL-like methods on it.
 
 ```typescript
 const output = await client.text.generation.create({
   model_id: 'google/flan-ul2',
   input: 'What is the capital of the United Kingdom?',
-  parameters: {
-    decoding_method: 'greedy',
-    min_new_tokens: 1,
-    max_new_tokens: 10,
-  },
 });
-console.log(output);
 ```
 
-### Streams
+#### Streams
 
 Some services support output streaming, you can easily recognize streaming methods by their `_stream` suffix.
 
@@ -93,7 +87,7 @@ for await (const output of stream) {
 }
 ```
 
-### Cancellation
+#### Cancellation
 
 All service methods support cancellation via [AbortSignal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal). Use the options argument to pass a signal into the method.
 
@@ -107,7 +101,25 @@ const output = await client.text.generation.create(
 );
 ```
 
-### LangChain
+Refer to [examples](./examples/) for further guidance.
+
+### API Reference
+
+The SDK structure closely follows [REST API](https://bam.res.ibm.com/docs/api-reference) endpoints. To use the desired functionality, first locate a [service](./src/services/) and then call appropriate method on it.
+
+```typescript
+// Signature template
+const output = await client.service[.subservice].method(input, options);
+
+// POST /v2/text/generation
+const output = await client.text.generation.create(input, options)
+```
+
+Input and output of each method is forwarded to the corresponding endpoint. The SDK exports [typing](./src/schema.ts) for each input and output.
+
+Standalone API reference is NOT available at the moment, please refer to the [REST API Reference](https://bam.res.ibm.com/docs/api-reference) to find the functionality you're looking for and the input/output semantics.
+
+## LangChain
 
 [LangChain](https://js.langchain.com/docs/getting-started/guide-llm) is a framework for developing applications powered by language models.
 The following example showcases how you can integrate GenAI into your project.
@@ -124,7 +136,7 @@ const model = new GenAIModel({
 });
 ```
 
-#### Basic usage
+### Basic usage
 
 ```typescript
 const response = await model.invoke(
@@ -134,7 +146,7 @@ const response = await model.invoke(
 console.log(response); // Fantasy Sockery
 ```
 
-#### LLM Chain + Prompt Template
+### LLM Chain + Prompt Template
 
 ```typescript
 import { PromptTemplate } from '@langchain/core/prompts';
@@ -155,7 +167,7 @@ const { text } = await chain.call({ product: 'clothes' });
 console.log(text); // ArcticAegis
 ```
 
-#### Streaming
+### Streaming
 
 ```typescript
 import { GenAIModel } from '@ibm-generative-ai/node-sdk/langchain';
@@ -180,7 +192,7 @@ await model.invoke('Tell me a joke.', {
 });
 ```
 
-#### Chat support
+### Chat support
 
 ```typescript
 import { GenAIChatModel } from '@ibm-generative-ai/node-sdk/langchain';
@@ -210,7 +222,7 @@ const response = await client.invoke([
 console.info(response.content); // "Me encanta la programación."
 ```
 
-#### Prompt Templates (GenAI x LangChain)
+### Prompt Templates (GenAI x LangChain)
 
 For using GenAI Prompt Template in LangChain, there needs to be a conversion between appropriate template syntaxes.
 This can be done via helper classes provided within our SDK.

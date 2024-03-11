@@ -8,7 +8,7 @@ This library provides convenient access to the Generative AI API from Node.js ap
 
 The SDK supports both TypeScript and JavaScript as well as ESM and CommonJS.
 
-> Looking for the [watsonx.ai](https://www.ibm.com/products/watsonx-ai) Python SDK? Check out the [documentation](https://ibm.github.io/watson-machine-learning-sdk/foundation_models.html).
+> Looking for the [watsonx.ai](https://www.ibm.com/products/watsonx-ai) Python SDK? Check out the [documentation](https://ibm.github.io/watsonx-ai-python-sdk/foundation_models.html).
 > Looking for the Python version? Check out [IBM Generative AI Python SDK](https://github.com/IBM/ibm-generative-ai).
 > Looking for a command-line interface? Check out [IBM Generative AI CLI](https://github.com/IBM/ibm-generative-ai-cli).
 

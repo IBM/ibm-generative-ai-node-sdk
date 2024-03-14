@@ -22,7 +22,7 @@ The SDK supports both TypeScript and JavaScript as well as ESM and CommonJS.
 - [Usage](#usage)
 - [API Reference](#api-reference)
 - [Langchain](#langchain)
-- [Migration](#migration)
+- [Migration](#migration-from-v1)
 
 ![-----------------------------------------------------](./docs/img/rainbow.png)
 

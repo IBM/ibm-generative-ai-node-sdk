@@ -22,6 +22,7 @@ The SDK supports both TypeScript and JavaScript as well as ESM and CommonJS.
 - [Usage](#usage)
 - [API Reference](#api-reference)
 - [Langchain](#langchain)
+- [Migration](#migration-from-v1)
 
 ![-----------------------------------------------------](./docs/img/rainbow.png)
 
@@ -244,5 +245,39 @@ const langChainPromptTemplate = GenAIPromptTemplate.toLangChain(
 
 console.log(langChainPromptTemplate); // "Tell me a {adjective} joke about {content}."
 ```
+
+![-----------------------------------------------------](./docs/img/rainbow.png)
+
+## Migration from v1
+
+The interface ovehaul in v2 was thorough, almost everything has been affected. This means you have to revisit every usage of Node.js SDK and make necessary adjustments to the interface. On the bright side, you can achieve this mostly by following few simple steps.
+
+Let's say you were calling the following method to perform text generation:
+
+```typescript
+const oldOutputs = await client.generate(oldInputs, { timeout });
+```
+
+This interface changed as follows:
+
+1. the method is nested inside a service
+2. input and output structure has changed a bit
+3. timeout has been replaced by signal
+4. only a single input is accepted
+
+The new equivalent usage is then
+
+```typescript
+const signal = AbortSignal.timeout(timeout);
+const output = await Promise.all(
+  inputs.map((input) => client.text.generation.create(input, { signal })),
+);
+```
+
+Additional migration tips:
+
+- output streaming now has a separate method (e.g. `create_stream`)
+- binary I/O is done using [Blobs](https://nodejs.org/api/buffer.html#class-blob)
+- callback interface is no longer supported, use [callbackify](https://nodejs.org/api/util.html#utilcallbackifyoriginal) wrapper if you have to
 
 ![-----------------------------------------------------](./docs/img/rainbow.png)

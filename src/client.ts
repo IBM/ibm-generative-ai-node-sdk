@@ -1,4 +1,5 @@
 import fetchRetry from 'fetch-retry';
+import { StatusCodes } from 'http-status-codes';
 
 import { InvalidInputError } from './errors.js';
 import { version } from './buildInfo.js';
@@ -53,8 +54,22 @@ export class Client {
     const _client = createApiClient({
       baseUrl: endpoint,
       headers,
-      fetch: fetchRetry(fetch, { retryOn: [429] }), // Retry on network errors and when rate limits or concurrency limits (due to external factors) are hit
+      fetch: fetchRetry(fetch, {
+        retryOn: [
+          StatusCodes.TOO_MANY_REQUESTS, // Retry also when concurrency limits (due to external factors) are hit
+          StatusCodes.BAD_GATEWAY,
+          StatusCodes.SERVICE_UNAVAILABLE,
+          StatusCodes.CONFLICT,
+          StatusCodes.GATEWAY_TIMEOUT,
+          StatusCodes.REQUEST_TIMEOUT,
+          StatusCodes.INTERNAL_SERVER_ERROR,
+        ],
+        retryDelay: function (attempt) {
+          return Math.pow(2, attempt) * 1000;
+        },
+      }),
     });
+
     const _streamingClient = createStreamingApiClient({
       baseUrl: endpoint,
       headers,

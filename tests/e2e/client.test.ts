@@ -1,3 +1,5 @@
+import range from 'lodash/range.js';
+
 import { Client } from '../../src/client.js';
 import { HttpError } from '../../src/errors.js';
 import {
@@ -208,6 +210,15 @@ describe('client', () => {
           stream.once('error', reject);
         });
       }).rejects.toHaveProperty('name', 'AbortError');
+    });
+  });
+
+  describe('limits', () => {
+    test('should handle rate limits', async () => {
+      const promise = Promise.all(
+        range(0, 100).map(() => client.tune.types({})),
+      );
+      await expect(promise).toResolve();
     });
   });
 });

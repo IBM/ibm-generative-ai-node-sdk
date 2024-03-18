@@ -53,7 +53,7 @@ export class Client {
     const _client = createApiClient({
       baseUrl: endpoint,
       headers,
-      fetch: fetchRetry(fetch) as any, // https://github.com/jonbern/fetch-retry/issues/89
+      fetch: fetchRetry(fetch, { retryOn: [429] }), // Retry on network errors and when rate limits or concurrency limits (due to external factors) are hit
     });
     const _streamingClient = createStreamingApiClient({
       baseUrl: endpoint,

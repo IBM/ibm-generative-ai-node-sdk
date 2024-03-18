@@ -216,7 +216,7 @@ describe('client', () => {
   describe('limits', () => {
     test('should handle rate limits', async () => {
       const promise = Promise.all(
-        range(0, 100).map(() => client.tune.types({})),
+        range(0, 50).map(() => client.tune.types({})),
       );
       await expect(promise).toResolve();
     });

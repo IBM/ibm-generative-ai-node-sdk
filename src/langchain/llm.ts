@@ -15,12 +15,14 @@ import {
   TextGenerationCreateOutput,
 } from '../schema.js';
 
-interface BaseGenAIModelOptions {
+type BaseGenAIModelOptions = {
   stream?: boolean;
   parameters?: Record<string, any>;
   timeout?: number;
-  configuration?: Configuration;
-}
+} & (
+  | { client: Client; configuration?: never }
+  | { client?: never; configuration: Configuration }
+);
 
 export type GenAIModelOptions =
   | (BaseGenAIModelOptions & { modelId?: string; promptId?: never })
@@ -41,6 +43,7 @@ export class GenAIModel extends BaseLLM {
     stream = false,
     parameters,
     timeout,
+    client,
     configuration,
     ...baseParams
   }: GenAIModelOptions & BaseLLMParams) {
@@ -51,7 +54,7 @@ export class GenAIModel extends BaseLLM {
     this.timeout = timeout;
     this.isStreaming = Boolean(stream);
     this.parameters = parameters || {};
-    this.#client = new Client(configuration);
+    this.#client = client ?? new Client(configuration);
   }
 
   #createPayload(

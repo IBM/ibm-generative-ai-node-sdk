@@ -1,14 +1,15 @@
 import { HumanMessage } from '@langchain/core/messages';
 
 import { GenAIChatModel } from '../../src/langchain/llm-chat.js';
+import { Client } from '../../src/index.js';
 
 const makeClient = () =>
   new GenAIChatModel({
     model_id: 'meta-llama/llama-2-70b-chat',
-    configuration: {
+    client: new Client({
       endpoint: process.env.ENDPOINT,
       apiKey: process.env.API_KEY,
-    },
+    }),
     parameters: {
       decoding_method: 'greedy',
       min_new_tokens: 1,

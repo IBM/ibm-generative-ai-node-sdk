@@ -2,16 +2,17 @@ import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 
 import { GenAIModel } from '../../../src/langchain/llm.js';
+import { Client } from '../../../src/client.js';
 
 describe('Langchain', () => {
   const makeClient = (modelId?: string, stream?: boolean) =>
     new GenAIModel({
       modelId,
       stream,
-      configuration: {
+      client: new Client({
         endpoint: process.env.ENDPOINT,
         apiKey: process.env.API_KEY,
-      },
+      }),
       parameters: {
         top_k: 1,
         max_new_tokens: 5,

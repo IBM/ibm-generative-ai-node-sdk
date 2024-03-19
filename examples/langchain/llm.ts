@@ -1,13 +1,14 @@
+import { Client } from '../../src/index.js';
 import { GenAIModel } from '../../src/langchain/index.js';
 
 const makeClient = (stream?: boolean) =>
   new GenAIModel({
     modelId: 'google/flan-t5-xl',
     stream,
-    configuration: {
+    client: new Client({
       endpoint: process.env.ENDPOINT,
       apiKey: process.env.API_KEY,
-    },
+    }),
     parameters: {
       decoding_method: 'greedy',
       min_new_tokens: 5,

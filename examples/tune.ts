@@ -1,3 +1,6 @@
+import { blob } from 'node:stream/consumers';
+import { createReadStream } from 'node:fs';
+
 import { Client } from '../src/index.js';
 
 const client = new Client({
@@ -26,13 +29,24 @@ const client = new Client({
   const { results: tuneTypes } = await client.tune.types({});
   console.log(tuneTypes);
 
+  // Upload file for tuning
+  const { result: file } = await client.file.create({
+    purpose: 'tune',
+    file: {
+      name: 'tune_input.jsonl',
+      content: (await blob(
+        createReadStream('examples/assets/tune_input.jsonl'),
+      )) as any,
+    },
+  });
+
   // Create a tune
   const { result: createdTune } = await client.tune.create({
     name: 'Awesome Tune',
     tuning_type: 'prompt_tuning',
     model_id: 'google/flan-t5-xl',
     task_id: 'generation',
-    training_file_ids: ['fileId'],
+    training_file_ids: [file.id],
   });
   console.log(createdTune);
 
@@ -50,4 +64,7 @@ const client = new Client({
 
   // Delete the tune
   await client.tune.delete({ id: createdTune.id });
+
+  // Detele the file
+  await client.file.delete({ id: file.id });
 }

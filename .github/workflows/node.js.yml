@@ -50,6 +50,27 @@ jobs:
       - run: yarn --frozen-lockfile
       - run: yarn test
 
+  examples:
+    runs-on: ubuntu-latest
+
+    env:
+      GENAI_API_KEY: ${{ secrets.TEST_API_KEY }}
+
+    strategy:
+      matrix:
+        node-version: [18.18.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'yarn'
+      - run: yarn --frozen-lockfile
+      - run: yarn examples
+
   build:
     runs-on: ubuntu-latest
 

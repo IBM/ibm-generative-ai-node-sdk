@@ -58,13 +58,7 @@
     "postpack": "pinst --enable",
     "generate": "./scripts/generate.sh",
     "generate:new": "node ./scripts/generate.js",
-    "example:run": "ts-node -r dotenv-flow/config",
-    "example:generate": "yarn run example:run examples/generate.ts",
-    "example:tune": "yarn run example:run examples/tune.ts",
-    "example:history": "yarn run example:run examples/history.ts",
-    "example:file": "yarn run example:run examples/file.ts",
-    "example:chat": "yarn run example:run examples/chat.ts",
-    "example:models": "yarn run example:run examples/models.ts"
+    "examples": "./scripts/examples.sh"
   },
   "peerDependencies": {
     "@langchain/core": ">=0.1.0"

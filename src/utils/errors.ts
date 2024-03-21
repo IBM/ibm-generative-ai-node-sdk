@@ -1,4 +1,6 @@
 import { FetchResponse } from 'openapi-fetch';
+import { AbortError } from 'p-queue-compat';
+AbortError.prototype.name = 'AbortError';
 
 import { HttpError, InternalError, NetworkError } from '../errors.js';
 

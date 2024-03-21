@@ -16,6 +16,7 @@ export default defineConfig({
   format: ['esm', 'cjs'],
   platform: 'node',
   shims: true,
+  splitting: true,
   env: {
     NODE_ENV: 'production',
     GENAI_DEFAULT_ENDPOINT: GENAI_DEFAULT_ENDPOINT,

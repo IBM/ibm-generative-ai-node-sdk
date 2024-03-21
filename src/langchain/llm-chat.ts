@@ -21,10 +21,12 @@ type TextChatInput = TextChatCreateInput & TextChatCreateStreamInput;
 export type GenAIChatModelParams = BaseChatModelParams &
   Omit<TextChatInput, 'messages' | 'prompt_template_id'> & {
     model_id: NonNullable<TextChatInput['model_id']>;
-    configuration?: Configuration;
-  };
+  } & (
+    | { client: Client; configuration?: never }
+    | { client?: never; configuration: Configuration }
+  );
 export type GenAIChatModelOptions = BaseChatModelCallOptions &
-  Partial<Omit<GenAIChatModelParams, 'configuration'>>;
+  Partial<Omit<GenAIChatModelParams, 'client' | 'configuration'>>;
 
 export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
   protected readonly client: Client;
@@ -47,6 +49,7 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
     parent_id,
     use_conversation_parameters,
     trim_method,
+    client,
     configuration,
     ...options
   }: GenAIChatModelParams) {
@@ -60,7 +63,7 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
     this.parentId = parent_id;
     this.useConversationParameters = use_conversation_parameters;
     this.trimMethod = trim_method;
-    this.client = new Client(configuration);
+    this.client = client ?? new Client(configuration);
   }
 
   async _generate(

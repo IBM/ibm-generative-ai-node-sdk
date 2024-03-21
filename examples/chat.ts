@@ -1,6 +1,6 @@
 import { Client } from '../src/index.js';
 
-import { CHAT_MODEL } from './constants.js';
+import { CHAT_MODEL } from './shared/constants.js';
 
 const client = new Client({
   apiKey: process.env.GENAI_API_KEY,

@@ -61,7 +61,8 @@ describe('client', () => {
         ]);
       };
 
-      test('should correctly process moderation chunks during streaming', async () => {
+      // TODO remove skip after server bug is fixed or when schema is updated
+      test.skip('should correctly process moderation chunks during streaming', async () => {
         const stream = await makeValidStream({
           min_new_tokens: 1,
           max_new_tokens: 5,

@@ -1,5 +1,4 @@
-const { default: PQueue } = await import('p-queue'); // Latest p-queue no longer supports CommonJS modules
-import type { QueueAddOptions } from 'p-queue';
+import PQueue, { QueueAddOptions } from '@esm2cjs/p-queue';
 
 import { HttpError } from '../errors.js';
 
@@ -13,7 +12,7 @@ function isConcurrencyLimitError(err: unknown): err is HttpError {
 }
 
 export class ConcurrencyLimiter {
-  private _queue?: typeof PQueue;
+  private _queue?: PQueue;
   private _limiterPromise?: ReturnType<Limiter>;
 
   constructor(private readonly limiter: Limiter) {}

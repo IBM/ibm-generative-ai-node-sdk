@@ -28,7 +28,7 @@ The SDK supports both TypeScript and JavaScript as well as ESM and CommonJS.
 
 ## Key features
 
-- ⚡️ Performant - processes 1k of short inputs in about 4 minutes
+- ⚡️ Performant - processes 1k of short inputs in under a minute
 - ☀️ Fault-tolerant - retry strategies and overflood protection
 - 🚦 Handles concurrency limiting - even if you have multiple parallel jobs running
 - 📌 Aligned with the REST API - clear structure that mirrors service endpoints and data
@@ -126,14 +126,15 @@ Standalone API reference is NOT available at the moment, please refer to the [RE
 The following example showcases how you can integrate GenAI into your project.
 
 ```typescript
+import { Client } from '@ibm-generative-ai/node-sdk';
 import { GenAIModel } from '@ibm-generative-ai/node-sdk/langchain';
 
 const model = new GenAIModel({
   modelId: 'google/flan-ul2',
   parameters: {},
-  configuration: {
+  client: new Client({
     apiKey: 'pak-.....',
-  },
+  }),
 });
 ```
 
@@ -171,15 +172,16 @@ console.log(text); // ArcticAegis
 ### Streaming
 
 ```typescript
+import { Client } from '@ibm-generative-ai/node-sdk';
 import { GenAIModel } from '@ibm-generative-ai/node-sdk/langchain';
 
 const model = new GenAIModel({
   modelId: 'google/flan-ul2',
   stream: true,
   parameters: {},
-  configuration: {
+  client: new Client({
     apiKey: 'pak-.....',
-  },
+  }),
 });
 
 await model.invoke('Tell me a joke.', {
@@ -196,15 +198,16 @@ await model.invoke('Tell me a joke.', {
 ### Chat support
 
 ```typescript
+import { Client } from '@ibm-generative-ai/node-sdk';
 import { GenAIChatModel } from '@ibm-generative-ai/node-sdk/langchain';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 
 const client = new GenAIChatModel({
   model_id: 'meta-llama/llama-2-70b-chat',
-  configuration: {
+  client: new Client({
     endpoint: process.env.ENDPOINT,
     apiKey: process.env.API_KEY,
-  },
+  }),
   parameters: {
     decoding_method: 'greedy',
     min_new_tokens: 10,

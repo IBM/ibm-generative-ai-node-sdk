@@ -93,10 +93,10 @@
   },
   "dependencies": {
     "@ai-zen/node-fetch-event-source": "^2.1.2",
-    "@esm2cjs/p-queue": "^7.3.0",
     "fetch-retry": "^5.0.6",
     "http-status-codes": "^2.3.0",
     "openapi-fetch": "^0.8.2",
+    "p-queue": "^8.0.1",
     "yaml": "^2.3.3"
   },
   "lint-staged": {

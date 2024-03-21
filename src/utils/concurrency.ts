@@ -1,4 +1,4 @@
-import PQueue, { QueueAddOptions } from '@esm2cjs/p-queue';
+import type { default as PQueueType, QueueAddOptions } from 'p-queue';
 
 import { HttpError } from '../errors.js';
 
@@ -11,8 +11,13 @@ function isConcurrencyLimitError(err: unknown): err is HttpError {
   );
 }
 
+const PQueue = (async () => {
+  const lib = await import('p-queue');
+  return lib.default;
+})();
+
 export class ConcurrencyLimiter {
-  private _queue?: PQueue;
+  private _queue?: PQueueType;
   private _limiterPromise?: ReturnType<Limiter>;
 
   constructor(private readonly limiter: Limiter) {}
@@ -42,6 +47,6 @@ export class ConcurrencyLimiter {
 
     this._limiterPromise = this.limiter();
     const { limit } = await this._limiterPromise;
-    this._queue = new PQueue({ concurrency: limit });
+    this._queue = new (await PQueue)({ concurrency: limit });
   }
 }

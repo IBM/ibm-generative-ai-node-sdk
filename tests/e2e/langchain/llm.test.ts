@@ -5,10 +5,9 @@ import { GenAIModel } from '../../../src/langchain/llm.js';
 import { Client } from '../../../src/client.js';
 
 describe('Langchain', () => {
-  const makeClient = (modelId?: string, stream?: boolean) =>
+  const makeClient = (modelId: string) =>
     new GenAIModel({
-      modelId,
-      stream,
+      model_id: modelId,
       client: new Client({
         endpoint: process.env.ENDPOINT,
         apiKey: process.env.API_KEY,
@@ -38,7 +37,7 @@ describe('Langchain', () => {
   describe('generate', () => {
     // TODO: enable once we will set default model for the test account
     test.skip('should handle empty modelId', async () => {
-      const client = makeClient();
+      const client = makeClient('google/flan-ul2');
 
       const data = await client.invoke('Who are you?');
       expectIsString(data);
@@ -101,24 +100,27 @@ describe('Langchain', () => {
     });
 
     test('streaming', async () => {
-      const client = makeClient('google/flan-t5-xl', true);
+      const client = makeClient('google/flan-t5-xl');
 
       const tokens: string[] = [];
-      const handleNewToken = vi.fn((token: string) => {
+      const handleText = vi.fn((token: string) => {
         tokens.push(token);
       });
 
-      const output = await client.invoke('Tell me a joke.', {
+      const stream = await client.stream('Tell me a joke.', {
         callbacks: [
           {
-            handleLLMNewToken: handleNewToken,
+            handleText,
           },
         ],
       });
 
-      expect(handleNewToken).toHaveBeenCalled();
-      expectIsString(output);
-      expect(tokens.join('')).toStrictEqual(output);
+      const outputs = [];
+      for await (const output of stream) {
+        outputs.push(output);
+      }
+      expect(handleText).toHaveBeenCalledTimes(outputs.length);
+      expect(tokens.join('')).toStrictEqual(outputs.join(''));
     }, 15_000);
   });
 

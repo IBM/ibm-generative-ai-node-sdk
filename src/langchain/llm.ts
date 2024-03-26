@@ -1,134 +1,91 @@
-import { BaseLLM, BaseLLMParams } from '@langchain/core/language_models/llms';
+import {
+  BaseLLM,
+  BaseLLMCallOptions,
+  BaseLLMParams,
+} from '@langchain/core/language_models/llms';
 import { CallbackManagerForLLMRun } from '@langchain/core/callbacks/manager';
-import type { LLMResult, Generation } from '@langchain/core/outputs';
+import type { LLMResult } from '@langchain/core/outputs';
 import { GenerationChunk } from '@langchain/core/outputs';
+import merge from 'lodash/merge.js';
 
 import { Client, Configuration } from '../client.js';
-import {
-  isNotEmptyArray,
-  concatUnique,
-  isNullish,
-  asyncGeneratorToArray,
-} from '../helpers/common.js';
+import { concatUnique, isNullish } from '../helpers/common.js';
 import {
   TextGenerationCreateInput,
-  TextGenerationCreateOutput,
+  TextGenerationCreateStreamInput,
 } from '../schema.js';
 
-type BaseGenAIModelOptions = {
-  stream?: boolean;
-  parameters?: Record<string, any>;
-  timeout?: number;
-} & (
-  | { client: Client; configuration?: never }
-  | { client?: never; configuration: Configuration }
-);
+type TextGenerationInput = TextGenerationCreateInput &
+  TextGenerationCreateStreamInput;
 
-export type GenAIModelOptions =
-  | (BaseGenAIModelOptions & { modelId?: string; promptId?: never })
-  | (BaseGenAIModelOptions & { modelId?: never; promptId: string });
+export type GenAIModelParams = BaseLLMParams &
+  Pick<
+    TextGenerationInput,
+    'model_id' | 'prompt_id' | 'parameters' | 'moderations'
+  > & {
+    model_id: NonNullable<TextGenerationInput['model_id']>;
+  } & (
+    | { client: Client; configuration?: never }
+    | { client?: never; configuration: Configuration }
+  );
+export type GenAIChatModelOptions = BaseLLMCallOptions &
+  Partial<Omit<GenAIModelParams, 'client' | 'configuration'>>;
 
-export class GenAIModel extends BaseLLM {
-  #client: Client;
+export class GenAIModel extends BaseLLM<GenAIChatModelOptions> {
+  protected readonly client: Client;
 
-  protected modelId?: string;
-  protected promptId?: string;
-  protected isStreaming: boolean;
-  protected timeout: number | undefined;
-  protected parameters: Record<string, any>;
+  public readonly modelId: GenAIModelParams['model_id'];
+  public readonly promptId: GenAIModelParams['prompt_id'];
+  public readonly parameters: GenAIModelParams['parameters'];
+  public readonly moderations: GenAIModelParams['moderations'];
 
   constructor({
-    modelId,
-    promptId,
-    stream = false,
+    model_id,
+    prompt_id,
     parameters,
-    timeout,
+    moderations,
     client,
     configuration,
-    ...baseParams
-  }: GenAIModelOptions & BaseLLMParams) {
-    super(baseParams ?? {});
+    ...options
+  }: GenAIModelParams) {
+    super(options);
 
-    this.modelId = modelId;
-    this.promptId = promptId;
-    this.timeout = timeout;
-    this.isStreaming = Boolean(stream);
-    this.parameters = parameters || {};
-    this.#client = client ?? new Client(configuration);
-  }
-
-  #createPayload(
-    prompts: string[],
-    options: this['ParsedCallOptions'],
-  ): TextGenerationCreateInput[] {
-    const stopSequences = concatUnique(this.parameters.stop, options.stop);
-
-    return prompts.map((input) => ({
-      ...(!isNullish(this.promptId)
-        ? {
-            prompt_id: this.promptId,
-          }
-        : !isNullish(this.modelId)
-        ? {
-            model_id: this.modelId,
-          }
-        : {}),
-      input,
-      parameters: {
-        ...this.parameters,
-        stop_sequences: isNotEmptyArray(stopSequences)
-          ? stopSequences
-          : undefined,
-      },
-    }));
-  }
-
-  async #execute(
-    prompts: string[],
-    options: this['ParsedCallOptions'],
-  ): Promise<TextGenerationCreateOutput[]> {
-    return await Promise.all(
-      this.#createPayload(prompts, options).map((input) =>
-        this.#client.text.generation.create(input, {
-          signal: options.signal,
-        }),
-      ),
-    );
+    this.modelId = model_id;
+    this.promptId = prompt_id;
+    this.parameters = parameters;
+    this.moderations = moderations;
+    this.client = client ?? new Client(configuration);
   }
 
   async _generate(
-    prompts: string[],
+    inputs: string[],
     options: this['ParsedCallOptions'],
     runManager?: CallbackManagerForLLMRun,
   ): Promise<LLMResult> {
-    const response: TextGenerationCreateOutput[] = [];
-    if (this.isStreaming) {
-      const { output } = await asyncGeneratorToArray(
-        this._streamResponseChunks(prompts[0], options, runManager),
-      );
-      response.push(output);
-    } else {
-      const outputs = await this.#execute(prompts, options);
-      response.push(...outputs);
-    }
-
-    const contentResponses = response.flatMap(
-      (res) => res.results?.at(0) ?? [],
+    const outputs = await Promise.all(
+      inputs.map((input) =>
+        this.client.text.generation.create(
+          this._prepareRequest(input, options),
+          {
+            signal: options.signal,
+          },
+        ),
+      ),
     );
 
-    const generations: Generation[][] = contentResponses.map(
-      ({ generated_text: text, ...generationInfo }) => [
-        {
-          text,
-          generationInfo,
-        },
-      ],
+    const generations = outputs.map((output) =>
+      output.results.map((result) => {
+        const { generated_text, ...generationInfo } = result;
+        return { text: generated_text, generationInfo };
+      }),
     );
 
-    const llmOutput = await contentResponses.reduce(
+    const llmOutput = generations.flat().reduce(
       (acc, generation) => {
-        acc.generated_token_count += generation.generated_token_count;
-        acc.input_token_count += generation.input_token_count ?? 0;
+        acc.generated_token_count +=
+          generation.generationInfo.generated_token_count;
+        acc.input_token_count +=
+          generation.generationInfo.input_token_count ?? 0;
         return acc;
       },
       {
@@ -137,63 +94,80 @@ export class GenAIModel extends BaseLLM {
       },
     );
 
-    return { generations, llmOutput };
+    return {
+      generations,
+      llmOutput,
+    };
   }
 
   async *_streamResponseChunks(
-    _input: string,
-    _options: this['ParsedCallOptions'],
-    _runManager?: CallbackManagerForLLMRun,
+    input: string,
+    options: this['ParsedCallOptions'],
+    runManager?: CallbackManagerForLLMRun,
   ): AsyncGenerator<GenerationChunk> {
-    const [payload] = this.#createPayload([_input], _options);
-    const stream = await this.#client.text.generation.create_stream(payload, {
-      signal: _options.signal,
-    });
-
-    const fullOutput = {
-      id: '',
-      model_id: '',
-      created_at: '',
-      results: [
-        {
-          generated_text: '',
-          stop_reason:
-            'not_finished' as TextGenerationCreateOutput['results'][number]['stop_reason'],
-          input_token_count: 0,
-          generated_token_count: 0,
-        },
-      ],
-    } satisfies TextGenerationCreateOutput;
+    const stream = await this.client.text.generation.create_stream(
+      this._prepareRequest(input, options),
+      {
+        signal: options.signal,
+      },
+    );
 
     for await (const response of stream) {
-      fullOutput.id = response.id ?? fullOutput.id;
-      fullOutput.model_id = response.model_id;
-      fullOutput.created_at = response.created_at ?? fullOutput.created_at;
-
-      const results = response.results;
-      if (!results) continue;
-
-      const { generated_text, ...chunk } = results[0];
-      const generation = new GenerationChunk({
-        text: generated_text,
-        generationInfo: chunk,
-      });
-      yield generation;
-      void _runManager?.handleLLMNewToken(generated_text);
-
-      fullOutput.results[0].generated_text += generation.text;
-      if (chunk.stop_reason) {
-        fullOutput.results[0].stop_reason = chunk.stop_reason;
+      if (response.results) {
+        for (const { generated_text, ...generationInfo } of response.results) {
+          yield new GenerationChunk({
+            text: generated_text,
+            generationInfo,
+          });
+          void runManager?.handleText(generated_text);
+        }
       }
-      fullOutput.results[0].input_token_count += chunk.input_token_count ?? 0;
-      fullOutput.results[0].generated_token_count +=
-        chunk.generated_token_count;
+      if (response.moderation) {
+        yield new GenerationChunk({
+          text: '',
+          generationInfo: {
+            moderation: response.moderation,
+          },
+        });
+        void runManager?.handleText('');
+      }
     }
-    return fullOutput;
+  }
+
+  private _prepareRequest(
+    input: string,
+    options: this['ParsedCallOptions'],
+  ): TextGenerationInput {
+    const stop_sequences = concatUnique(
+      options.stop,
+      options.parameters?.stop_sequences,
+    );
+    const { model_id, prompt_id, ...rest } = merge(
+      {
+        model_id: this.modelId,
+        prompt_id: this.promptId,
+        moderations: this.moderations,
+        parameters: this.parameters,
+      },
+      {
+        model_id: options.model_id,
+        prompt_id: options.prompt_id,
+        moderations: options.moderations,
+        parameters: {
+          ...options.parameters,
+          stop_sequences,
+        },
+      },
+      { input },
+    );
+    return {
+      ...(prompt_id ? { prompt_id } : { model_id }),
+      ...rest,
+    };
   }
 
   async getNumTokens(input: string): Promise<number> {
-    const result = await this.#client.text.tokenization.create({
+    const result = await this.client.text.tokenization.create({
       ...(!isNullish(this.modelId) && {
         model_id: this.modelId,
       }),
@@ -209,7 +183,7 @@ export class GenAIModel extends BaseLLM {
   }
 
   _modelType(): string {
-    return this.modelId ?? 'default';
+    return this.modelId;
   }
 
   _llmType(): string {

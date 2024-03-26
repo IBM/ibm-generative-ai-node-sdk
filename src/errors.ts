@@ -1,5 +1,3 @@
-import { AbortError } from 'p-queue-compat';
-
 import { ApiError } from './api/client.js';
 
 export class BaseError extends Error {}

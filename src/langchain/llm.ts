@@ -28,10 +28,10 @@ export type GenAIModelParams = BaseLLMParams &
     | { client: Client; configuration?: never }
     | { client?: never; configuration: Configuration }
   );
-export type GenAIChatModelOptions = BaseLLMCallOptions &
+export type GenAIModelOptions = BaseLLMCallOptions &
   Partial<Omit<GenAIModelParams, 'client' | 'configuration'>>;
 
-export class GenAIModel extends BaseLLM<GenAIChatModelOptions> {
+export class GenAIModel extends BaseLLM<GenAIModelOptions> {
   protected readonly client: Client;
 
   public readonly modelId: GenAIModelParams['model_id'];

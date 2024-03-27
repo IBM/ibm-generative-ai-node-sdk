@@ -1,10 +1,9 @@
 import { Client } from '../../src/index.js';
 import { GenAIModel } from '../../src/langchain/index.js';
 
-const makeClient = (stream?: boolean) =>
+const makeClient = () =>
   new GenAIModel({
-    modelId: 'google/flan-t5-xl',
-    stream,
+    model_id: 'google/flan-t5-xl',
     client: new Client({
       endpoint: process.env.ENDPOINT,
       apiKey: process.env.API_KEY,
@@ -14,6 +13,9 @@ const makeClient = (stream?: boolean) =>
       min_new_tokens: 5,
       max_new_tokens: 25,
       repetition_penalty: 1.5,
+    },
+    moderations: {
+      hap: true,
     },
   });
 
@@ -40,7 +42,7 @@ const makeClient = (stream?: boolean) =>
 
 {
   console.info('---Streaming Example---');
-  const chat = makeClient(true);
+  const chat = makeClient();
 
   const prompt = 'What is a molecule?';
   console.info(`Request: ${prompt}`);

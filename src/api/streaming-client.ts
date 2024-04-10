@@ -107,6 +107,10 @@ export function createStreamingApiClient(clientOptions: {
             );
             return;
           }
+          if (message.event === 'error') {
+            onError(new HttpError(result));
+            return;
+          }
 
           outputStream.push(result);
         },

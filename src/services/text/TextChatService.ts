@@ -30,7 +30,7 @@ export class TextChatService extends BaseService {
         clientErrorWrapper(
           this._client.POST('/v2/text/chat', {
             ...opts,
-            params: { query: { version: '2024-01-10' } },
+            params: { query: { version: '2024-03-19' } },
             body: input,
           }),
         ),
@@ -45,7 +45,7 @@ export class TextChatService extends BaseService {
     return this._limiter.execute(
       async () =>
         this._streamingClient.stream({
-          url: '/v2/text/chat_stream?version=2024-01-10',
+          url: '/v2/text/chat_stream?version=2024-03-19',
           body: input,
           signal: opts?.signal,
         }),

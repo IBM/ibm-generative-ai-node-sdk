@@ -43,7 +43,7 @@ export class RequestService extends BaseService {
     return clientErrorWrapper(
       this._client.GET('/v2/requests/chat/{conversation_id}', {
         ...opts,
-        params: { path: input, query: { version: '2023-11-22' } },
+        params: { path: input, query: { version: '2024-03-19' } },
       }),
     );
   }

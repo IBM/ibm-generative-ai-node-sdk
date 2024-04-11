@@ -24,7 +24,7 @@ export class PromptService extends BaseService {
         params: {
           query: {
             ...input,
-            version: '2024-01-10',
+            version: '2024-03-19',
           },
         },
       }),
@@ -40,7 +40,7 @@ export class PromptService extends BaseService {
         ...opts,
         params: {
           query: {
-            version: '2024-01-10',
+            version: '2024-03-19',
           },
           path: input,
         },
@@ -58,7 +58,7 @@ export class PromptService extends BaseService {
         body: input,
         params: {
           query: {
-            version: '2024-01-10',
+            version: '2024-03-19',
           },
         },
       }),

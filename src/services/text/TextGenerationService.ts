@@ -30,7 +30,7 @@ export class TextGenerationService extends BaseService {
         clientErrorWrapper(
           this._client.POST('/v2/text/generation', {
             ...opts,
-            params: { query: { version: '2024-01-10' } },
+            params: { query: { version: '2024-03-19' } },
             body: input,
           }),
         ),
@@ -45,7 +45,7 @@ export class TextGenerationService extends BaseService {
     return this._limiter.execute(
       async () =>
         this._streamingClient.stream({
-          url: '/v2/text/generation_stream?version=2023-11-22',
+          url: '/v2/text/generation_stream?version=2024-03-19',
           body: input,
           signal: opts?.signal,
         }),

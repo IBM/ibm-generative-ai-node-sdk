@@ -5,6 +5,458 @@
 
 
 export interface paths {
+  "/v2/text/embeddings": {
+    post: {
+      parameters: {
+        query: {
+          version: "2024-04-15";
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            model_id: string;
+            input: string | string[];
+            parameters?: ({
+              truncate_input_tokens?: boolean | null;
+              return_options?: {
+                input_text?: boolean | null;
+              };
+            }) | null;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              model_id: string;
+              /** Format: date-time */
+              created_at: string;
+              results: {
+                  embedding: number[];
+                  input_text?: string;
+                }[];
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/files/{id}": {
+    get: {
+      parameters: {
+        query: {
+          version: "2024-04-09";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                bytes: number;
+                file_name: string;
+                /** @enum {string} */
+                storage_provider_location: "us-south" | "us-east";
+                /** @enum {string} */
+                purpose: "tune" | "template" | "tune_import" | "extraction" | "generic_structured";
+                /** Format: date-time */
+                created_at: string;
+                /** Format: date-time */
+                updated_at: string;
+                file_formats?: {
+                    id: number;
+                    name: string;
+                  }[];
+                origin?: {
+                  id: string;
+                };
+                descendants?: {
+                    id: string;
+                  }[];
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        204: {
+          content: never;
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "multipart/form-data": {
+            /** Format: binary */
+            file: Blob;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                bytes: number;
+                file_name: string;
+                /** @enum {string} */
+                storage_provider_location: "us-south" | "us-east";
+                /** @enum {string} */
+                purpose: "tune" | "template" | "tune_import" | "extraction" | "generic_structured";
+                /** Format: date-time */
+                created_at: string;
+                /** Format: date-time */
+                updated_at: string;
+                file_formats?: {
+                    id: number;
+                    name: string;
+                  }[];
+                origin?: {
+                  id: string;
+                };
+                descendants?: {
+                    id: string;
+                  }[];
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/files": {
+    get: {
+      parameters: {
+        query: {
+          limit?: number;
+          offset?: number;
+          sort_by?: "name" | "created_at";
+          direction?: "asc" | "desc";
+          search?: string;
+          purpose?: "tune" | "template" | "tune_import" | "extraction" | "generic_structured";
+          format_id?: number;
+          version: "2024-04-09";
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              results: ({
+                  id: string;
+                  bytes: number;
+                  file_name: string;
+                  /** @enum {string} */
+                  storage_provider_location: "us-south" | "us-east";
+                  /** @enum {string} */
+                  purpose: "tune" | "template" | "tune_import" | "extraction" | "generic_structured";
+                  /** Format: date-time */
+                  created_at: string;
+                  /** Format: date-time */
+                  updated_at: string;
+                  file_formats?: {
+                      id: number;
+                      name: string;
+                    }[];
+                  origin?: {
+                    id: string;
+                  };
+                  descendants?: {
+                      id: string;
+                    }[];
+                })[];
+              total_count: number;
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+    post: {
+      parameters: {
+        query: {
+          version: "2024-04-09";
+        };
+      };
+      requestBody: {
+        content: {
+          "multipart/form-data": {
+            /** @enum {string} */
+            purpose: "tune" | "template" | "tune_import" | "extraction" | "generic_structured";
+            /** Format: binary */
+            file: Blob;
+            origin_id?: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                bytes: number;
+                file_name: string;
+                /** @enum {string} */
+                storage_provider_location: "us-south" | "us-east";
+                /** @enum {string} */
+                purpose: "tune" | "template" | "tune_import" | "extraction" | "generic_structured";
+                /** Format: date-time */
+                created_at: string;
+                /** Format: date-time */
+                updated_at: string;
+                file_formats?: {
+                    id: number;
+                    name: string;
+                  }[];
+                origin?: {
+                  id: string;
+                };
+                descendants?: {
+                    id: string;
+                  }[];
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
   "/v2/text/moderations": {
     post: {
       parameters: {
@@ -3319,12 +3771,21 @@ export interface paths {
                 warning?: string;
                 description?: string;
                 tags: string[];
+                facets?: ({
+                    id: string;
+                    name: string;
+                    /** @enum {string} */
+                    type: "language" | "industry" | "model_type";
+                  })[];
                 source_model_id?: string | null;
                 is_live: boolean;
                 token_limits: {
                     beam_width: number;
                     token_limit: number;
                   }[];
+                prompt_builder_example?: {
+                  [key: string]: unknown;
+                };
                 system_prompt_id?: number;
               };
             };
@@ -3754,389 +4215,6 @@ export interface paths {
       };
     };
   };
-  "/v2/files/{id}": {
-    get: {
-      parameters: {
-        query: {
-          version: "2023-12-15";
-        };
-        path: {
-          id: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              result: {
-                id: string;
-                bytes: number;
-                file_name: string;
-                /** @enum {string} */
-                storage_provider_location: "us-south" | "us-east";
-                /** @enum {string} */
-                purpose: "tune" | "template" | "tune_import" | "extraction";
-                /** Format: date-time */
-                created_at: string;
-                /** Format: date-time */
-                updated_at: string;
-                file_formats?: {
-                    id: number;
-                    name: string;
-                  }[];
-                origin?: {
-                  id: string;
-                };
-                descendants?: {
-                    id: string;
-                  }[];
-              };
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-    delete: {
-      parameters: {
-        query: {
-          version: "2023-11-22";
-        };
-        path: {
-          id: string;
-        };
-      };
-      responses: {
-        /** @description Success */
-        204: {
-          content: never;
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-    patch: {
-      parameters: {
-        query: {
-          version: "2023-11-22";
-        };
-        path: {
-          id: string;
-        };
-      };
-      requestBody: {
-        content: {
-          "multipart/form-data": {
-            /** Format: binary */
-            file: Blob;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              result: {
-                id: string;
-                bytes: number;
-                file_name: string;
-                /** @enum {string} */
-                storage_provider_location: "us-south" | "us-east";
-                /** @enum {string} */
-                purpose: "tune" | "template" | "tune_import" | "extraction";
-                /** Format: date-time */
-                created_at: string;
-                /** Format: date-time */
-                updated_at: string;
-                file_formats?: {
-                    id: number;
-                    name: string;
-                  }[];
-                origin?: {
-                  id: string;
-                };
-                descendants?: {
-                    id: string;
-                  }[];
-              };
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-  };
-  "/v2/files": {
-    get: {
-      parameters: {
-        query: {
-          limit?: number;
-          offset?: number;
-          sort_by?: "name" | "created_at";
-          direction?: "asc" | "desc";
-          search?: string;
-          purpose?: "tune" | "template" | "tune_import" | "extraction";
-          format_id?: number;
-          version: "2023-12-15";
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              results: ({
-                  id: string;
-                  bytes: number;
-                  file_name: string;
-                  /** @enum {string} */
-                  storage_provider_location: "us-south" | "us-east";
-                  /** @enum {string} */
-                  purpose: "tune" | "template" | "tune_import" | "extraction";
-                  /** Format: date-time */
-                  created_at: string;
-                  /** Format: date-time */
-                  updated_at: string;
-                  file_formats?: {
-                      id: number;
-                      name: string;
-                    }[];
-                  origin?: {
-                    id: string;
-                  };
-                  descendants?: {
-                      id: string;
-                    }[];
-                })[];
-              total_count: number;
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-    post: {
-      parameters: {
-        query: {
-          version: "2023-12-15";
-        };
-      };
-      requestBody: {
-        content: {
-          "multipart/form-data": {
-            /** @enum {string} */
-            purpose: "tune" | "template" | "tune_import" | "extraction";
-            /** Format: binary */
-            file: Blob;
-            origin_id?: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              result: {
-                id: string;
-                bytes: number;
-                file_name: string;
-                /** @enum {string} */
-                storage_provider_location: "us-south" | "us-east";
-                /** @enum {string} */
-                purpose: "tune" | "template" | "tune_import" | "extraction";
-                /** Format: date-time */
-                created_at: string;
-                /** Format: date-time */
-                updated_at: string;
-                file_formats?: {
-                    id: number;
-                    name: string;
-                  }[];
-                origin?: {
-                  id: string;
-                };
-                descendants?: {
-                    id: string;
-                  }[];
-              };
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-  };
   "/v2/user": {
     get: {
       parameters: {
@@ -4488,6 +4566,61 @@ export interface paths {
       };
     };
   };
+  "/v2/tunes/{id}/content": {
+    get: {
+      parameters: {
+        query: {
+          content: string;
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        302: {
+          content: never;
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
   "/v2/tunes/{id}": {
     get: {
       parameters: {
@@ -4552,6 +4685,9 @@ export interface paths {
                     }[];
                 };
                 vectors?: string | null;
+                contents?: {
+                    name: string;
+                  }[];
               };
             };
           };
@@ -4717,6 +4853,9 @@ export interface paths {
                     }[];
                 };
                 vectors?: string | null;
+                contents?: {
+                    name: string;
+                  }[];
               };
             };
           };
@@ -4829,6 +4968,9 @@ export interface paths {
                     }[];
                 };
                 vectors?: string | null;
+                contents?: {
+                    name: string;
+                  }[];
               };
             };
           };
@@ -4940,6 +5082,9 @@ export interface paths {
                       }[];
                   };
                   vectors?: string | null;
+                  contents?: {
+                      name: string;
+                    }[];
                 })[];
             };
           };
@@ -5060,6 +5205,9 @@ export interface paths {
                     }[];
                 };
                 vectors?: string | null;
+                contents?: {
+                    name: string;
+                  }[];
               };
             };
           };
@@ -5217,66 +5365,6 @@ export interface paths {
         401: {
           content: {
             "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-  };
-  "/v2/text/embeddings": {
-    post: {
-      parameters: {
-        query: {
-          version: "2023-11-22";
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            model_id: string;
-            input: string | string[];
-            parameters?: ({
-              truncate_input_tokens?: boolean | null;
-            }) | null;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              results: number[][];
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
           };
         };
         /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
@@ -6423,19 +6511,63 @@ export interface paths {
         content: {
           "application/json": {
             model_id: string;
-            /** Format: byte */
+            /**
+             * Data
+             * Format: byte
+             * @description Base64 encoded string of data.
+             */
             data: string;
-            /** Format: byte */
-            future_data: string;
-            columns: {
-              timestamp: string;
-              id?: string[];
-              target?: string[];
-              observable?: string[];
-              control?: string[];
-              conditional?: string[];
-              static_categorical?: string[];
-            };
+            /**
+             * Timestamp Column
+             * @description A valid column in the data that should be treated as the timestamp.
+             */
+            timestamp_column: string;
+            /**
+             * Id Columns
+             * @description Columns that define a unique key for time series.
+             */
+            id_columns?: string[];
+            /**
+             * Target Columns
+             * @description An array of column headings which constitute the target variables.
+             */
+            target_columns?: string[];
+            /**
+             * Observable Columns
+             * @description An optional array of column headings which constitute the observable variables.
+             */
+            observable_columns?: string[];
+            /**
+             * Control Columns
+             * @description An optional array of column headings which constitute the control variables.
+             */
+            control_columns?: string[];
+            /**
+             * Conditional Columns
+             * @description An optional array of column headings which constitute the conditional variables.
+             */
+            conditional_columns?: string[];
+            /**
+             * Static Categorical Columns
+             * @description An optional array of column headings which constitute the static categorical variables.
+             */
+            static_categorical_columns?: string[];
+            /**
+             * Future Data
+             * Format: byte
+             * @description Base64 encoded string of data for future supporting features.
+             */
+            future_data?: string;
+            /**
+             * Prediction Length
+             * @description The prediction length for the forecast.
+             */
+            prediction_length?: number;
+            /**
+             * Context Length
+             * @description Context length of the forecast.
+             */
+            context_length?: number;
           };
         };
       };
@@ -6651,6 +6783,568 @@ export interface paths {
                 classification_type: "multi_class" | "multi_label" | "binary";
                 model_input: string;
                 model_output: string;
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/beta/evaluation/{id}/instance_results": {
+    get: {
+      parameters: {
+        query: {
+          limit?: number;
+          offset?: number;
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              results: ({
+                  /** EvaluationScore */
+                  score: {
+                    /** Score */
+                    score: number;
+                    /** Score Name */
+                    score_name: string;
+                    [key: string]: unknown;
+                  };
+                  /** Source */
+                  source: string;
+                  /** Target */
+                  target: string | string[];
+                  /** Prediction */
+                  prediction: string[];
+                  /** References */
+                  references: string[][];
+                  /** Generation Info */
+                  generation_info?: Record<string, never> | null;
+                })[];
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/beta/evaluation/{id}": {
+    get: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                name: string;
+                description?: string;
+                model_id: string | null;
+                /** @enum {string} */
+                status: "pending" | "queued" | "running" | "completed" | "failed";
+                status_message?: string | null;
+                parameters?: Record<string, never>;
+                prompt_id: string;
+                template_id: string;
+                template_name: string;
+                task_id: string | null;
+                /** Format: date-time */
+                created_at: string;
+                /** Format: date-time */
+                started_at?: string | null;
+                /** Format: date-time */
+                finished_at?: string | null;
+                result: {
+                  [key: string]: unknown;
+                } | null;
+                file: {
+                  id: string;
+                  file_name: string;
+                  /** Format: date-time */
+                  created_at?: string;
+                } | null;
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/beta/evaluation/template/{id}": {
+    get: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                task?: {
+                  id: string;
+                  name: string;
+                  parent_task?: {
+                    id: string;
+                    name: string;
+                  };
+                };
+                default_prompt_ids?: string[];
+                name: string;
+                metrics: Record<string, never>[];
+                postprocessors: string[];
+                dataset_fields: {
+                  [key: string]: unknown;
+                };
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/beta/evaluation/template": {
+    get: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              results: {
+                  id: string;
+                  task?: {
+                    id: string;
+                    name: string;
+                    parent_task?: {
+                      id: string;
+                      name: string;
+                    };
+                  };
+                  default_prompt_ids?: string[];
+                  name: string;
+                  metrics: Record<string, never>[];
+                  postprocessors: string[];
+                  dataset_fields: {
+                    [key: string]: unknown;
+                  };
+                }[];
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/beta/evaluation/preview": {
+    post: {
+      parameters: {
+        query: {
+          limit?: number;
+          version: "2023-11-22";
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            description?: string;
+            template_id: string;
+            prompt_id: string;
+            model_id?: string;
+            parameters?: ({
+              beam_width?: number | null;
+              /** @enum {string|null} */
+              decoding_method?: "greedy" | "sample" | null;
+              max_new_tokens?: number | null;
+              min_new_tokens?: number | null;
+              random_seed?: number | null;
+              stop_sequences?: string[] | null;
+              temperature?: number | null;
+              time_limit?: number | null;
+              top_k?: number | null;
+              top_p?: number | null;
+              typical_p?: number | null;
+              repetition_penalty?: number | null;
+              truncate_input_tokens?: number | null;
+              include_stop_sequence?: boolean;
+              return_options?: ({
+                generated_tokens?: boolean | null;
+                input_text?: boolean | null;
+                input_tokens?: boolean | null;
+                input_parameters?: boolean | null;
+                token_logprobs?: boolean | null;
+                token_ranks?: boolean | null;
+                top_n_tokens?: number | null;
+              }) | null;
+              length_penalty?: ({
+                decay_factor?: number | null;
+                start_index?: number | null;
+              }) | null;
+            }) | null;
+            dataset_file_id: string;
+            field_operations?: ({
+                /** @enum {string} */
+                type: "rename_fields" | "add_fields" | "shuffle";
+                [key: string]: unknown;
+              })[];
+            metrics: string[];
+            postprocessors?: string[];
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              results: ({
+                  /** EvaluationScore */
+                  score: {
+                    /** Score */
+                    score: number;
+                    /** Score Name */
+                    score_name: string;
+                    [key: string]: unknown;
+                  };
+                  /** Source */
+                  source: string;
+                  /** Target */
+                  target: string | string[];
+                  /** Prediction */
+                  prediction: string[];
+                  /** References */
+                  references: string[][];
+                  /** Generation Info */
+                  generation_info?: Record<string, never> | null;
+                })[];
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/beta/evaluation": {
+    post: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            description?: string;
+            template_id: string;
+            prompt_id: string;
+            model_id?: string;
+            parameters?: ({
+              beam_width?: number | null;
+              /** @enum {string|null} */
+              decoding_method?: "greedy" | "sample" | null;
+              max_new_tokens?: number | null;
+              min_new_tokens?: number | null;
+              random_seed?: number | null;
+              stop_sequences?: string[] | null;
+              temperature?: number | null;
+              time_limit?: number | null;
+              top_k?: number | null;
+              top_p?: number | null;
+              typical_p?: number | null;
+              repetition_penalty?: number | null;
+              truncate_input_tokens?: number | null;
+              include_stop_sequence?: boolean;
+              return_options?: ({
+                generated_tokens?: boolean | null;
+                input_text?: boolean | null;
+                input_tokens?: boolean | null;
+                input_parameters?: boolean | null;
+                token_logprobs?: boolean | null;
+                token_ranks?: boolean | null;
+                top_n_tokens?: number | null;
+              }) | null;
+              length_penalty?: ({
+                decay_factor?: number | null;
+                start_index?: number | null;
+              }) | null;
+            }) | null;
+            dataset_file_id: string;
+            field_operations?: ({
+                /** @enum {string} */
+                type: "rename_fields" | "add_fields" | "shuffle";
+                [key: string]: unknown;
+              })[];
+            metrics: string[];
+            postprocessors?: string[];
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                name: string;
+                description?: string;
+                model_id: string | null;
+                /** @enum {string} */
+                status: "pending" | "queued" | "running" | "completed" | "failed";
+                status_message?: string | null;
+                parameters?: Record<string, never>;
+                prompt_id: string;
+                template_id: string;
+                template_name: string;
+                task_id: string | null;
+                /** Format: date-time */
+                created_at: string;
+                /** Format: date-time */
+                started_at?: string | null;
+                /** Format: date-time */
+                finished_at?: string | null;
+                result: {
+                  [key: string]: unknown;
+                } | null;
+                file: {
+                  id: string;
+                  file_name: string;
+                  /** Format: date-time */
+                  created_at?: string;
+                } | null;
               };
             };
           };

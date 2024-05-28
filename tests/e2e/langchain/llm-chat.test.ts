@@ -122,4 +122,11 @@ describe('LangChain Chat', () => {
       expect(tokens).toStrictEqual(contents);
     });
   });
+
+  it('Serializes', async () => {
+    const model = makeModel();
+    const serialized = model.toJSON();
+    const deserialized = await GenAIChatModel.fromJSON(serialized);
+    expect(deserialized).toBeInstanceOf(GenAIChatModel);
+  });
 });

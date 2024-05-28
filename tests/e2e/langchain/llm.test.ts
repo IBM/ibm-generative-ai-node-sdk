@@ -34,6 +34,13 @@ describe('Langchain', () => {
     });
   });
 
+  it('Serializes', async () => {
+    const client = makeClient('google/flan-ul2');
+    const serialized = client.toJSON();
+    const deserialized = await GenAIModel.fromJSON(serialized);
+    expect(deserialized).toBeInstanceOf(GenAIModel);
+  });
+
   describe('generate', () => {
     // TODO: enable once we will set default model for the test account
     test.skip('should handle empty modelId', async () => {

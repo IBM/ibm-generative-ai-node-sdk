@@ -11,6 +11,8 @@ import { CallbackManagerForLLMRun } from '@langchain/core/callbacks/manager';
 import { ChatGenerationChunk, ChatResult } from '@langchain/core/outputs';
 import { BaseLanguageModelCallOptions as BaseChatModelCallOptions } from '@langchain/core/language_models/base';
 import merge from 'lodash/merge.js';
+import { load } from '@langchain/core/load';
+import type { Serialized } from '@langchain/core/load/serializable';
 
 import { Client, Configuration } from '../client.js';
 import { TextChatCreateInput, TextChatCreateStreamInput } from '../schema.js';
@@ -218,11 +220,40 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
     });
   }
 
-  _llmType(): string {
-    return 'GenAIChat';
+  lc_serializable = true;
+  lc_namespace = ['@ibm-generative-ai/node-sdk', 'langchain', 'llm-chat'];
+
+  get lc_id(): string[] {
+    return [...this.lc_namespace, 'GenAIChatModel'];
+  }
+
+  lc_kwargs = {
+    modelId: undefined,
+    promptId: undefined,
+    conversationId: undefined,
+    parameters: undefined,
+    moderations: undefined,
+    useConversationParameters: undefined,
+    parentId: undefined,
+    trimMethod: undefined,
+  };
+
+  static async fromJSON(value: string | Serialized) {
+    const input = typeof value === 'string' ? value : JSON.stringify(value);
+    return await load(input, {
+      optionalImportsMap: {
+        '@ibm-generative-ai/node-sdk/langchain/llm-chat': {
+          GenAIModel: GenAIChatModel,
+        },
+      },
+    });
   }
 
   _modelType(): string {
     return this.modelId;
+  }
+
+  _llmType(): string {
+    return 'GenAIChatModel';
   }
 }

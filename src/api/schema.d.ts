@@ -5,6 +5,3455 @@
 
 
 export interface paths {
+  "/v2/files/{id}": {
+    get: {
+      parameters: {
+        query: {
+          version: "2024-05-13";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                bytes: number;
+                file_name: string;
+                /** @enum {string} */
+                storage_provider_location: "us-south" | "us-east";
+                /** @enum {string} */
+                purpose: "tune" | "template" | "tune_import" | "extraction" | "generic_structured";
+                /** Format: date-time */
+                created_at: string;
+                /** Format: date-time */
+                updated_at: string;
+                file_formats?: {
+                    id: number;
+                    name: string;
+                  }[];
+                origin?: {
+                  id: string;
+                };
+                descendants?: {
+                    id: string;
+                  }[];
+                metadata?: {
+                  stats: {
+                    columns: string[];
+                    records_count: number;
+                  };
+                };
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        204: {
+          content: never;
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "multipart/form-data": {
+            /** Format: binary */
+            file: Blob;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                bytes: number;
+                file_name: string;
+                /** @enum {string} */
+                storage_provider_location: "us-south" | "us-east";
+                /** @enum {string} */
+                purpose: "tune" | "template" | "tune_import" | "extraction" | "generic_structured";
+                /** Format: date-time */
+                created_at: string;
+                /** Format: date-time */
+                updated_at: string;
+                file_formats?: {
+                    id: number;
+                    name: string;
+                  }[];
+                origin?: {
+                  id: string;
+                };
+                descendants?: {
+                    id: string;
+                  }[];
+                metadata?: {
+                  stats: {
+                    columns: string[];
+                    records_count: number;
+                  };
+                };
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/files": {
+    get: {
+      parameters: {
+        query: {
+          limit?: number;
+          offset?: number;
+          sort_by?: "name" | "created_at";
+          direction?: "asc" | "desc";
+          search?: string;
+          purpose?: "tune" | "template" | "tune_import" | "extraction" | "generic_structured";
+          format_id?: number;
+          version: "2024-05-13";
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              results: ({
+                  id: string;
+                  bytes: number;
+                  file_name: string;
+                  /** @enum {string} */
+                  storage_provider_location: "us-south" | "us-east";
+                  /** @enum {string} */
+                  purpose: "tune" | "template" | "tune_import" | "extraction" | "generic_structured";
+                  /** Format: date-time */
+                  created_at: string;
+                  /** Format: date-time */
+                  updated_at: string;
+                  file_formats?: {
+                      id: number;
+                      name: string;
+                    }[];
+                  origin?: {
+                    id: string;
+                  };
+                  descendants?: {
+                      id: string;
+                    }[];
+                  metadata?: {
+                    stats: {
+                      columns: string[];
+                      records_count: number;
+                    };
+                  };
+                })[];
+              total_count: number;
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+    post: {
+      parameters: {
+        query: {
+          version: "2024-05-13";
+        };
+      };
+      requestBody: {
+        content: {
+          "multipart/form-data": {
+            /** @enum {string} */
+            purpose: "tune" | "template" | "tune_import" | "extraction" | "generic_structured";
+            /** Format: binary */
+            file: Blob;
+            origin_id?: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                bytes: number;
+                file_name: string;
+                /** @enum {string} */
+                storage_provider_location: "us-south" | "us-east";
+                /** @enum {string} */
+                purpose: "tune" | "template" | "tune_import" | "extraction" | "generic_structured";
+                /** Format: date-time */
+                created_at: string;
+                /** Format: date-time */
+                updated_at: string;
+                file_formats?: {
+                    id: number;
+                    name: string;
+                  }[];
+                origin?: {
+                  id: string;
+                };
+                descendants?: {
+                    id: string;
+                  }[];
+                metadata?: {
+                  stats: {
+                    columns: string[];
+                    records_count: number;
+                  };
+                };
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/text/embeddings": {
+    post: {
+      parameters: {
+        query: {
+          version: "2024-04-15";
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            model_id: string;
+            input: string | string[];
+            parameters?: ({
+              truncate_input_tokens?: boolean | null;
+              return_options?: {
+                input_text?: boolean | null;
+              };
+            }) | null;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              model_id: string;
+              /** Format: date-time */
+              created_at: string;
+              results: {
+                  embedding: number[];
+                  input_text?: string;
+                }[];
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/text/moderations": {
+    post: {
+      parameters: {
+        query: {
+          version: "2024-03-19";
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            input: string;
+            hap?: {
+              /** @default 0.75 */
+              threshold?: number;
+              /** @default false */
+              send_tokens?: boolean;
+            };
+            social_bias?: {
+              /** @default 0.75 */
+              threshold?: number;
+              /** @default false */
+              send_tokens?: boolean;
+            };
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              results: {
+                  hap?: {
+                      success: boolean;
+                      score: number;
+                      flagged: boolean;
+                      position: {
+                        start: number;
+                        end: number;
+                      };
+                      tokens?: {
+                          token?: string;
+                          index?: number;
+                          score?: number;
+                        }[];
+                    }[];
+                  social_bias?: {
+                      success: boolean;
+                      score: number;
+                      flagged: boolean;
+                      position: {
+                        start: number;
+                        end: number;
+                      };
+                      tokens?: {
+                          token?: string;
+                          index?: number;
+                          score?: number;
+                        }[];
+                    }[];
+                }[];
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/text/generation_stream": {
+    post: {
+      parameters: {
+        query: {
+          version: "2024-03-19";
+        };
+      };
+      requestBody?: {
+        content: {
+          "application/json": {
+            data?: {
+              example_file_ids?: string[];
+              [key: string]: unknown;
+            };
+            /**
+             * Input string
+             * @description The input is the prompt to generate completions, passed as a string. Note: The method tokenizes the input internally. It is recommended not to leave any trailing spaces.
+             * @example How are you
+             */
+            input?: string;
+            /**
+             * Model ID
+             * @description The ID of the model or tune to be used for this request.
+             */
+            model_id?: string;
+            /** Saved prompt Id */
+            prompt_id?: string;
+            parameters?: ({
+              /**
+               * Top K
+               * @description Set the number of highest probability vocabulary tokens to keep for top-k-filtering. Lower values make it less likely the model will go off topic.
+               */
+              top_k?: number | null;
+              /**
+               * Top P (nucleus sampling)
+               * @description If < 1.0, only the smallest set of most probable tokens with probabilities that add up to `top_p` or higher are used.
+               */
+              top_p?: number | null;
+              /**
+               * Typical P
+               * @description Local typicality measures how similar the conditional probability of predicting a target token next is to the expected conditional probability of predicting a random token next, given the partial text already generated. If set to float < 1, the smallest set of the most locally typical tokens with probabilities that add up to typical_p or higher are kept for generation. 1.00 means a neutral value.
+               */
+              typical_p?: number | null;
+              /**
+               * Beam width
+               * @description At each step, or token, the algorithm keeps track of the n (off=1, 2, or 3) most probable sequences (beams) and selects the one with the highest probability. This continues until the stop sequence is met.
+               */
+              beam_width?: number | null;
+              /**
+               * Time limit
+               * @description Time limit in milliseconds - if not completed within this time, generation will stop. The text generated so far will be returned along with the `TIME_LIMIT` stop reason.
+               */
+              time_limit?: number | null;
+              /**
+               * Random seed
+               * @description Controls the random sampling of the generated tokens when sampling is enabled. Setting the random seed to a the same number for each generation ensures experimental repeatability.
+               */
+              random_seed?: number | null;
+              /**
+               * Temperature
+               * @description Control the creativity of generated text. Higher values will lead to more randomly generated outputs.
+               */
+              temperature?: number | null;
+              /**
+               * Length penalty
+               * @description Can be used to exponentially increase the likelihood of the text generation terminating once a specified number of tokens have been generated.
+               */
+              length_penalty?: ({
+                /**
+                 * Start index
+                 * @description A number of generated tokens after which this should take effect.
+                 */
+                start_index?: number | null;
+                /**
+                 * Decay factor
+                 * @description Represents the factor of exponential decay and must be > 1.0. Larger values correspond to more aggressive decay.
+                 */
+                decay_factor?: number | null;
+              }) | null;
+              /**
+               * Max new tokens
+               * @description Define the maximum number of tokens to generate.
+               */
+              max_new_tokens?: number | null;
+              /**
+               * Min new tokens
+               * @description If stop sequences are given, they are ignored until minimum tokens are generated.
+               */
+              min_new_tokens?: number | null;
+              return_options?: ({
+                /**
+                 * Input text
+                 * @description Include input text
+                 * @default false
+                 */
+                input_text?: boolean | null;
+                /**
+                 * Token ranks
+                 * @description Include rank of each returned token
+                 * @default false
+                 */
+                token_ranks?: boolean | null;
+                /**
+                 * Input Tokens
+                 * @description Include list of input tokens
+                 * @default false
+                 */
+                input_tokens?: boolean | null;
+                /**
+                 * Top N tokens
+                 * @description Include top n candidate tokens at the position of each returned token
+                 */
+                top_n_tokens?: number | null;
+                /**
+                 * Token logprobs
+                 * @description Include logprob for each returned token
+                 * @default false
+                 */
+                token_logprobs?: boolean | null;
+                /**
+                 * Generated Tokens
+                 * @description Include list of individual generated tokens
+                 * @default false
+                 */
+                generated_tokens?: boolean | null;
+                input_parameters?: boolean | null;
+              }) | null;
+              /**
+               * Stop sequences
+               * @description Stop sequences are one or more strings which will cause the text generation to stop if/when they are produced as part of the output. Stop sequences encountered prior to the minimum number of tokens being generated will be ignored.
+               * @example [" and "]
+               */
+              stop_sequences?: string[] | null;
+              /**
+               * Decoding method
+               * @description Decoding method used for generation.
+               * @enum {string|null}
+               */
+              decoding_method?: "greedy" | "sample" | null;
+              /**
+               * Repetition penalty
+               * @description The parameter for repetition penalty. 1.00 means no penalty.
+               */
+              repetition_penalty?: number | null;
+              include_stop_sequence?: boolean;
+              /**
+               * Truncate input tokens
+               * @description Truncate to this many input tokens. Can be used to avoid requests failing due to input being longer than configured limits. Zero means don't truncate.
+               */
+              truncate_input_tokens?: number | null;
+            }) | null;
+            moderations?: {
+              hap?: {
+                input?: {
+                  /**
+                   * @description Detects HAP (hateful, abusive, or profane language).
+                   * @default false
+                   */
+                  enabled: boolean;
+                  /**
+                   * @description The higher the number, the more confidence that the sentence contains HAP. The threshold allows you to modify how much confidence is needed for the sentence to be flagged as containing HAP.
+                   * @default 0.75
+                   */
+                  threshold?: number;
+                  /** @default false */
+                  send_tokens?: boolean;
+                };
+                output?: {
+                  /**
+                   * @description Detects HAP (hateful, abusive, or profane language).
+                   * @default false
+                   */
+                  enabled: boolean;
+                  /**
+                   * @description The higher the number, the more confidence that the sentence contains HAP. The threshold allows you to modify how much confidence is needed for the sentence to be flagged as containing HAP.
+                   * @default 0.75
+                   */
+                  threshold?: number;
+                  /** @default false */
+                  send_tokens?: boolean;
+                };
+              };
+              social_bias?: {
+                input?: {
+                  /**
+                   * @description Detects social bias.
+                   * @default false
+                   */
+                  enabled: boolean;
+                  /**
+                   * @description The higher the number, the more confidence that the sentence contains social bias. The threshold allows you to modify how much confidence is needed for the sentence to be flagged as containing social bias.
+                   * @default 0.75
+                   */
+                  threshold?: number;
+                  /** @default false */
+                  send_tokens?: boolean;
+                };
+                output?: {
+                  /**
+                   * @description Detects social bias.
+                   * @default false
+                   */
+                  enabled: boolean;
+                  /**
+                   * @description The higher the number, the more confidence that the sentence contains social bias. The threshold allows you to modify how much confidence is needed for the sentence to be flagged as containing social bias.
+                   * @default 0.75
+                   */
+                  threshold?: number;
+                  /** @default false */
+                  send_tokens?: boolean;
+                };
+              };
+            };
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "text/event-stream": {
+              id?: string | null;
+              model_id: string;
+              /** Format: date-time */
+              created_at?: string;
+              input_parameters?: {
+                [key: string]: unknown;
+              } | null;
+              results?: ({
+                  input_text?: string | null;
+                  generated_text: string;
+                  generated_token_count: number;
+                  input_token_count?: number | null;
+                  /** @enum {string} */
+                  stop_reason: "not_finished" | "max_tokens" | "eos_token" | "cancelled" | "time_limit" | "stop_sequence" | "token_limit" | "error";
+                  stop_sequence?: string | null;
+                  generated_tokens?: (({
+                      text?: string | null;
+                      logprob?: (number | null) | (string | null);
+                      rank?: number | null;
+                      top_tokens?: (({
+                          text?: string | null;
+                          logprob?: (number | null) | (string | null);
+                        })[]) | null;
+                    })[]) | null;
+                  input_tokens?: (({
+                      text?: string | null;
+                      logprob?: (number | null) | (string | null);
+                      rank?: number | null;
+                      top_tokens?: (({
+                          text?: string | null;
+                          logprob?: (number | null) | (string | null);
+                        })[]) | null;
+                    })[]) | null;
+                  seed?: number | null;
+                  [key: string]: unknown;
+                })[];
+              moderations?: {
+                hap?: {
+                    success: boolean;
+                    score: number;
+                    flagged: boolean;
+                    position: {
+                      start: number;
+                      end: number;
+                    };
+                    tokens?: {
+                        token?: string;
+                        index?: number;
+                        score?: number;
+                      }[];
+                  }[];
+                social_bias?: {
+                    success: boolean;
+                    score: number;
+                    flagged: boolean;
+                    position: {
+                      start: number;
+                      end: number;
+                    };
+                    tokens?: {
+                        token?: string;
+                        index?: number;
+                        score?: number;
+                      }[];
+                  }[];
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/text/generation/output": {
+    post: {
+      parameters: {
+        query: {
+          version: "2024-03-19";
+        };
+      };
+      requestBody?: {
+        content: {
+          "application/json": {
+            model_id?: string;
+            prompt_id?: string;
+            input?: string;
+            data?: {
+              example_file_ids?: string[];
+              [key: string]: unknown;
+            };
+            parameters?: ({
+              beam_width?: number | null;
+              /** @enum {string|null} */
+              decoding_method?: "greedy" | "sample" | null;
+              max_new_tokens?: number | null;
+              min_new_tokens?: number | null;
+              random_seed?: number | null;
+              stop_sequences?: string[] | null;
+              temperature?: number | null;
+              time_limit?: number | null;
+              top_k?: number | null;
+              top_p?: number | null;
+              typical_p?: number | null;
+              repetition_penalty?: number | null;
+              truncate_input_tokens?: number | null;
+              include_stop_sequence?: boolean;
+              return_options?: ({
+                generated_tokens?: boolean | null;
+                input_text?: boolean | null;
+                input_tokens?: boolean | null;
+                input_parameters?: boolean | null;
+                token_logprobs?: boolean | null;
+                token_ranks?: boolean | null;
+                top_n_tokens?: number | null;
+              }) | null;
+              length_penalty?: ({
+                decay_factor?: number | null;
+                start_index?: number | null;
+              }) | null;
+            }) | null;
+            moderations?: {
+              hap?: {
+                input?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+                output?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+              };
+              social_bias?: {
+                input?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+                output?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+              };
+            };
+            use_default?: boolean | null;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              results: string[];
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/text/generation/comparison": {
+    post: {
+      parameters: {
+        query: {
+          version: "2024-03-19";
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            request: {
+              model_id?: string;
+              prompt_id?: string;
+              input: string;
+              data?: {
+                example_file_ids?: string[];
+                [key: string]: unknown;
+              };
+              parameters?: ({
+                beam_width?: number | null;
+                /** @enum {string|null} */
+                decoding_method?: "greedy" | "sample" | null;
+                max_new_tokens?: number | null;
+                min_new_tokens?: number | null;
+                random_seed?: number | null;
+                stop_sequences?: string[] | null;
+                temperature?: number | null;
+                time_limit?: number | null;
+                top_k?: number | null;
+                top_p?: number | null;
+                typical_p?: number | null;
+                repetition_penalty?: number | null;
+                truncate_input_tokens?: number | null;
+                include_stop_sequence?: boolean;
+                return_options?: ({
+                  generated_tokens?: boolean | null;
+                  input_text?: boolean | null;
+                  input_tokens?: boolean | null;
+                  input_parameters?: boolean | null;
+                  token_logprobs?: boolean | null;
+                  token_ranks?: boolean | null;
+                  top_n_tokens?: number | null;
+                }) | null;
+                length_penalty?: ({
+                  decay_factor?: number | null;
+                  start_index?: number | null;
+                }) | null;
+              }) | null;
+              moderations?: {
+                hap?: {
+                  input?: {
+                    /** @default 0.75 */
+                    threshold?: number;
+                    send_tokens?: boolean;
+                    enabled: boolean;
+                  };
+                  output?: {
+                    /** @default 0.75 */
+                    threshold?: number;
+                    send_tokens?: boolean;
+                    enabled: boolean;
+                  };
+                };
+                social_bias?: {
+                  input?: {
+                    /** @default 0.75 */
+                    threshold?: number;
+                    send_tokens?: boolean;
+                    enabled: boolean;
+                  };
+                  output?: {
+                    /** @default 0.75 */
+                    threshold?: number;
+                    send_tokens?: boolean;
+                    enabled: boolean;
+                  };
+                };
+              };
+              use_default?: boolean | null;
+            };
+            name?: string;
+            compare_parameters: {
+              model_id?: string[];
+              temperature?: number[];
+              top_k?: number[];
+              top_p?: number[];
+              typical_p?: number[];
+              repetition_penalty?: number[];
+              length_penalty?: Record<string, never>[];
+            };
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              results: ({
+                  parameters: {
+                    model_id?: string;
+                    temperature?: number;
+                    top_k?: number;
+                    top_p?: number;
+                    typical_p?: number;
+                    repetition_penalty?: number;
+                    length_penalty?: Record<string, never>;
+                  };
+                  error?: (({
+                    status_code: number;
+                    message?: string;
+                    extensions?: {
+                      code?: string;
+                      reason?: string;
+                    };
+                  } | null) | ({
+                    status_code: number;
+                    extensions?: {
+                      code?: string;
+                      reason?: string;
+                    };
+                  } | null)) | null;
+                  result?: ({
+                    id: string | null;
+                    model_id: string;
+                    /** Format: date-time */
+                    created_at: string;
+                    input_parameters?: {
+                      [key: string]: unknown;
+                    } | null;
+                    results: ({
+                        input_text?: string | null;
+                        generated_text: string;
+                        generated_token_count: number;
+                        input_token_count?: number | null;
+                        /** @enum {string} */
+                        stop_reason: "not_finished" | "max_tokens" | "eos_token" | "cancelled" | "time_limit" | "stop_sequence" | "token_limit" | "error";
+                        stop_sequence?: string | null;
+                        generated_tokens?: (({
+                            text?: string | null;
+                            logprob?: (number | null) | (string | null);
+                            rank?: number | null;
+                            top_tokens?: (({
+                                text?: string | null;
+                                logprob?: (number | null) | (string | null);
+                              })[]) | null;
+                          })[]) | null;
+                        input_tokens?: (({
+                            text?: string | null;
+                            logprob?: (number | null) | (string | null);
+                            rank?: number | null;
+                            top_tokens?: (({
+                                text?: string | null;
+                                logprob?: (number | null) | (string | null);
+                              })[]) | null;
+                          })[]) | null;
+                        seed?: number | null;
+                        moderations?: {
+                          hap?: {
+                              success: boolean;
+                              score: number;
+                              flagged: boolean;
+                              position: {
+                                start: number;
+                                end: number;
+                              };
+                              tokens?: {
+                                  token?: string;
+                                  index?: number;
+                                  score?: number;
+                                }[];
+                            }[];
+                          social_bias?: {
+                              success: boolean;
+                              score: number;
+                              flagged: boolean;
+                              position: {
+                                start: number;
+                                end: number;
+                              };
+                              tokens?: {
+                                  token?: string;
+                                  index?: number;
+                                  score?: number;
+                                }[];
+                            }[];
+                        };
+                        [key: string]: unknown;
+                      })[];
+                  }) | null;
+                })[];
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/text/generation": {
+    post: {
+      parameters: {
+        query: {
+          version: "2024-03-19";
+        };
+      };
+      requestBody?: {
+        content: {
+          "application/json": {
+            data?: {
+              example_file_ids?: string[];
+              [key: string]: unknown;
+            };
+            /**
+             * Input string
+             * @description The input is the prompt to generate completions, passed as a string. Note: The method tokenizes the input internally. It is recommended not to leave any trailing spaces.
+             * @example How are you
+             */
+            input?: string;
+            /**
+             * Model ID
+             * @description The ID of the model or tune to be used for this request.
+             */
+            model_id?: string;
+            /** Saved prompt Id */
+            prompt_id?: string;
+            parameters?: ({
+              /**
+               * Top K
+               * @description Set the number of highest probability vocabulary tokens to keep for top-k-filtering. Lower values make it less likely the model will go off topic.
+               */
+              top_k?: number | null;
+              /**
+               * Top P (nucleus sampling)
+               * @description If < 1.0, only the smallest set of most probable tokens with probabilities that add up to `top_p` or higher are used.
+               */
+              top_p?: number | null;
+              /**
+               * Typical P
+               * @description Local typicality measures how similar the conditional probability of predicting a target token next is to the expected conditional probability of predicting a random token next, given the partial text already generated. If set to float < 1, the smallest set of the most locally typical tokens with probabilities that add up to typical_p or higher are kept for generation. 1.00 means a neutral value.
+               */
+              typical_p?: number | null;
+              /**
+               * Beam width
+               * @description At each step, or token, the algorithm keeps track of the n (off=1, 2, or 3) most probable sequences (beams) and selects the one with the highest probability. This continues until the stop sequence is met.
+               */
+              beam_width?: number | null;
+              /**
+               * Time limit
+               * @description Time limit in milliseconds - if not completed within this time, generation will stop. The text generated so far will be returned along with the `TIME_LIMIT` stop reason.
+               */
+              time_limit?: number | null;
+              /**
+               * Random seed
+               * @description Controls the random sampling of the generated tokens when sampling is enabled. Setting the random seed to a the same number for each generation ensures experimental repeatability.
+               */
+              random_seed?: number | null;
+              /**
+               * Temperature
+               * @description Control the creativity of generated text. Higher values will lead to more randomly generated outputs.
+               */
+              temperature?: number | null;
+              /**
+               * Length penalty
+               * @description Can be used to exponentially increase the likelihood of the text generation terminating once a specified number of tokens have been generated.
+               */
+              length_penalty?: ({
+                /**
+                 * Start index
+                 * @description A number of generated tokens after which this should take effect.
+                 */
+                start_index?: number | null;
+                /**
+                 * Decay factor
+                 * @description Represents the factor of exponential decay and must be > 1.0. Larger values correspond to more aggressive decay.
+                 */
+                decay_factor?: number | null;
+              }) | null;
+              /**
+               * Max new tokens
+               * @description Define the maximum number of tokens to generate.
+               */
+              max_new_tokens?: number | null;
+              /**
+               * Min new tokens
+               * @description If stop sequences are given, they are ignored until minimum tokens are generated.
+               */
+              min_new_tokens?: number | null;
+              return_options?: ({
+                /**
+                 * Input text
+                 * @description Include input text
+                 * @default false
+                 */
+                input_text?: boolean | null;
+                /**
+                 * Token ranks
+                 * @description Include rank of each returned token
+                 * @default false
+                 */
+                token_ranks?: boolean | null;
+                /**
+                 * Input Tokens
+                 * @description Include list of input tokens
+                 * @default false
+                 */
+                input_tokens?: boolean | null;
+                /**
+                 * Top N tokens
+                 * @description Include top n candidate tokens at the position of each returned token
+                 */
+                top_n_tokens?: number | null;
+                /**
+                 * Token logprobs
+                 * @description Include logprob for each returned token
+                 * @default false
+                 */
+                token_logprobs?: boolean | null;
+                /**
+                 * Generated Tokens
+                 * @description Include list of individual generated tokens
+                 * @default false
+                 */
+                generated_tokens?: boolean | null;
+                input_parameters?: boolean | null;
+              }) | null;
+              /**
+               * Stop sequences
+               * @description Stop sequences are one or more strings which will cause the text generation to stop if/when they are produced as part of the output. Stop sequences encountered prior to the minimum number of tokens being generated will be ignored.
+               * @example [" and "]
+               */
+              stop_sequences?: string[] | null;
+              /**
+               * Decoding method
+               * @description Decoding method used for generation.
+               * @enum {string|null}
+               */
+              decoding_method?: "greedy" | "sample" | null;
+              /**
+               * Repetition penalty
+               * @description The parameter for repetition penalty. 1.00 means no penalty.
+               */
+              repetition_penalty?: number | null;
+              include_stop_sequence?: boolean;
+              /**
+               * Truncate input tokens
+               * @description Truncate to this many input tokens. Can be used to avoid requests failing due to input being longer than configured limits. Zero means don't truncate.
+               */
+              truncate_input_tokens?: number | null;
+            }) | null;
+            moderations?: {
+              hap?: {
+                input?: {
+                  /**
+                   * @description Detects HAP (hateful, abusive, or profane language).
+                   * @default false
+                   */
+                  enabled: boolean;
+                  /**
+                   * @description The higher the number, the more confidence that the sentence contains HAP. The threshold allows you to modify how much confidence is needed for the sentence to be flagged as containing HAP.
+                   * @default 0.75
+                   */
+                  threshold?: number;
+                  /** @default false */
+                  send_tokens?: boolean;
+                };
+                output?: {
+                  /**
+                   * @description Detects HAP (hateful, abusive, or profane language).
+                   * @default false
+                   */
+                  enabled: boolean;
+                  /**
+                   * @description The higher the number, the more confidence that the sentence contains HAP. The threshold allows you to modify how much confidence is needed for the sentence to be flagged as containing HAP.
+                   * @default 0.75
+                   */
+                  threshold?: number;
+                  /** @default false */
+                  send_tokens?: boolean;
+                };
+              };
+              social_bias?: {
+                input?: {
+                  /**
+                   * @description Detects social bias.
+                   * @default false
+                   */
+                  enabled: boolean;
+                  /**
+                   * @description The higher the number, the more confidence that the sentence contains social bias. The threshold allows you to modify how much confidence is needed for the sentence to be flagged as containing social bias.
+                   * @default 0.75
+                   */
+                  threshold?: number;
+                  /** @default false */
+                  send_tokens?: boolean;
+                };
+                output?: {
+                  /**
+                   * @description Detects social bias.
+                   * @default false
+                   */
+                  enabled: boolean;
+                  /**
+                   * @description The higher the number, the more confidence that the sentence contains social bias. The threshold allows you to modify how much confidence is needed for the sentence to be flagged as containing social bias.
+                   * @default 0.75
+                   */
+                  threshold?: number;
+                  /** @default false */
+                  send_tokens?: boolean;
+                };
+              };
+            };
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              id: string | null;
+              model_id: string;
+              /** Format: date-time */
+              created_at: string;
+              input_parameters?: {
+                [key: string]: unknown;
+              } | null;
+              results: ({
+                  input_text?: string | null;
+                  generated_text: string;
+                  generated_token_count: number;
+                  input_token_count?: number | null;
+                  /** @enum {string} */
+                  stop_reason: "not_finished" | "max_tokens" | "eos_token" | "cancelled" | "time_limit" | "stop_sequence" | "token_limit" | "error";
+                  stop_sequence?: string | null;
+                  generated_tokens?: (({
+                      text?: string | null;
+                      logprob?: (number | null) | (string | null);
+                      rank?: number | null;
+                      top_tokens?: (({
+                          text?: string | null;
+                          logprob?: (number | null) | (string | null);
+                        })[]) | null;
+                    })[]) | null;
+                  input_tokens?: (({
+                      text?: string | null;
+                      logprob?: (number | null) | (string | null);
+                      rank?: number | null;
+                      top_tokens?: (({
+                          text?: string | null;
+                          logprob?: (number | null) | (string | null);
+                        })[]) | null;
+                    })[]) | null;
+                  seed?: number | null;
+                  moderations?: {
+                    hap?: {
+                        success: boolean;
+                        score: number;
+                        flagged: boolean;
+                        position: {
+                          start: number;
+                          end: number;
+                        };
+                        tokens?: {
+                            token?: string;
+                            index?: number;
+                            score?: number;
+                          }[];
+                      }[];
+                    social_bias?: {
+                        success: boolean;
+                        score: number;
+                        flagged: boolean;
+                        position: {
+                          start: number;
+                          end: number;
+                        };
+                        tokens?: {
+                            token?: string;
+                            index?: number;
+                            score?: number;
+                          }[];
+                      }[];
+                  };
+                  [key: string]: unknown;
+                })[];
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/text/chat_stream": {
+    post: {
+      parameters: {
+        query: {
+          version: "2024-03-19";
+        };
+      };
+      requestBody?: {
+        content: {
+          "application/json": {
+            model_id?: string;
+            prompt_template_id?: string | null;
+            moderations?: {
+              hap?: {
+                input?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+                output?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+              };
+              social_bias?: {
+                input?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+                output?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+              };
+            };
+            messages?: ({
+                /** @enum {string} */
+                role: "user" | "system" | "assistant";
+                content: string;
+                files?: {
+                    id?: string;
+                    content?: string;
+                  }[];
+              })[];
+            conversation_id?: string | null;
+            parent_id?: string | null;
+            prompt_id?: string;
+            /** @enum {string} */
+            trim_method?: "floating_window" | "none";
+            use_conversation_parameters?: boolean;
+            parameters?: ({
+              beam_width?: number | null;
+              /** @enum {string|null} */
+              decoding_method?: "greedy" | "sample" | null;
+              max_new_tokens?: number | null;
+              min_new_tokens?: number | null;
+              random_seed?: number | null;
+              stop_sequences?: string[] | null;
+              temperature?: number | null;
+              time_limit?: number | null;
+              top_k?: number | null;
+              top_p?: number | null;
+              typical_p?: number | null;
+              repetition_penalty?: number | null;
+              truncate_input_tokens?: number | null;
+              include_stop_sequence?: boolean;
+              return_options?: ({
+                generated_tokens?: boolean | null;
+                input_text?: boolean | null;
+                input_tokens?: boolean | null;
+                input_parameters?: boolean | null;
+                token_logprobs?: boolean | null;
+                token_ranks?: boolean | null;
+                top_n_tokens?: number | null;
+              }) | null;
+              length_penalty?: ({
+                decay_factor?: number | null;
+                start_index?: number | null;
+              }) | null;
+            }) | null;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "text/event-stream": {
+              id?: string | null;
+              model_id?: string;
+              /** Format: date-time */
+              created_at?: string;
+              input_parameters?: {
+                [key: string]: unknown;
+              } | null;
+              results?: ({
+                  input_text?: string | null;
+                  generated_text: string;
+                  generated_token_count: number;
+                  input_token_count?: number | null;
+                  /** @enum {string} */
+                  stop_reason: "not_finished" | "max_tokens" | "eos_token" | "cancelled" | "time_limit" | "stop_sequence" | "token_limit" | "error";
+                  stop_sequence?: string | null;
+                  generated_tokens?: (({
+                      text?: string | null;
+                      logprob?: (number | null) | (string | null);
+                      rank?: number | null;
+                      top_tokens?: (({
+                          text?: string | null;
+                          logprob?: (number | null) | (string | null);
+                        })[]) | null;
+                    })[]) | null;
+                  input_tokens?: (({
+                      text?: string | null;
+                      logprob?: (number | null) | (string | null);
+                      rank?: number | null;
+                      top_tokens?: (({
+                          text?: string | null;
+                          logprob?: (number | null) | (string | null);
+                        })[]) | null;
+                    })[]) | null;
+                  seed?: number | null;
+                  [key: string]: unknown;
+                })[];
+              moderations?: {
+                hap?: {
+                    success: boolean;
+                    score: number;
+                    flagged: boolean;
+                    position: {
+                      start: number;
+                      end: number;
+                    };
+                    tokens?: {
+                        token?: string;
+                        index?: number;
+                        score?: number;
+                      }[];
+                  }[];
+                social_bias?: {
+                    success: boolean;
+                    score: number;
+                    flagged: boolean;
+                    position: {
+                      start: number;
+                      end: number;
+                    };
+                    tokens?: {
+                        token?: string;
+                        index?: number;
+                        score?: number;
+                      }[];
+                  }[];
+              };
+              conversation_id: string;
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/text/chat/output": {
+    post: {
+      parameters: {
+        query: {
+          version: "2024-03-19";
+        };
+      };
+      requestBody?: {
+        content: {
+          "application/json": {
+            model_id?: string;
+            prompt_template_id?: string | null;
+            moderations?: {
+              hap?: {
+                input?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+                output?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+              };
+              social_bias?: {
+                input?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+                output?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+              };
+            };
+            messages?: ({
+                /** @enum {string} */
+                role: "user" | "system" | "assistant";
+                content: string;
+                files?: {
+                    id?: string;
+                    content?: string;
+                  }[];
+              })[];
+            conversation_id?: string | null;
+            parent_id?: string | null;
+            prompt_id?: string;
+            /** @enum {string} */
+            trim_method?: "floating_window" | "none";
+            use_conversation_parameters?: boolean;
+            parameters?: ({
+              beam_width?: number | null;
+              /** @enum {string|null} */
+              decoding_method?: "greedy" | "sample" | null;
+              max_new_tokens?: number | null;
+              min_new_tokens?: number | null;
+              random_seed?: number | null;
+              stop_sequences?: string[] | null;
+              temperature?: number | null;
+              time_limit?: number | null;
+              top_k?: number | null;
+              top_p?: number | null;
+              typical_p?: number | null;
+              repetition_penalty?: number | null;
+              truncate_input_tokens?: number | null;
+              include_stop_sequence?: boolean;
+              return_options?: ({
+                generated_tokens?: boolean | null;
+                input_text?: boolean | null;
+                input_tokens?: boolean | null;
+                input_parameters?: boolean | null;
+                token_logprobs?: boolean | null;
+                token_ranks?: boolean | null;
+                top_n_tokens?: number | null;
+              }) | null;
+              length_penalty?: ({
+                decay_factor?: number | null;
+                start_index?: number | null;
+              }) | null;
+            }) | null;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: string;
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/text/chat": {
+    post: {
+      parameters: {
+        query: {
+          version: "2024-03-19";
+        };
+      };
+      requestBody?: {
+        content: {
+          "application/json": {
+            model_id?: string;
+            prompt_template_id?: string | null;
+            moderations?: {
+              hap?: {
+                input?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+                output?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+              };
+              social_bias?: {
+                input?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+                output?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+              };
+            };
+            messages?: ({
+                /** @enum {string} */
+                role: "user" | "system" | "assistant";
+                content: string;
+                files?: {
+                    id?: string;
+                    content?: string;
+                  }[];
+              })[];
+            conversation_id?: string | null;
+            parent_id?: string | null;
+            prompt_id?: string;
+            /** @enum {string} */
+            trim_method?: "floating_window" | "none";
+            use_conversation_parameters?: boolean;
+            parameters?: ({
+              beam_width?: number | null;
+              /** @enum {string|null} */
+              decoding_method?: "greedy" | "sample" | null;
+              max_new_tokens?: number | null;
+              min_new_tokens?: number | null;
+              random_seed?: number | null;
+              stop_sequences?: string[] | null;
+              temperature?: number | null;
+              time_limit?: number | null;
+              top_k?: number | null;
+              top_p?: number | null;
+              typical_p?: number | null;
+              repetition_penalty?: number | null;
+              truncate_input_tokens?: number | null;
+              include_stop_sequence?: boolean;
+              return_options?: ({
+                generated_tokens?: boolean | null;
+                input_text?: boolean | null;
+                input_tokens?: boolean | null;
+                input_parameters?: boolean | null;
+                token_logprobs?: boolean | null;
+                token_ranks?: boolean | null;
+                top_n_tokens?: number | null;
+              }) | null;
+              length_penalty?: ({
+                decay_factor?: number | null;
+                start_index?: number | null;
+              }) | null;
+            }) | null;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              id?: string | null;
+              model_id?: string;
+              /** Format: date-time */
+              created_at?: string;
+              input_parameters?: {
+                [key: string]: unknown;
+              } | null;
+              results: ({
+                  input_text?: string | null;
+                  generated_text: string;
+                  generated_token_count: number;
+                  input_token_count?: number | null;
+                  /** @enum {string} */
+                  stop_reason: "not_finished" | "max_tokens" | "eos_token" | "cancelled" | "time_limit" | "stop_sequence" | "token_limit" | "error";
+                  stop_sequence?: string | null;
+                  generated_tokens?: (({
+                      text?: string | null;
+                      logprob?: (number | null) | (string | null);
+                      rank?: number | null;
+                      top_tokens?: (({
+                          text?: string | null;
+                          logprob?: (number | null) | (string | null);
+                        })[]) | null;
+                    })[]) | null;
+                  input_tokens?: (({
+                      text?: string | null;
+                      logprob?: (number | null) | (string | null);
+                      rank?: number | null;
+                      top_tokens?: (({
+                          text?: string | null;
+                          logprob?: (number | null) | (string | null);
+                        })[]) | null;
+                    })[]) | null;
+                  seed?: number | null;
+                  moderations?: {
+                    hap?: {
+                        success: boolean;
+                        score: number;
+                        flagged: boolean;
+                        position: {
+                          start: number;
+                          end: number;
+                        };
+                        tokens?: {
+                            token?: string;
+                            index?: number;
+                            score?: number;
+                          }[];
+                      }[];
+                    social_bias?: {
+                        success: boolean;
+                        score: number;
+                        flagged: boolean;
+                        position: {
+                          start: number;
+                          end: number;
+                        };
+                        tokens?: {
+                            token?: string;
+                            index?: number;
+                            score?: number;
+                          }[];
+                      }[];
+                  };
+                  [key: string]: unknown;
+                })[];
+              conversation_id: string;
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/requests/chat/{conversation_id}": {
+    get: {
+      parameters: {
+        query: {
+          version: "2024-03-19";
+        };
+        path: {
+          conversation_id: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              results: ({
+                  id: string;
+                  duration: number;
+                  /** Format: date-time */
+                  created_at: string;
+                  request: {
+                    [key: string]: unknown;
+                  } | null;
+                  /** @enum {string} */
+                  status: "success" | "error";
+                  response: {
+                    [key: string]: unknown;
+                  } | null;
+                  version?: ({
+                    api?: string | null;
+                    /** Format: date */
+                    date?: string | null;
+                  }) | null;
+                  parent_id?: string | null;
+                  [key: string]: unknown;
+                })[];
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+        path: {
+          conversation_id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        204: {
+          content: never;
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/prompts/{id}": {
+    get: {
+      parameters: {
+        query: {
+          version: "2024-03-19";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                name: string;
+                description?: string;
+                data?: Record<string, never>;
+                input?: string;
+                output?: string;
+                model_id?: string;
+                parameters?: ({
+                  beam_width?: number | null;
+                  /** @enum {string|null} */
+                  decoding_method?: "greedy" | "sample" | null;
+                  max_new_tokens?: number | null;
+                  min_new_tokens?: number | null;
+                  random_seed?: number | null;
+                  stop_sequences?: string[] | null;
+                  temperature?: number | null;
+                  time_limit?: number | null;
+                  top_k?: number | null;
+                  top_p?: number | null;
+                  typical_p?: number | null;
+                  repetition_penalty?: number | null;
+                  truncate_input_tokens?: number | null;
+                  include_stop_sequence?: boolean;
+                  return_options?: ({
+                    generated_tokens?: boolean | null;
+                    input_text?: boolean | null;
+                    input_tokens?: boolean | null;
+                    input_parameters?: boolean | null;
+                    token_logprobs?: boolean | null;
+                    token_ranks?: boolean | null;
+                    top_n_tokens?: number | null;
+                  }) | null;
+                  length_penalty?: ({
+                    decay_factor?: number | null;
+                    start_index?: number | null;
+                  }) | null;
+                }) | null;
+                moderations?: {
+                  hap?: {
+                    input?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                    output?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                  };
+                  social_bias?: {
+                    input?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                    output?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                  };
+                  stigma?: {
+                    input?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                    output?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                  };
+                  implicit_hate?: {
+                    input?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                    output?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                  };
+                } | null;
+                /** Format: date-time */
+                created_at: string;
+                /** Format: date-time */
+                updated_at?: string;
+                /** @enum {string} */
+                type: "private" | "public" | "community" | "example";
+                public?: boolean;
+                prompt_id?: string | null;
+                metadata?: {
+                  [key: string]: unknown;
+                };
+                tags?: ({
+                    id: string;
+                    name: string;
+                    /** @enum {string} */
+                    type: "language" | "industry" | "model_type";
+                  })[];
+                author?: {
+                  id?: number;
+                  first_name?: string;
+                  last_name?: string;
+                };
+                task?: {
+                  id?: string;
+                  name?: string;
+                  icon?: string;
+                };
+                messages?: (({
+                    /** @enum {string} */
+                    role: "user" | "system" | "assistant";
+                    content: string;
+                    files?: {
+                        id?: string;
+                        content?: string;
+                      }[];
+                  })[]) | null;
+                folder_id?: string | null;
+                usage_count: number;
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+    put: {
+      parameters: {
+        query: {
+          version: "2024-03-19";
+        };
+        path: {
+          id: string;
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            description?: string;
+            prompt_id?: string;
+            data?: {
+              example_file_ids?: string[];
+              [key: string]: unknown;
+            };
+            output?: string | null;
+            parameters?: ({
+              beam_width?: number | null;
+              /** @enum {string|null} */
+              decoding_method?: "greedy" | "sample" | null;
+              max_new_tokens?: number | null;
+              min_new_tokens?: number | null;
+              random_seed?: number | null;
+              stop_sequences?: string[] | null;
+              temperature?: number | null;
+              time_limit?: number | null;
+              top_k?: number | null;
+              top_p?: number | null;
+              typical_p?: number | null;
+              repetition_penalty?: number | null;
+              truncate_input_tokens?: number | null;
+              include_stop_sequence?: boolean;
+              return_options?: ({
+                generated_tokens?: boolean | null;
+                input_text?: boolean | null;
+                input_tokens?: boolean | null;
+                input_parameters?: boolean | null;
+                token_logprobs?: boolean | null;
+                token_ranks?: boolean | null;
+                top_n_tokens?: number | null;
+              }) | null;
+              length_penalty?: ({
+                decay_factor?: number | null;
+                start_index?: number | null;
+              }) | null;
+            }) | null;
+            moderations?: {
+              hap?: {
+                input?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+                output?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+              };
+              social_bias?: {
+                input?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+                output?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+              };
+            };
+            model_id: string;
+            task_id?: string;
+            folder_id?: string | null;
+            industry_id?: string;
+            language_id?: string;
+            /** @enum {string} */
+            type?: "private" | "public" | "community";
+            input?: string;
+            messages?: (({
+                /** @enum {string} */
+                role: "user" | "system" | "assistant";
+                content: string;
+                files?: {
+                    id?: string;
+                    content?: string;
+                  }[];
+              })[]) | null;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                name: string;
+                description?: string;
+                data?: Record<string, never>;
+                input?: string;
+                output?: string;
+                model_id?: string;
+                parameters?: ({
+                  beam_width?: number | null;
+                  /** @enum {string|null} */
+                  decoding_method?: "greedy" | "sample" | null;
+                  max_new_tokens?: number | null;
+                  min_new_tokens?: number | null;
+                  random_seed?: number | null;
+                  stop_sequences?: string[] | null;
+                  temperature?: number | null;
+                  time_limit?: number | null;
+                  top_k?: number | null;
+                  top_p?: number | null;
+                  typical_p?: number | null;
+                  repetition_penalty?: number | null;
+                  truncate_input_tokens?: number | null;
+                  include_stop_sequence?: boolean;
+                  return_options?: ({
+                    generated_tokens?: boolean | null;
+                    input_text?: boolean | null;
+                    input_tokens?: boolean | null;
+                    input_parameters?: boolean | null;
+                    token_logprobs?: boolean | null;
+                    token_ranks?: boolean | null;
+                    top_n_tokens?: number | null;
+                  }) | null;
+                  length_penalty?: ({
+                    decay_factor?: number | null;
+                    start_index?: number | null;
+                  }) | null;
+                }) | null;
+                moderations?: {
+                  hap?: {
+                    input?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                    output?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                  };
+                  social_bias?: {
+                    input?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                    output?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                  };
+                  stigma?: {
+                    input?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                    output?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                  };
+                  implicit_hate?: {
+                    input?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                    output?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                  };
+                } | null;
+                /** Format: date-time */
+                created_at: string;
+                /** Format: date-time */
+                updated_at?: string;
+                /** @enum {string} */
+                type: "private" | "public" | "community" | "example";
+                public?: boolean;
+                prompt_id?: string | null;
+                metadata?: {
+                  [key: string]: unknown;
+                };
+                tags?: ({
+                    id: string;
+                    name: string;
+                    /** @enum {string} */
+                    type: "language" | "industry" | "model_type";
+                  })[];
+                author?: {
+                  id?: number;
+                  first_name?: string;
+                  last_name?: string;
+                };
+                task?: {
+                  id?: string;
+                  name?: string;
+                  icon?: string;
+                };
+                messages?: (({
+                    /** @enum {string} */
+                    role: "user" | "system" | "assistant";
+                    content: string;
+                    files?: {
+                        id?: string;
+                        content?: string;
+                      }[];
+                  })[]) | null;
+                folder_id?: string | null;
+                usage_count: number;
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        204: {
+          content: never;
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+    patch: {
+      parameters: {
+        query: {
+          version: "2024-03-19";
+        };
+        path: {
+          id: string;
+        };
+      };
+      requestBody?: {
+        content: {
+          "application/json": {
+            /** @enum {string} */
+            type?: "private" | "public" | "community";
+            folder_id?: string | null;
+            name?: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                name: string;
+                description?: string;
+                data?: Record<string, never>;
+                input?: string;
+                output?: string;
+                model_id?: string;
+                parameters?: ({
+                  beam_width?: number | null;
+                  /** @enum {string|null} */
+                  decoding_method?: "greedy" | "sample" | null;
+                  max_new_tokens?: number | null;
+                  min_new_tokens?: number | null;
+                  random_seed?: number | null;
+                  stop_sequences?: string[] | null;
+                  temperature?: number | null;
+                  time_limit?: number | null;
+                  top_k?: number | null;
+                  top_p?: number | null;
+                  typical_p?: number | null;
+                  repetition_penalty?: number | null;
+                  truncate_input_tokens?: number | null;
+                  include_stop_sequence?: boolean;
+                  return_options?: ({
+                    generated_tokens?: boolean | null;
+                    input_text?: boolean | null;
+                    input_tokens?: boolean | null;
+                    input_parameters?: boolean | null;
+                    token_logprobs?: boolean | null;
+                    token_ranks?: boolean | null;
+                    top_n_tokens?: number | null;
+                  }) | null;
+                  length_penalty?: ({
+                    decay_factor?: number | null;
+                    start_index?: number | null;
+                  }) | null;
+                }) | null;
+                moderations?: {
+                  hap?: {
+                    input?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                    output?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                  };
+                  social_bias?: {
+                    input?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                    output?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                  };
+                  stigma?: {
+                    input?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                    output?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                  };
+                  implicit_hate?: {
+                    input?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                    output?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                  };
+                } | null;
+                /** Format: date-time */
+                created_at: string;
+                /** Format: date-time */
+                updated_at?: string;
+                /** @enum {string} */
+                type: "private" | "public" | "community" | "example";
+                public?: boolean;
+                prompt_id?: string | null;
+                metadata?: {
+                  [key: string]: unknown;
+                };
+                tags?: ({
+                    id: string;
+                    name: string;
+                    /** @enum {string} */
+                    type: "language" | "industry" | "model_type";
+                  })[];
+                author?: {
+                  id?: number;
+                  first_name?: string;
+                  last_name?: string;
+                };
+                task?: {
+                  id?: string;
+                  name?: string;
+                  icon?: string;
+                };
+                messages?: (({
+                    /** @enum {string} */
+                    role: "user" | "system" | "assistant";
+                    content: string;
+                    files?: {
+                        id?: string;
+                        content?: string;
+                      }[];
+                  })[]) | null;
+                folder_id?: string | null;
+                usage_count: number;
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/prompts": {
+    get: {
+      parameters: {
+        query: {
+          limit?: number;
+          offset?: number;
+          sort_by?: "type" | "model_task" | "updated_at" | "created_at" | "name" | "id" | "model" | "usage_count";
+          direction?: "asc" | "desc";
+          search?: string;
+          task_id?: string | string[];
+          model_id?: string | string[];
+          source?: ("user" | "example" | "community") | (("user" | "example" | "community")[]);
+          model_family_id?: number;
+          industry_id?: string | string[];
+          prompt_language_id?: string | string[];
+          model_type_id?: string | string[];
+          avg_time_min?: number;
+          avg_time_max?: number;
+          context_window_min?: number;
+          context_window_max?: number;
+          folder_id?: string | null;
+          version: "2024-03-19";
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              results: ({
+                  id: string;
+                  name: string;
+                  description?: string;
+                  data?: Record<string, never>;
+                  input?: string;
+                  output?: string;
+                  model_id?: string;
+                  parameters?: ({
+                    beam_width?: number | null;
+                    /** @enum {string|null} */
+                    decoding_method?: "greedy" | "sample" | null;
+                    max_new_tokens?: number | null;
+                    min_new_tokens?: number | null;
+                    random_seed?: number | null;
+                    stop_sequences?: string[] | null;
+                    temperature?: number | null;
+                    time_limit?: number | null;
+                    top_k?: number | null;
+                    top_p?: number | null;
+                    typical_p?: number | null;
+                    repetition_penalty?: number | null;
+                    truncate_input_tokens?: number | null;
+                    include_stop_sequence?: boolean;
+                    return_options?: ({
+                      generated_tokens?: boolean | null;
+                      input_text?: boolean | null;
+                      input_tokens?: boolean | null;
+                      input_parameters?: boolean | null;
+                      token_logprobs?: boolean | null;
+                      token_ranks?: boolean | null;
+                      top_n_tokens?: number | null;
+                    }) | null;
+                    length_penalty?: ({
+                      decay_factor?: number | null;
+                      start_index?: number | null;
+                    }) | null;
+                  }) | null;
+                  moderations?: {
+                    hap?: {
+                      input?: {
+                        /** @default 0.75 */
+                        threshold?: number;
+                        send_tokens?: boolean;
+                        enabled: boolean;
+                      };
+                      output?: {
+                        /** @default 0.75 */
+                        threshold?: number;
+                        send_tokens?: boolean;
+                        enabled: boolean;
+                      };
+                    };
+                    social_bias?: {
+                      input?: {
+                        /** @default 0.75 */
+                        threshold?: number;
+                        send_tokens?: boolean;
+                        enabled: boolean;
+                      };
+                      output?: {
+                        /** @default 0.75 */
+                        threshold?: number;
+                        send_tokens?: boolean;
+                        enabled: boolean;
+                      };
+                    };
+                    stigma?: {
+                      input?: {
+                        /** @default 0.75 */
+                        threshold?: number;
+                        send_tokens?: boolean;
+                        enabled: boolean;
+                      };
+                      output?: {
+                        /** @default 0.75 */
+                        threshold?: number;
+                        send_tokens?: boolean;
+                        enabled: boolean;
+                      };
+                    };
+                    implicit_hate?: {
+                      input?: {
+                        /** @default 0.75 */
+                        threshold?: number;
+                        send_tokens?: boolean;
+                        enabled: boolean;
+                      };
+                      output?: {
+                        /** @default 0.75 */
+                        threshold?: number;
+                        send_tokens?: boolean;
+                        enabled: boolean;
+                      };
+                    };
+                  } | null;
+                  /** Format: date-time */
+                  created_at: string;
+                  /** Format: date-time */
+                  updated_at?: string;
+                  /** @enum {string} */
+                  type: "private" | "public" | "community" | "example";
+                  public?: boolean;
+                  prompt_id?: string | null;
+                  metadata?: {
+                    [key: string]: unknown;
+                  };
+                  tags?: ({
+                      id: string;
+                      name: string;
+                      /** @enum {string} */
+                      type: "language" | "industry" | "model_type";
+                    })[];
+                  author?: {
+                    id?: number;
+                    first_name?: string;
+                    last_name?: string;
+                  };
+                  task?: {
+                    id?: string;
+                    name?: string;
+                    icon?: string;
+                  };
+                  messages?: (({
+                      /** @enum {string} */
+                      role: "user" | "system" | "assistant";
+                      content: string;
+                      files?: {
+                          id?: string;
+                          content?: string;
+                        }[];
+                    })[]) | null;
+                  folder_id?: string | null;
+                  usage_count: number;
+                })[];
+              total_count: number;
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+    post: {
+      parameters: {
+        query: {
+          version: "2024-03-19";
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            description?: string;
+            prompt_id?: string;
+            data?: {
+              example_file_ids?: string[];
+              [key: string]: unknown;
+            };
+            output?: string | null;
+            parameters?: ({
+              beam_width?: number | null;
+              /** @enum {string|null} */
+              decoding_method?: "greedy" | "sample" | null;
+              max_new_tokens?: number | null;
+              min_new_tokens?: number | null;
+              random_seed?: number | null;
+              stop_sequences?: string[] | null;
+              temperature?: number | null;
+              time_limit?: number | null;
+              top_k?: number | null;
+              top_p?: number | null;
+              typical_p?: number | null;
+              repetition_penalty?: number | null;
+              truncate_input_tokens?: number | null;
+              include_stop_sequence?: boolean;
+              return_options?: ({
+                generated_tokens?: boolean | null;
+                input_text?: boolean | null;
+                input_tokens?: boolean | null;
+                input_parameters?: boolean | null;
+                token_logprobs?: boolean | null;
+                token_ranks?: boolean | null;
+                top_n_tokens?: number | null;
+              }) | null;
+              length_penalty?: ({
+                decay_factor?: number | null;
+                start_index?: number | null;
+              }) | null;
+            }) | null;
+            moderations?: {
+              hap?: {
+                input?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+                output?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+              };
+              social_bias?: {
+                input?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+                output?: {
+                  /** @default 0.75 */
+                  threshold?: number;
+                  send_tokens?: boolean;
+                  enabled: boolean;
+                };
+              };
+            };
+            model_id: string;
+            task_id?: string;
+            folder_id?: string | null;
+            industry_id?: string;
+            language_id?: string;
+            /** @enum {string} */
+            type?: "private" | "public" | "community";
+            input?: string;
+            messages?: (({
+                /** @enum {string} */
+                role: "user" | "system" | "assistant";
+                content: string;
+                files?: {
+                    id?: string;
+                    content?: string;
+                  }[];
+              })[]) | null;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                name: string;
+                description?: string;
+                data?: Record<string, never>;
+                input?: string;
+                output?: string;
+                model_id?: string;
+                parameters?: ({
+                  beam_width?: number | null;
+                  /** @enum {string|null} */
+                  decoding_method?: "greedy" | "sample" | null;
+                  max_new_tokens?: number | null;
+                  min_new_tokens?: number | null;
+                  random_seed?: number | null;
+                  stop_sequences?: string[] | null;
+                  temperature?: number | null;
+                  time_limit?: number | null;
+                  top_k?: number | null;
+                  top_p?: number | null;
+                  typical_p?: number | null;
+                  repetition_penalty?: number | null;
+                  truncate_input_tokens?: number | null;
+                  include_stop_sequence?: boolean;
+                  return_options?: ({
+                    generated_tokens?: boolean | null;
+                    input_text?: boolean | null;
+                    input_tokens?: boolean | null;
+                    input_parameters?: boolean | null;
+                    token_logprobs?: boolean | null;
+                    token_ranks?: boolean | null;
+                    top_n_tokens?: number | null;
+                  }) | null;
+                  length_penalty?: ({
+                    decay_factor?: number | null;
+                    start_index?: number | null;
+                  }) | null;
+                }) | null;
+                moderations?: {
+                  hap?: {
+                    input?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                    output?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                  };
+                  social_bias?: {
+                    input?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                    output?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                  };
+                  stigma?: {
+                    input?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                    output?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                  };
+                  implicit_hate?: {
+                    input?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                    output?: {
+                      /** @default 0.75 */
+                      threshold?: number;
+                      send_tokens?: boolean;
+                      enabled: boolean;
+                    };
+                  };
+                } | null;
+                /** Format: date-time */
+                created_at: string;
+                /** Format: date-time */
+                updated_at?: string;
+                /** @enum {string} */
+                type: "private" | "public" | "community" | "example";
+                public?: boolean;
+                prompt_id?: string | null;
+                metadata?: {
+                  [key: string]: unknown;
+                };
+                tags?: ({
+                    id: string;
+                    name: string;
+                    /** @enum {string} */
+                    type: "language" | "industry" | "model_type";
+                  })[];
+                author?: {
+                  id?: number;
+                  first_name?: string;
+                  last_name?: string;
+                };
+                task?: {
+                  id?: string;
+                  name?: string;
+                  icon?: string;
+                };
+                messages?: (({
+                    /** @enum {string} */
+                    role: "user" | "system" | "assistant";
+                    content: string;
+                    files?: {
+                        id?: string;
+                        content?: string;
+                      }[];
+                  })[]) | null;
+                folder_id?: string | null;
+                usage_count: number;
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
   "/v2/text/generation/{id}/feedback": {
     /**
      * @deprecated
@@ -35,6 +3484,7 @@ export interface paths {
                 api_request: string;
                 /** @enum {string|null} */
                 vote?: "up" | "down" | null;
+                contact_consent: boolean;
               };
             };
           };
@@ -90,13 +3540,15 @@ export interface paths {
           id: string;
         };
       };
-      requestBody?: {
+      requestBody: {
         content: {
           "application/json": {
             comment?: string;
             categories?: ("inaccurate" | "not_relevant" | "offensive_harmful" | "knowledge_gap" | "other_content" | "too_long" | "too_short" | "wrong_tone" | "wrong_format" | "other_style" | "correct_content" | "correct_style")[];
             /** @enum {string} */
             vote?: "up" | "down";
+            /** @default false */
+            contact_consent: boolean;
           };
         };
       };
@@ -116,6 +3568,7 @@ export interface paths {
                 api_request: string;
                 /** @enum {string|null} */
                 vote?: "up" | "down" | null;
+                contact_consent: boolean;
               };
             };
           };
@@ -171,13 +3624,15 @@ export interface paths {
           id: string;
         };
       };
-      requestBody?: {
+      requestBody: {
         content: {
           "application/json": {
             comment?: string;
             categories?: ("inaccurate" | "not_relevant" | "offensive_harmful" | "knowledge_gap" | "other_content" | "too_long" | "too_short" | "wrong_tone" | "wrong_format" | "other_style" | "correct_content" | "correct_style")[];
             /** @enum {string} */
             vote?: "up" | "down";
+            /** @default false */
+            contact_consent: boolean;
           };
         };
       };
@@ -197,6 +3652,7 @@ export interface paths {
                 api_request: string;
                 /** @enum {string|null} */
                 vote?: "up" | "down" | null;
+                contact_consent: boolean;
               };
             };
           };
@@ -343,12 +3799,21 @@ export interface paths {
                 warning?: string;
                 description?: string;
                 tags: string[];
+                facets?: ({
+                    id: string;
+                    name: string;
+                    /** @enum {string} */
+                    type: "language" | "industry" | "model_type";
+                  })[];
                 source_model_id?: string | null;
                 is_live: boolean;
                 token_limits: {
                     beam_width: number;
                     token_limit: number;
                   }[];
+                prompt_builder_example?: {
+                  [key: string]: unknown;
+                };
                 system_prompt_id?: number;
               };
             };
@@ -450,2060 +3915,6 @@ export interface paths {
         404: {
           content: {
             "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-  };
-  "/v2/text/generation_stream": {
-    post: {
-      parameters: {
-        query: {
-          version: "2024-01-10";
-        };
-      };
-      requestBody?: {
-        content: {
-          "application/json": {
-            data?: {
-              example_file_ids?: string[];
-              [key: string]: unknown;
-            };
-            /**
-             * Input string
-             * @description The input is the prompt to generate completions, passed as a string. Note: The method tokenizes the input internally. It is recommended not to leave any trailing spaces.
-             */
-            input?: string;
-            /**
-             * Model ID
-             * @description The ID of the model or tune to be used for this request.
-             */
-            model_id?: string;
-            /** Saved prompt Id */
-            prompt_id?: string;
-            parameters?: ({
-              /**
-               * Top K
-               * @description Set the number of highest probability vocabulary tokens to keep for top-k-filtering. Lower values make it less likely the model will go off topic.
-               */
-              top_k?: number | null;
-              /**
-               * Top P (nucleus sampling)
-               * @description If < 1.0, only the smallest set of most probable tokens with probabilities that add up to `top_p` or higher are used.
-               */
-              top_p?: number | null;
-              /**
-               * Typical P
-               * @description Local typicality measures how similar the conditional probability of predicting a target token next is to the expected conditional probability of predicting a random token next, given the partial text already generated. If set to float < 1, the smallest set of the most locally typical tokens with probabilities that add up to typical_p or higher are kept for generation. 1.00 means a neutral value.
-               */
-              typical_p?: number | null;
-              /**
-               * Beam width
-               * @description At each step, or token, the algorithm keeps track of the n (off=1, 2, or 3) most probable sequences (beams) and selects the one with the highest probability. This continues until the stop sequence is met.
-               */
-              beam_width?: number | null;
-              /**
-               * Time limit
-               * @description Time limit in milliseconds - if not completed within this time, generation will stop. The text generated so far will be returned along with the `TIME_LIMIT` stop reason.
-               */
-              time_limit?: number | null;
-              /**
-               * Random seed
-               * @description Controls the random sampling of the generated tokens when sampling is enabled. Setting the random seed to a the same number for each generation ensures experimental repeatability.
-               */
-              random_seed?: number | null;
-              /**
-               * Temperature
-               * @description Control the creativity of generated text. Higher values will lead to more randomly generated outputs.
-               */
-              temperature?: number | null;
-              /**
-               * Length penalty
-               * @description Can be used to exponentially increase the likelihood of the text generation terminating once a specified number of tokens have been generated.
-               */
-              length_penalty?: ({
-                /**
-                 * Start index
-                 * @description A number of generated tokens after which this should take effect.
-                 */
-                start_index?: number | null;
-                /**
-                 * Decay factor
-                 * @description Represents the factor of exponential decay and must be > 1.0. Larger values correspond to more aggressive decay.
-                 */
-                decay_factor?: number | null;
-              }) | null;
-              /**
-               * Max new tokens
-               * @description Define the maximum number of tokens to generate.
-               */
-              max_new_tokens?: number | null;
-              /**
-               * Min new tokens
-               * @description If stop sequences are given, they are ignored until minimum tokens are generated.
-               */
-              min_new_tokens?: number | null;
-              return_options?: ({
-                /**
-                 * Input text
-                 * @description Include input text
-                 * @default false
-                 */
-                input_text?: boolean | null;
-                /**
-                 * Token ranks
-                 * @description Include rank of each returned token
-                 * @default false
-                 */
-                token_ranks?: boolean | null;
-                /**
-                 * Input Tokens
-                 * @description Include list of input tokens
-                 * @default false
-                 */
-                input_tokens?: boolean | null;
-                /**
-                 * Top N tokens
-                 * @description Include top n candidate tokens at the position of each returned token
-                 */
-                top_n_tokens?: number | null;
-                /**
-                 * Token logprobs
-                 * @description Include logprob for each returned token
-                 * @default false
-                 */
-                token_logprobs?: boolean | null;
-                /**
-                 * Generated Tokens
-                 * @description Include list of individual generated tokens
-                 * @default false
-                 */
-                generated_tokens?: boolean | null;
-                input_parameters?: boolean | null;
-              }) | null;
-              /**
-               * Stop sequences
-               * @description Stop sequences are one or more strings which will cause the text generation to stop if/when they are produced as part of the output. Stop sequences encountered prior to the minimum number of tokens being generated will be ignored.
-               */
-              stop_sequences?: string[] | null;
-              /**
-               * Decoding method
-               * @description Decoding method used for generation.
-               * @enum {string|null}
-               */
-              decoding_method?: "greedy" | "sample" | null;
-              /**
-               * Repetition penalty
-               * @description The parameter for repetition penalty. 1.00 means no penalty.
-               */
-              repetition_penalty?: number | null;
-              include_stop_sequence?: boolean;
-              /**
-               * Truncate input tokens
-               * @description Truncate to this many input tokens. Can be used to avoid requests failing due to input being longer than configured limits. Zero means don't truncate.
-               */
-              truncate_input_tokens?: number | null;
-            }) | null;
-            moderations?: {
-              hap?: boolean | {
-                /**
-                 * @description Detects HAP (hateful, abusive, or profane language). Please see documentation for more info (API Reference -> Moderations -> HAP).
-                 * @default true
-                 */
-                input?: boolean;
-                output?: boolean;
-                /**
-                 * @description The higher the number, the more confidence that the sentence contains HAP. The threshold allows you to modify how much confidence is needed for the sentence to be flagged as containing HAP.
-                 * @default 0.75
-                 */
-                threshold?: number;
-                /** @default false */
-                send_tokens?: boolean;
-              };
-              stigma?: boolean | {
-                /**
-                 * @description Detects Stigma.
-                 * @default true
-                 */
-                input?: boolean;
-                output?: boolean;
-                /**
-                 * @description The higher the number, the more confidence that the sentence contains Stigma. The threshold allows you to modify how much confidence is needed for the sentence to be flagged as containing Stigma.
-                 * @default 0.75
-                 */
-                threshold?: number;
-                /** @default false */
-                send_tokens?: boolean;
-              };
-              implicit_hate?: boolean | {
-                /**
-                 * @description Detects implicit hate.
-                 * @default true
-                 */
-                input?: boolean;
-                output?: boolean;
-                /**
-                 * @description The higher the number, the more confidence that the sentence contains implicit hate. The threshold allows you to modify how much confidence is needed for the sentence to be flagged as containing implicit hate.
-                 * @default 0.75
-                 */
-                threshold?: number;
-                /** @default false */
-                send_tokens?: boolean;
-              };
-            };
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "text/event-stream": {
-              id?: string | null;
-              model_id: string;
-              /** Format: date-time */
-              created_at?: string;
-              input_parameters?: {
-                [key: string]: unknown;
-              } | null;
-              results?: ({
-                  input_text?: string | null;
-                  generated_text: string;
-                  generated_token_count: number;
-                  input_token_count?: number | null;
-                  /** @enum {string} */
-                  stop_reason: "not_finished" | "max_tokens" | "eos_token" | "cancelled" | "time_limit" | "stop_sequence" | "token_limit" | "error";
-                  stop_sequence?: string | null;
-                  generated_tokens?: (({
-                      text?: string | null;
-                      logprob?: (number | null) | (string | null);
-                      rank?: number | null;
-                      top_tokens?: (({
-                          text?: string | null;
-                          logprob?: (number | null) | (string | null);
-                        })[]) | null;
-                    })[]) | null;
-                  input_tokens?: (({
-                      text?: string | null;
-                      logprob?: (number | null) | (string | null);
-                      rank?: number | null;
-                      top_tokens?: (({
-                          text?: string | null;
-                          logprob?: (number | null) | (string | null);
-                        })[]) | null;
-                    })[]) | null;
-                  seed?: number | null;
-                  [key: string]: unknown;
-                })[];
-              moderation?: {
-                hap?: {
-                    success: boolean;
-                    score: number;
-                    flagged: boolean;
-                    position: {
-                      start: number;
-                      end: number;
-                    };
-                    tokens?: {
-                        token?: string;
-                        index?: number;
-                        score?: number;
-                      }[];
-                  }[];
-                stigma?: {
-                    success: boolean;
-                    score: number;
-                    flagged: boolean;
-                    position: {
-                      start: number;
-                      end: number;
-                    };
-                    tokens?: {
-                        token?: string;
-                        index?: number;
-                        score?: number;
-                      }[];
-                  }[];
-                implicit_hate?: {
-                    success: boolean;
-                    score: number;
-                    flagged: boolean;
-                    position: {
-                      start: number;
-                      end: number;
-                    };
-                    tokens?: {
-                        token?: string;
-                        index?: number;
-                        score?: number;
-                      }[];
-                  }[];
-              };
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-  };
-  "/v2/text/generation": {
-    post: {
-      parameters: {
-        query: {
-          version: "2024-01-10";
-        };
-      };
-      requestBody?: {
-        content: {
-          "application/json": {
-            data?: {
-              example_file_ids?: string[];
-              [key: string]: unknown;
-            };
-            /**
-             * Input string
-             * @description The input is the prompt to generate completions, passed as a string. Note: The method tokenizes the input internally. It is recommended not to leave any trailing spaces.
-             */
-            input?: string;
-            /**
-             * Model ID
-             * @description The ID of the model or tune to be used for this request.
-             */
-            model_id?: string;
-            /** Saved prompt Id */
-            prompt_id?: string;
-            parameters?: ({
-              /**
-               * Top K
-               * @description Set the number of highest probability vocabulary tokens to keep for top-k-filtering. Lower values make it less likely the model will go off topic.
-               */
-              top_k?: number | null;
-              /**
-               * Top P (nucleus sampling)
-               * @description If < 1.0, only the smallest set of most probable tokens with probabilities that add up to `top_p` or higher are used.
-               */
-              top_p?: number | null;
-              /**
-               * Typical P
-               * @description Local typicality measures how similar the conditional probability of predicting a target token next is to the expected conditional probability of predicting a random token next, given the partial text already generated. If set to float < 1, the smallest set of the most locally typical tokens with probabilities that add up to typical_p or higher are kept for generation. 1.00 means a neutral value.
-               */
-              typical_p?: number | null;
-              /**
-               * Beam width
-               * @description At each step, or token, the algorithm keeps track of the n (off=1, 2, or 3) most probable sequences (beams) and selects the one with the highest probability. This continues until the stop sequence is met.
-               */
-              beam_width?: number | null;
-              /**
-               * Time limit
-               * @description Time limit in milliseconds - if not completed within this time, generation will stop. The text generated so far will be returned along with the `TIME_LIMIT` stop reason.
-               */
-              time_limit?: number | null;
-              /**
-               * Random seed
-               * @description Controls the random sampling of the generated tokens when sampling is enabled. Setting the random seed to a the same number for each generation ensures experimental repeatability.
-               */
-              random_seed?: number | null;
-              /**
-               * Temperature
-               * @description Control the creativity of generated text. Higher values will lead to more randomly generated outputs.
-               */
-              temperature?: number | null;
-              /**
-               * Length penalty
-               * @description Can be used to exponentially increase the likelihood of the text generation terminating once a specified number of tokens have been generated.
-               */
-              length_penalty?: ({
-                /**
-                 * Start index
-                 * @description A number of generated tokens after which this should take effect.
-                 */
-                start_index?: number | null;
-                /**
-                 * Decay factor
-                 * @description Represents the factor of exponential decay and must be > 1.0. Larger values correspond to more aggressive decay.
-                 */
-                decay_factor?: number | null;
-              }) | null;
-              /**
-               * Max new tokens
-               * @description Define the maximum number of tokens to generate.
-               */
-              max_new_tokens?: number | null;
-              /**
-               * Min new tokens
-               * @description If stop sequences are given, they are ignored until minimum tokens are generated.
-               */
-              min_new_tokens?: number | null;
-              return_options?: ({
-                /**
-                 * Input text
-                 * @description Include input text
-                 * @default false
-                 */
-                input_text?: boolean | null;
-                /**
-                 * Token ranks
-                 * @description Include rank of each returned token
-                 * @default false
-                 */
-                token_ranks?: boolean | null;
-                /**
-                 * Input Tokens
-                 * @description Include list of input tokens
-                 * @default false
-                 */
-                input_tokens?: boolean | null;
-                /**
-                 * Top N tokens
-                 * @description Include top n candidate tokens at the position of each returned token
-                 */
-                top_n_tokens?: number | null;
-                /**
-                 * Token logprobs
-                 * @description Include logprob for each returned token
-                 * @default false
-                 */
-                token_logprobs?: boolean | null;
-                /**
-                 * Generated Tokens
-                 * @description Include list of individual generated tokens
-                 * @default false
-                 */
-                generated_tokens?: boolean | null;
-                input_parameters?: boolean | null;
-              }) | null;
-              /**
-               * Stop sequences
-               * @description Stop sequences are one or more strings which will cause the text generation to stop if/when they are produced as part of the output. Stop sequences encountered prior to the minimum number of tokens being generated will be ignored.
-               */
-              stop_sequences?: string[] | null;
-              /**
-               * Decoding method
-               * @description Decoding method used for generation.
-               * @enum {string|null}
-               */
-              decoding_method?: "greedy" | "sample" | null;
-              /**
-               * Repetition penalty
-               * @description The parameter for repetition penalty. 1.00 means no penalty.
-               */
-              repetition_penalty?: number | null;
-              include_stop_sequence?: boolean;
-              /**
-               * Truncate input tokens
-               * @description Truncate to this many input tokens. Can be used to avoid requests failing due to input being longer than configured limits. Zero means don't truncate.
-               */
-              truncate_input_tokens?: number | null;
-            }) | null;
-            moderations?: {
-              hap?: boolean | {
-                /**
-                 * @description Detects HAP (hateful, abusive, or profane language). Please see documentation for more info (API Reference -> Moderations -> HAP).
-                 * @default true
-                 */
-                input?: boolean;
-                output?: boolean;
-                /**
-                 * @description The higher the number, the more confidence that the sentence contains HAP. The threshold allows you to modify how much confidence is needed for the sentence to be flagged as containing HAP.
-                 * @default 0.75
-                 */
-                threshold?: number;
-                /** @default false */
-                send_tokens?: boolean;
-              };
-              stigma?: boolean | {
-                /**
-                 * @description Detects Stigma.
-                 * @default true
-                 */
-                input?: boolean;
-                output?: boolean;
-                /**
-                 * @description The higher the number, the more confidence that the sentence contains Stigma. The threshold allows you to modify how much confidence is needed for the sentence to be flagged as containing Stigma.
-                 * @default 0.75
-                 */
-                threshold?: number;
-                /** @default false */
-                send_tokens?: boolean;
-              };
-              implicit_hate?: boolean | {
-                /**
-                 * @description Detects implicit hate.
-                 * @default true
-                 */
-                input?: boolean;
-                output?: boolean;
-                /**
-                 * @description The higher the number, the more confidence that the sentence contains implicit hate. The threshold allows you to modify how much confidence is needed for the sentence to be flagged as containing implicit hate.
-                 * @default 0.75
-                 */
-                threshold?: number;
-                /** @default false */
-                send_tokens?: boolean;
-              };
-            };
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id: string | null;
-              model_id: string;
-              /** Format: date-time */
-              created_at: string;
-              input_parameters?: {
-                [key: string]: unknown;
-              } | null;
-              results: ({
-                  input_text?: string | null;
-                  generated_text: string;
-                  generated_token_count: number;
-                  input_token_count?: number | null;
-                  /** @enum {string} */
-                  stop_reason: "not_finished" | "max_tokens" | "eos_token" | "cancelled" | "time_limit" | "stop_sequence" | "token_limit" | "error";
-                  stop_sequence?: string | null;
-                  generated_tokens?: (({
-                      text?: string | null;
-                      logprob?: (number | null) | (string | null);
-                      rank?: number | null;
-                      top_tokens?: (({
-                          text?: string | null;
-                          logprob?: (number | null) | (string | null);
-                        })[]) | null;
-                    })[]) | null;
-                  input_tokens?: (({
-                      text?: string | null;
-                      logprob?: (number | null) | (string | null);
-                      rank?: number | null;
-                      top_tokens?: (({
-                          text?: string | null;
-                          logprob?: (number | null) | (string | null);
-                        })[]) | null;
-                    })[]) | null;
-                  seed?: number | null;
-                  moderation?: {
-                    [key: string]: unknown;
-                  } | null;
-                  [key: string]: unknown;
-                })[];
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-  };
-  "/v2/text/chat_stream": {
-    post: {
-      parameters: {
-        query: {
-          version: "2024-01-10";
-        };
-      };
-      requestBody?: {
-        content: {
-          "application/json": {
-            model_id?: string;
-            prompt_template_id?: string | null;
-            moderations?: {
-              hap?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-              stigma?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-              implicit_hate?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-            };
-            messages?: ({
-                /** @enum {string} */
-                role: "user" | "system" | "assistant";
-                content: string;
-                file_ids?: string[];
-              })[];
-            conversation_id?: string | null;
-            parent_id?: string | null;
-            prompt_id?: string;
-            /** @enum {string} */
-            trim_method?: "floating_window" | "none";
-            use_conversation_parameters?: boolean;
-            parameters?: ({
-              beam_width?: number | null;
-              /** @enum {string|null} */
-              decoding_method?: "greedy" | "sample" | null;
-              max_new_tokens?: number | null;
-              min_new_tokens?: number | null;
-              random_seed?: number | null;
-              stop_sequences?: string[] | null;
-              temperature?: number | null;
-              time_limit?: number | null;
-              top_k?: number | null;
-              top_p?: number | null;
-              typical_p?: number | null;
-              repetition_penalty?: number | null;
-              truncate_input_tokens?: number | null;
-              include_stop_sequence?: boolean;
-              return_options?: ({
-                generated_tokens?: boolean | null;
-                input_text?: boolean | null;
-                input_tokens?: boolean | null;
-                input_parameters?: boolean | null;
-                token_logprobs?: boolean | null;
-                token_ranks?: boolean | null;
-                top_n_tokens?: number | null;
-              }) | null;
-              length_penalty?: ({
-                decay_factor?: number | null;
-                start_index?: number | null;
-              }) | null;
-            }) | null;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "text/event-stream": {
-              id?: string | null;
-              model_id?: string;
-              /** Format: date-time */
-              created_at?: string;
-              input_parameters?: {
-                [key: string]: unknown;
-              } | null;
-              results?: ({
-                  input_text?: string | null;
-                  generated_text: string;
-                  generated_token_count: number;
-                  input_token_count?: number | null;
-                  /** @enum {string} */
-                  stop_reason: "not_finished" | "max_tokens" | "eos_token" | "cancelled" | "time_limit" | "stop_sequence" | "token_limit" | "error";
-                  stop_sequence?: string | null;
-                  generated_tokens?: (({
-                      text?: string | null;
-                      logprob?: (number | null) | (string | null);
-                      rank?: number | null;
-                      top_tokens?: (({
-                          text?: string | null;
-                          logprob?: (number | null) | (string | null);
-                        })[]) | null;
-                    })[]) | null;
-                  input_tokens?: (({
-                      text?: string | null;
-                      logprob?: (number | null) | (string | null);
-                      rank?: number | null;
-                      top_tokens?: (({
-                          text?: string | null;
-                          logprob?: (number | null) | (string | null);
-                        })[]) | null;
-                    })[]) | null;
-                  seed?: number | null;
-                  [key: string]: unknown;
-                })[];
-              moderation?: {
-                hap?: {
-                    success: boolean;
-                    score: number;
-                    flagged: boolean;
-                    position: {
-                      start: number;
-                      end: number;
-                    };
-                    tokens?: {
-                        token?: string;
-                        index?: number;
-                        score?: number;
-                      }[];
-                  }[];
-                stigma?: {
-                    success: boolean;
-                    score: number;
-                    flagged: boolean;
-                    position: {
-                      start: number;
-                      end: number;
-                    };
-                    tokens?: {
-                        token?: string;
-                        index?: number;
-                        score?: number;
-                      }[];
-                  }[];
-                implicit_hate?: {
-                    success: boolean;
-                    score: number;
-                    flagged: boolean;
-                    position: {
-                      start: number;
-                      end: number;
-                    };
-                    tokens?: {
-                        token?: string;
-                        index?: number;
-                        score?: number;
-                      }[];
-                  }[];
-              };
-              conversation_id: string;
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-  };
-  "/v2/text/chat/output": {
-    post: {
-      parameters: {
-        query: {
-          version: "2024-01-10";
-        };
-      };
-      requestBody?: {
-        content: {
-          "application/json": {
-            model_id?: string;
-            prompt_template_id?: string | null;
-            moderations?: {
-              hap?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-              stigma?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-              implicit_hate?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-            };
-            messages?: ({
-                /** @enum {string} */
-                role: "user" | "system" | "assistant";
-                content: string;
-                file_ids?: string[];
-              })[];
-            conversation_id?: string | null;
-            parent_id?: string | null;
-            prompt_id?: string;
-            /** @enum {string} */
-            trim_method?: "floating_window" | "none";
-            use_conversation_parameters?: boolean;
-            parameters?: ({
-              beam_width?: number | null;
-              /** @enum {string|null} */
-              decoding_method?: "greedy" | "sample" | null;
-              max_new_tokens?: number | null;
-              min_new_tokens?: number | null;
-              random_seed?: number | null;
-              stop_sequences?: string[] | null;
-              temperature?: number | null;
-              time_limit?: number | null;
-              top_k?: number | null;
-              top_p?: number | null;
-              typical_p?: number | null;
-              repetition_penalty?: number | null;
-              truncate_input_tokens?: number | null;
-              include_stop_sequence?: boolean;
-              return_options?: ({
-                generated_tokens?: boolean | null;
-                input_text?: boolean | null;
-                input_tokens?: boolean | null;
-                input_parameters?: boolean | null;
-                token_logprobs?: boolean | null;
-                token_ranks?: boolean | null;
-                top_n_tokens?: number | null;
-              }) | null;
-              length_penalty?: ({
-                decay_factor?: number | null;
-                start_index?: number | null;
-              }) | null;
-            }) | null;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              result: string;
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-  };
-  "/v2/text/chat": {
-    post: {
-      parameters: {
-        query: {
-          version: "2024-01-10";
-        };
-      };
-      requestBody?: {
-        content: {
-          "application/json": {
-            model_id?: string;
-            prompt_template_id?: string | null;
-            moderations?: {
-              hap?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-              stigma?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-              implicit_hate?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-            };
-            messages?: ({
-                /** @enum {string} */
-                role: "user" | "system" | "assistant";
-                content: string;
-                file_ids?: string[];
-              })[];
-            conversation_id?: string | null;
-            parent_id?: string | null;
-            prompt_id?: string;
-            /** @enum {string} */
-            trim_method?: "floating_window" | "none";
-            use_conversation_parameters?: boolean;
-            parameters?: ({
-              beam_width?: number | null;
-              /** @enum {string|null} */
-              decoding_method?: "greedy" | "sample" | null;
-              max_new_tokens?: number | null;
-              min_new_tokens?: number | null;
-              random_seed?: number | null;
-              stop_sequences?: string[] | null;
-              temperature?: number | null;
-              time_limit?: number | null;
-              top_k?: number | null;
-              top_p?: number | null;
-              typical_p?: number | null;
-              repetition_penalty?: number | null;
-              truncate_input_tokens?: number | null;
-              include_stop_sequence?: boolean;
-              return_options?: ({
-                generated_tokens?: boolean | null;
-                input_text?: boolean | null;
-                input_tokens?: boolean | null;
-                input_parameters?: boolean | null;
-                token_logprobs?: boolean | null;
-                token_ranks?: boolean | null;
-                top_n_tokens?: number | null;
-              }) | null;
-              length_penalty?: ({
-                decay_factor?: number | null;
-                start_index?: number | null;
-              }) | null;
-            }) | null;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              id?: string | null;
-              model_id?: string;
-              /** Format: date-time */
-              created_at?: string;
-              input_parameters?: {
-                [key: string]: unknown;
-              } | null;
-              results: ({
-                  input_text?: string | null;
-                  generated_text: string;
-                  generated_token_count: number;
-                  input_token_count?: number | null;
-                  /** @enum {string} */
-                  stop_reason: "not_finished" | "max_tokens" | "eos_token" | "cancelled" | "time_limit" | "stop_sequence" | "token_limit" | "error";
-                  stop_sequence?: string | null;
-                  generated_tokens?: (({
-                      text?: string | null;
-                      logprob?: (number | null) | (string | null);
-                      rank?: number | null;
-                      top_tokens?: (({
-                          text?: string | null;
-                          logprob?: (number | null) | (string | null);
-                        })[]) | null;
-                    })[]) | null;
-                  input_tokens?: (({
-                      text?: string | null;
-                      logprob?: (number | null) | (string | null);
-                      rank?: number | null;
-                      top_tokens?: (({
-                          text?: string | null;
-                          logprob?: (number | null) | (string | null);
-                        })[]) | null;
-                    })[]) | null;
-                  seed?: number | null;
-                  moderation?: {
-                    [key: string]: unknown;
-                  } | null;
-                  [key: string]: unknown;
-                })[];
-              conversation_id: string;
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-  };
-  "/v2/prompts/{id}": {
-    get: {
-      parameters: {
-        query: {
-          version: "2024-01-10";
-        };
-        path: {
-          id: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              result: {
-                id: string;
-                name: string;
-                description?: string;
-                data?: Record<string, never>;
-                input?: string;
-                output?: string;
-                model_id?: string;
-                parameters?: ({
-                  beam_width?: number | null;
-                  /** @enum {string|null} */
-                  decoding_method?: "greedy" | "sample" | null;
-                  max_new_tokens?: number | null;
-                  min_new_tokens?: number | null;
-                  random_seed?: number | null;
-                  stop_sequences?: string[] | null;
-                  temperature?: number | null;
-                  time_limit?: number | null;
-                  top_k?: number | null;
-                  top_p?: number | null;
-                  typical_p?: number | null;
-                  repetition_penalty?: number | null;
-                  truncate_input_tokens?: number | null;
-                  include_stop_sequence?: boolean;
-                  return_options?: ({
-                    generated_tokens?: boolean | null;
-                    input_text?: boolean | null;
-                    input_tokens?: boolean | null;
-                    input_parameters?: boolean | null;
-                    token_logprobs?: boolean | null;
-                    token_ranks?: boolean | null;
-                    top_n_tokens?: number | null;
-                  }) | null;
-                  length_penalty?: ({
-                    decay_factor?: number | null;
-                    start_index?: number | null;
-                  }) | null;
-                }) | null;
-                moderations?: ({
-                  hap?: boolean | {
-                    input?: boolean;
-                    output?: boolean;
-                    threshold?: number;
-                    send_tokens?: boolean;
-                  };
-                  stigma?: boolean | {
-                    input?: boolean;
-                    output?: boolean;
-                    threshold?: number;
-                    send_tokens?: boolean;
-                  };
-                  implicit_hate?: boolean | {
-                    input?: boolean;
-                    output?: boolean;
-                    threshold?: number;
-                    send_tokens?: boolean;
-                  };
-                }) | null;
-                /** Format: date-time */
-                created_at: string;
-                /** Format: date-time */
-                updated_at?: string;
-                /** @enum {string} */
-                type: "private" | "public" | "community" | "example";
-                public?: boolean;
-                prompt_id?: string | null;
-                metadata?: {
-                  [key: string]: unknown;
-                };
-                tags?: ({
-                    id: string;
-                    name: string;
-                    /** @enum {string} */
-                    type: "language" | "industry" | "model_type";
-                  })[];
-                author?: {
-                  id?: number;
-                  first_name?: string;
-                  last_name?: string;
-                };
-                task?: {
-                  id?: string;
-                  name?: string;
-                  icon?: string;
-                };
-                messages?: (({
-                    /** @enum {string} */
-                    role: "user" | "system" | "assistant";
-                    content: string;
-                    file_ids?: string[];
-                  })[]) | null;
-                folder_id?: string | null;
-                usage_count: number;
-              };
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-    put: {
-      parameters: {
-        query: {
-          version: "2024-01-10";
-        };
-        path: {
-          id: string;
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            description?: string;
-            prompt_id?: string;
-            data?: {
-              example_file_ids?: string[];
-              [key: string]: unknown;
-            };
-            output?: string | null;
-            parameters?: ({
-              beam_width?: number | null;
-              /** @enum {string|null} */
-              decoding_method?: "greedy" | "sample" | null;
-              max_new_tokens?: number | null;
-              min_new_tokens?: number | null;
-              random_seed?: number | null;
-              stop_sequences?: string[] | null;
-              temperature?: number | null;
-              time_limit?: number | null;
-              top_k?: number | null;
-              top_p?: number | null;
-              typical_p?: number | null;
-              repetition_penalty?: number | null;
-              truncate_input_tokens?: number | null;
-              include_stop_sequence?: boolean;
-              return_options?: ({
-                generated_tokens?: boolean | null;
-                input_text?: boolean | null;
-                input_tokens?: boolean | null;
-                input_parameters?: boolean | null;
-                token_logprobs?: boolean | null;
-                token_ranks?: boolean | null;
-                top_n_tokens?: number | null;
-              }) | null;
-              length_penalty?: ({
-                decay_factor?: number | null;
-                start_index?: number | null;
-              }) | null;
-            }) | null;
-            moderations?: {
-              hap?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-              stigma?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-              implicit_hate?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-            };
-            model_id: string;
-            task_id?: string;
-            folder_id?: string | null;
-            industry_id?: string;
-            language_id?: string;
-            /** @enum {string} */
-            type?: "private" | "public" | "community";
-            input?: string;
-            messages?: (({
-                /** @enum {string} */
-                role: "user" | "system" | "assistant";
-                content: string;
-                file_ids?: string[];
-              })[]) | null;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              result: {
-                id: string;
-                name: string;
-                description?: string;
-                data?: Record<string, never>;
-                input?: string;
-                output?: string;
-                model_id?: string;
-                parameters?: ({
-                  beam_width?: number | null;
-                  /** @enum {string|null} */
-                  decoding_method?: "greedy" | "sample" | null;
-                  max_new_tokens?: number | null;
-                  min_new_tokens?: number | null;
-                  random_seed?: number | null;
-                  stop_sequences?: string[] | null;
-                  temperature?: number | null;
-                  time_limit?: number | null;
-                  top_k?: number | null;
-                  top_p?: number | null;
-                  typical_p?: number | null;
-                  repetition_penalty?: number | null;
-                  truncate_input_tokens?: number | null;
-                  include_stop_sequence?: boolean;
-                  return_options?: ({
-                    generated_tokens?: boolean | null;
-                    input_text?: boolean | null;
-                    input_tokens?: boolean | null;
-                    input_parameters?: boolean | null;
-                    token_logprobs?: boolean | null;
-                    token_ranks?: boolean | null;
-                    top_n_tokens?: number | null;
-                  }) | null;
-                  length_penalty?: ({
-                    decay_factor?: number | null;
-                    start_index?: number | null;
-                  }) | null;
-                }) | null;
-                moderations?: ({
-                  hap?: boolean | {
-                    input?: boolean;
-                    output?: boolean;
-                    threshold?: number;
-                    send_tokens?: boolean;
-                  };
-                  stigma?: boolean | {
-                    input?: boolean;
-                    output?: boolean;
-                    threshold?: number;
-                    send_tokens?: boolean;
-                  };
-                  implicit_hate?: boolean | {
-                    input?: boolean;
-                    output?: boolean;
-                    threshold?: number;
-                    send_tokens?: boolean;
-                  };
-                }) | null;
-                /** Format: date-time */
-                created_at: string;
-                /** Format: date-time */
-                updated_at?: string;
-                /** @enum {string} */
-                type: "private" | "public" | "community" | "example";
-                public?: boolean;
-                prompt_id?: string | null;
-                metadata?: {
-                  [key: string]: unknown;
-                };
-                tags?: ({
-                    id: string;
-                    name: string;
-                    /** @enum {string} */
-                    type: "language" | "industry" | "model_type";
-                  })[];
-                author?: {
-                  id?: number;
-                  first_name?: string;
-                  last_name?: string;
-                };
-                task?: {
-                  id?: string;
-                  name?: string;
-                  icon?: string;
-                };
-                messages?: (({
-                    /** @enum {string} */
-                    role: "user" | "system" | "assistant";
-                    content: string;
-                    file_ids?: string[];
-                  })[]) | null;
-                folder_id?: string | null;
-                usage_count: number;
-              };
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-    delete: {
-      parameters: {
-        query: {
-          version: "2023-11-22";
-        };
-        path: {
-          id: string;
-        };
-      };
-      responses: {
-        /** @description Success */
-        204: {
-          content: never;
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-    patch: {
-      parameters: {
-        query: {
-          version: "2024-01-10";
-        };
-        path: {
-          id: string;
-        };
-      };
-      requestBody?: {
-        content: {
-          "application/json": {
-            /** @enum {string} */
-            type?: "private" | "public" | "community";
-            folder_id?: string | null;
-            name?: string;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              result: {
-                id: string;
-                name: string;
-                description?: string;
-                data?: Record<string, never>;
-                input?: string;
-                output?: string;
-                model_id?: string;
-                parameters?: ({
-                  beam_width?: number | null;
-                  /** @enum {string|null} */
-                  decoding_method?: "greedy" | "sample" | null;
-                  max_new_tokens?: number | null;
-                  min_new_tokens?: number | null;
-                  random_seed?: number | null;
-                  stop_sequences?: string[] | null;
-                  temperature?: number | null;
-                  time_limit?: number | null;
-                  top_k?: number | null;
-                  top_p?: number | null;
-                  typical_p?: number | null;
-                  repetition_penalty?: number | null;
-                  truncate_input_tokens?: number | null;
-                  include_stop_sequence?: boolean;
-                  return_options?: ({
-                    generated_tokens?: boolean | null;
-                    input_text?: boolean | null;
-                    input_tokens?: boolean | null;
-                    input_parameters?: boolean | null;
-                    token_logprobs?: boolean | null;
-                    token_ranks?: boolean | null;
-                    top_n_tokens?: number | null;
-                  }) | null;
-                  length_penalty?: ({
-                    decay_factor?: number | null;
-                    start_index?: number | null;
-                  }) | null;
-                }) | null;
-                moderations?: ({
-                  hap?: boolean | {
-                    input?: boolean;
-                    output?: boolean;
-                    threshold?: number;
-                    send_tokens?: boolean;
-                  };
-                  stigma?: boolean | {
-                    input?: boolean;
-                    output?: boolean;
-                    threshold?: number;
-                    send_tokens?: boolean;
-                  };
-                  implicit_hate?: boolean | {
-                    input?: boolean;
-                    output?: boolean;
-                    threshold?: number;
-                    send_tokens?: boolean;
-                  };
-                }) | null;
-                /** Format: date-time */
-                created_at: string;
-                /** Format: date-time */
-                updated_at?: string;
-                /** @enum {string} */
-                type: "private" | "public" | "community" | "example";
-                public?: boolean;
-                prompt_id?: string | null;
-                metadata?: {
-                  [key: string]: unknown;
-                };
-                tags?: ({
-                    id: string;
-                    name: string;
-                    /** @enum {string} */
-                    type: "language" | "industry" | "model_type";
-                  })[];
-                author?: {
-                  id?: number;
-                  first_name?: string;
-                  last_name?: string;
-                };
-                task?: {
-                  id?: string;
-                  name?: string;
-                  icon?: string;
-                };
-                messages?: (({
-                    /** @enum {string} */
-                    role: "user" | "system" | "assistant";
-                    content: string;
-                    file_ids?: string[];
-                  })[]) | null;
-                folder_id?: string | null;
-                usage_count: number;
-              };
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-  };
-  "/v2/prompts": {
-    get: {
-      parameters: {
-        query: {
-          limit?: number;
-          offset?: number;
-          sort_by?: "type" | "model_task" | "updated_at" | "created_at" | "name" | "id" | "model" | "usage_count";
-          direction?: "asc" | "desc";
-          search?: string;
-          task_id?: string | string[];
-          model_id?: string | string[];
-          source?: ("user" | "example" | "community") | (("user" | "example" | "community")[]);
-          model_family_id?: number;
-          industry_id?: string | string[];
-          prompt_language_id?: string | string[];
-          model_type_id?: string | string[];
-          avg_time_min?: number;
-          avg_time_max?: number;
-          context_window_min?: number;
-          context_window_max?: number;
-          folder_id?: string | null;
-          version: "2024-01-10";
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              results: ({
-                  id: string;
-                  name: string;
-                  description?: string;
-                  data?: Record<string, never>;
-                  input?: string;
-                  output?: string;
-                  model_id?: string;
-                  parameters?: ({
-                    beam_width?: number | null;
-                    /** @enum {string|null} */
-                    decoding_method?: "greedy" | "sample" | null;
-                    max_new_tokens?: number | null;
-                    min_new_tokens?: number | null;
-                    random_seed?: number | null;
-                    stop_sequences?: string[] | null;
-                    temperature?: number | null;
-                    time_limit?: number | null;
-                    top_k?: number | null;
-                    top_p?: number | null;
-                    typical_p?: number | null;
-                    repetition_penalty?: number | null;
-                    truncate_input_tokens?: number | null;
-                    include_stop_sequence?: boolean;
-                    return_options?: ({
-                      generated_tokens?: boolean | null;
-                      input_text?: boolean | null;
-                      input_tokens?: boolean | null;
-                      input_parameters?: boolean | null;
-                      token_logprobs?: boolean | null;
-                      token_ranks?: boolean | null;
-                      top_n_tokens?: number | null;
-                    }) | null;
-                    length_penalty?: ({
-                      decay_factor?: number | null;
-                      start_index?: number | null;
-                    }) | null;
-                  }) | null;
-                  moderations?: ({
-                    hap?: boolean | {
-                      input?: boolean;
-                      output?: boolean;
-                      threshold?: number;
-                      send_tokens?: boolean;
-                    };
-                    stigma?: boolean | {
-                      input?: boolean;
-                      output?: boolean;
-                      threshold?: number;
-                      send_tokens?: boolean;
-                    };
-                    implicit_hate?: boolean | {
-                      input?: boolean;
-                      output?: boolean;
-                      threshold?: number;
-                      send_tokens?: boolean;
-                    };
-                  }) | null;
-                  /** Format: date-time */
-                  created_at: string;
-                  /** Format: date-time */
-                  updated_at?: string;
-                  /** @enum {string} */
-                  type: "private" | "public" | "community" | "example";
-                  public?: boolean;
-                  prompt_id?: string | null;
-                  metadata?: {
-                    [key: string]: unknown;
-                  };
-                  tags?: ({
-                      id: string;
-                      name: string;
-                      /** @enum {string} */
-                      type: "language" | "industry" | "model_type";
-                    })[];
-                  author?: {
-                    id?: number;
-                    first_name?: string;
-                    last_name?: string;
-                  };
-                  task?: {
-                    id?: string;
-                    name?: string;
-                    icon?: string;
-                  };
-                  messages?: (({
-                      /** @enum {string} */
-                      role: "user" | "system" | "assistant";
-                      content: string;
-                      file_ids?: string[];
-                    })[]) | null;
-                  folder_id?: string | null;
-                  usage_count: number;
-                })[];
-              total_count: number;
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-    post: {
-      parameters: {
-        query: {
-          version: "2024-01-10";
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            name: string;
-            description?: string;
-            prompt_id?: string;
-            data?: {
-              example_file_ids?: string[];
-              [key: string]: unknown;
-            };
-            output?: string | null;
-            parameters?: ({
-              beam_width?: number | null;
-              /** @enum {string|null} */
-              decoding_method?: "greedy" | "sample" | null;
-              max_new_tokens?: number | null;
-              min_new_tokens?: number | null;
-              random_seed?: number | null;
-              stop_sequences?: string[] | null;
-              temperature?: number | null;
-              time_limit?: number | null;
-              top_k?: number | null;
-              top_p?: number | null;
-              typical_p?: number | null;
-              repetition_penalty?: number | null;
-              truncate_input_tokens?: number | null;
-              include_stop_sequence?: boolean;
-              return_options?: ({
-                generated_tokens?: boolean | null;
-                input_text?: boolean | null;
-                input_tokens?: boolean | null;
-                input_parameters?: boolean | null;
-                token_logprobs?: boolean | null;
-                token_ranks?: boolean | null;
-                top_n_tokens?: number | null;
-              }) | null;
-              length_penalty?: ({
-                decay_factor?: number | null;
-                start_index?: number | null;
-              }) | null;
-            }) | null;
-            moderations?: {
-              hap?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-              stigma?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-              implicit_hate?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-            };
-            model_id: string;
-            task_id?: string;
-            folder_id?: string | null;
-            industry_id?: string;
-            language_id?: string;
-            /** @enum {string} */
-            type?: "private" | "public" | "community";
-            input?: string;
-            messages?: (({
-                /** @enum {string} */
-                role: "user" | "system" | "assistant";
-                content: string;
-                file_ids?: string[];
-              })[]) | null;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              result: {
-                id: string;
-                name: string;
-                description?: string;
-                data?: Record<string, never>;
-                input?: string;
-                output?: string;
-                model_id?: string;
-                parameters?: ({
-                  beam_width?: number | null;
-                  /** @enum {string|null} */
-                  decoding_method?: "greedy" | "sample" | null;
-                  max_new_tokens?: number | null;
-                  min_new_tokens?: number | null;
-                  random_seed?: number | null;
-                  stop_sequences?: string[] | null;
-                  temperature?: number | null;
-                  time_limit?: number | null;
-                  top_k?: number | null;
-                  top_p?: number | null;
-                  typical_p?: number | null;
-                  repetition_penalty?: number | null;
-                  truncate_input_tokens?: number | null;
-                  include_stop_sequence?: boolean;
-                  return_options?: ({
-                    generated_tokens?: boolean | null;
-                    input_text?: boolean | null;
-                    input_tokens?: boolean | null;
-                    input_parameters?: boolean | null;
-                    token_logprobs?: boolean | null;
-                    token_ranks?: boolean | null;
-                    top_n_tokens?: number | null;
-                  }) | null;
-                  length_penalty?: ({
-                    decay_factor?: number | null;
-                    start_index?: number | null;
-                  }) | null;
-                }) | null;
-                moderations?: ({
-                  hap?: boolean | {
-                    input?: boolean;
-                    output?: boolean;
-                    threshold?: number;
-                    send_tokens?: boolean;
-                  };
-                  stigma?: boolean | {
-                    input?: boolean;
-                    output?: boolean;
-                    threshold?: number;
-                    send_tokens?: boolean;
-                  };
-                  implicit_hate?: boolean | {
-                    input?: boolean;
-                    output?: boolean;
-                    threshold?: number;
-                    send_tokens?: boolean;
-                  };
-                }) | null;
-                /** Format: date-time */
-                created_at: string;
-                /** Format: date-time */
-                updated_at?: string;
-                /** @enum {string} */
-                type: "private" | "public" | "community" | "example";
-                public?: boolean;
-                prompt_id?: string | null;
-                metadata?: {
-                  [key: string]: unknown;
-                };
-                tags?: ({
-                    id: string;
-                    name: string;
-                    /** @enum {string} */
-                    type: "language" | "industry" | "model_type";
-                  })[];
-                author?: {
-                  id?: number;
-                  first_name?: string;
-                  last_name?: string;
-                };
-                task?: {
-                  id?: string;
-                  name?: string;
-                  icon?: string;
-                };
-                messages?: (({
-                    /** @enum {string} */
-                    role: "user" | "system" | "assistant";
-                    content: string;
-                    file_ids?: string[];
-                  })[]) | null;
-                folder_id?: string | null;
-                usage_count: number;
-              };
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
           };
         };
         /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
@@ -2832,278 +4243,6 @@ export interface paths {
       };
     };
   };
-  "/v2/files/{id}": {
-    get: {
-      parameters: {
-        query: {
-          version: "2023-12-15";
-        };
-        path: {
-          id: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              result: {
-                id: string;
-                bytes: number;
-                file_name: string;
-                /** @enum {string} */
-                storage_provider_location: "us-south" | "us-east";
-                /** @enum {string} */
-                purpose: "tune" | "template" | "tune_import" | "extraction";
-                /** Format: date-time */
-                created_at: string;
-                file_formats?: {
-                    id: number;
-                    name: string;
-                  }[];
-              };
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-    delete: {
-      parameters: {
-        query: {
-          version: "2023-11-22";
-        };
-        path: {
-          id: string;
-        };
-      };
-      responses: {
-        /** @description Success */
-        204: {
-          content: never;
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-  };
-  "/v2/files": {
-    get: {
-      parameters: {
-        query: {
-          limit?: number;
-          offset?: number;
-          sort_by?: "name" | "created_at";
-          direction?: "asc" | "desc";
-          search?: string;
-          purpose?: "tune" | "template" | "tune_import" | "extraction";
-          format_id?: number;
-          version: "2023-12-15";
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              results: ({
-                  id: string;
-                  bytes: number;
-                  file_name: string;
-                  /** @enum {string} */
-                  storage_provider_location: "us-south" | "us-east";
-                  /** @enum {string} */
-                  purpose: "tune" | "template" | "tune_import" | "extraction";
-                  /** Format: date-time */
-                  created_at: string;
-                  file_formats?: {
-                      id: number;
-                      name: string;
-                    }[];
-                })[];
-              total_count: number;
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-    post: {
-      parameters: {
-        query: {
-          version: "2023-12-15";
-        };
-      };
-      requestBody: {
-        content: {
-          "multipart/form-data": {
-            /** @enum {string} */
-            purpose: "tune" | "template" | "tune_import" | "extraction";
-            /** Format: binary */
-            file: Blob;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              result: {
-                id: string;
-                bytes: number;
-                file_name: string;
-                /** @enum {string} */
-                storage_provider_location: "us-south" | "us-east";
-                /** @enum {string} */
-                purpose: "tune" | "template" | "tune_import" | "extraction";
-                /** Format: date-time */
-                created_at: string;
-                file_formats?: {
-                    id: number;
-                    name: string;
-                  }[];
-              };
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-  };
   "/v2/user": {
     get: {
       parameters: {
@@ -3120,19 +4259,11 @@ export interface paths {
                 id: number;
                 first_name?: string;
                 last_name?: string;
+                email: string;
                 tou_accepted: boolean;
                 tou_accepted_at?: string;
                 generate_default?: ({
                   model_id?: string;
-                  prompt_id?: string;
-                  template?: {
-                    id?: string;
-                    value?: string;
-                    data: {
-                      example_file_ids?: string[];
-                      [key: string]: unknown;
-                    };
-                  };
                   parameters?: ({
                     beam_width?: number | null;
                     /** @enum {string|null} */
@@ -3163,26 +4294,6 @@ export interface paths {
                       start_index?: number | null;
                     }) | null;
                   }) | null;
-                  moderations?: {
-                    hap?: boolean | {
-                      input?: boolean;
-                      output?: boolean;
-                      threshold?: number;
-                      send_tokens?: boolean;
-                    };
-                    stigma?: boolean | {
-                      input?: boolean;
-                      output?: boolean;
-                      threshold?: number;
-                      send_tokens?: boolean;
-                    };
-                    implicit_hate?: boolean | {
-                      input?: boolean;
-                      output?: boolean;
-                      threshold?: number;
-                      send_tokens?: boolean;
-                    };
-                  };
                 }) | null;
                 data_usage_consent: boolean;
               };
@@ -3251,19 +4362,11 @@ export interface paths {
                 id: number;
                 first_name?: string;
                 last_name?: string;
+                email: string;
                 tou_accepted: boolean;
                 tou_accepted_at?: string;
                 generate_default?: ({
                   model_id?: string;
-                  prompt_id?: string;
-                  template?: {
-                    id?: string;
-                    value?: string;
-                    data: {
-                      example_file_ids?: string[];
-                      [key: string]: unknown;
-                    };
-                  };
                   parameters?: ({
                     beam_width?: number | null;
                     /** @enum {string|null} */
@@ -3294,26 +4397,6 @@ export interface paths {
                       start_index?: number | null;
                     }) | null;
                   }) | null;
-                  moderations?: {
-                    hap?: boolean | {
-                      input?: boolean;
-                      output?: boolean;
-                      threshold?: number;
-                      send_tokens?: boolean;
-                    };
-                    stigma?: boolean | {
-                      input?: boolean;
-                      output?: boolean;
-                      threshold?: number;
-                      send_tokens?: boolean;
-                    };
-                    implicit_hate?: boolean | {
-                      input?: boolean;
-                      output?: boolean;
-                      threshold?: number;
-                      send_tokens?: boolean;
-                    };
-                  };
                 }) | null;
                 data_usage_consent: boolean;
                 [key: string]: unknown;
@@ -3431,19 +4514,11 @@ export interface paths {
                 id: number;
                 first_name?: string;
                 last_name?: string;
+                email: string;
                 tou_accepted: boolean;
                 tou_accepted_at?: string;
                 generate_default?: ({
                   model_id?: string;
-                  prompt_id?: string;
-                  template?: {
-                    id?: string;
-                    value?: string;
-                    data: {
-                      example_file_ids?: string[];
-                      [key: string]: unknown;
-                    };
-                  };
                   parameters?: ({
                     beam_width?: number | null;
                     /** @enum {string|null} */
@@ -3474,31 +4549,66 @@ export interface paths {
                       start_index?: number | null;
                     }) | null;
                   }) | null;
-                  moderations?: {
-                    hap?: boolean | {
-                      input?: boolean;
-                      output?: boolean;
-                      threshold?: number;
-                      send_tokens?: boolean;
-                    };
-                    stigma?: boolean | {
-                      input?: boolean;
-                      output?: boolean;
-                      threshold?: number;
-                      send_tokens?: boolean;
-                    };
-                    implicit_hate?: boolean | {
-                      input?: boolean;
-                      output?: boolean;
-                      threshold?: number;
-                      send_tokens?: boolean;
-                    };
-                  };
                 }) | null;
                 data_usage_consent: boolean;
               };
             };
           };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/tunes/{id}/content": {
+    get: {
+      parameters: {
+        query: {
+          content: string;
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        302: {
+          content: never;
         };
         /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
         400: {
@@ -3572,6 +4682,8 @@ export interface paths {
                 /** Format: date-time */
                 finished_at?: string | null;
                 /** Format: date-time */
+                last_used_at?: string;
+                /** Format: date-time */
                 created_at: string;
                 validation_files?: {
                     id: string;
@@ -3601,8 +4713,20 @@ export interface paths {
                       /** Format: date-time */
                       timestamp: string;
                     }[];
+                  validation_loss?: {
+                      data: {
+                        value: number;
+                        step?: number;
+                        epoch: number;
+                      };
+                      /** Format: date-time */
+                      timestamp: string;
+                    }[];
                 };
                 vectors?: string | null;
+                contents?: {
+                    name: string;
+                  }[];
               };
             };
           };
@@ -3737,6 +4861,8 @@ export interface paths {
                 /** Format: date-time */
                 finished_at?: string | null;
                 /** Format: date-time */
+                last_used_at?: string;
+                /** Format: date-time */
                 created_at: string;
                 validation_files?: {
                     id: string;
@@ -3766,8 +4892,106 @@ export interface paths {
                       /** Format: date-time */
                       timestamp: string;
                     }[];
+                  validation_loss?: {
+                      data: {
+                        value: number;
+                        step?: number;
+                        epoch: number;
+                      };
+                      /** Format: date-time */
+                      timestamp: string;
+                    }[];
                 };
                 vectors?: string | null;
+                contents?: {
+                    name: string;
+                  }[];
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/tunes/preflight": {
+    post: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            model_id: string;
+            task_id: string;
+            training_file_ids: string[];
+            validation_file_ids?: string[] | null;
+            evaluation_file_ids?: string[] | null;
+            tuning_type: string;
+            parameters?: ({
+              batch_size?: number | null;
+              num_epochs?: number | null;
+              verbalizer?: string | null;
+              learning_rate?: number | null;
+              accumulate_steps?: number | null;
+              max_input_tokens?: number | null;
+              max_output_tokens?: number | null;
+              num_virtual_tokens?: number | null;
+              [key: string]: unknown;
+            }) | null;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                training_file_preview?: {
+                    [key: string]: unknown;
+                  }[];
+                validation_file_preview?: {
+                    [key: string]: unknown;
+                  }[];
               };
             };
           };
@@ -3849,6 +5073,8 @@ export interface paths {
                 /** Format: date-time */
                 finished_at?: string | null;
                 /** Format: date-time */
+                last_used_at?: string;
+                /** Format: date-time */
                 created_at: string;
                 validation_files?: {
                     id: string;
@@ -3878,8 +5104,20 @@ export interface paths {
                       /** Format: date-time */
                       timestamp: string;
                     }[];
+                  validation_loss?: {
+                      data: {
+                        value: number;
+                        step?: number;
+                        epoch: number;
+                      };
+                      /** Format: date-time */
+                      timestamp: string;
+                    }[];
                 };
                 vectors?: string | null;
+                contents?: {
+                    name: string;
+                  }[];
               };
             };
           };
@@ -3960,6 +5198,8 @@ export interface paths {
                   /** Format: date-time */
                   finished_at?: string | null;
                   /** Format: date-time */
+                  last_used_at?: string;
+                  /** Format: date-time */
                   created_at: string;
                   validation_files?: {
                       id: string;
@@ -3989,8 +5229,20 @@ export interface paths {
                         /** Format: date-time */
                         timestamp: string;
                       }[];
+                    validation_loss?: {
+                        data: {
+                          value: number;
+                          step?: number;
+                          epoch: number;
+                        };
+                        /** Format: date-time */
+                        timestamp: string;
+                      }[];
                   };
                   vectors?: string | null;
+                  contents?: {
+                      name: string;
+                    }[];
                 })[];
             };
           };
@@ -4080,6 +5332,8 @@ export interface paths {
                 /** Format: date-time */
                 finished_at?: string | null;
                 /** Format: date-time */
+                last_used_at?: string;
+                /** Format: date-time */
                 created_at: string;
                 validation_files?: {
                     id: string;
@@ -4109,251 +5363,21 @@ export interface paths {
                       /** Format: date-time */
                       timestamp: string;
                     }[];
+                  validation_loss?: {
+                      data: {
+                        value: number;
+                        step?: number;
+                        epoch: number;
+                      };
+                      /** Format: date-time */
+                      timestamp: string;
+                    }[];
                 };
                 vectors?: string | null;
+                contents?: {
+                    name: string;
+                  }[];
               };
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-  };
-  "/v2/text/moderations": {
-    post: {
-      parameters: {
-        query: {
-          version: "2023-11-22";
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            input: string;
-            hap?: {
-              /** @default 0.75 */
-              threshold?: number;
-              /** @default false */
-              send_tokens?: boolean;
-            };
-            stigma?: {
-              /** @default 0.75 */
-              threshold?: number;
-              /** @default false */
-              send_tokens?: boolean;
-            };
-            implicit_hate?: {
-              /** @default 0.75 */
-              threshold?: number;
-              /** @default false */
-              send_tokens?: boolean;
-            };
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              results: {
-                  hap?: {
-                      success: boolean;
-                      score: number;
-                      flagged: boolean;
-                      position: {
-                        start: number;
-                        end: number;
-                      };
-                      tokens?: {
-                          token?: string;
-                          index?: number;
-                          score?: number;
-                        }[];
-                    }[];
-                  stigma?: {
-                      success: boolean;
-                      score: number;
-                      flagged: boolean;
-                      position: {
-                        start: number;
-                        end: number;
-                      };
-                      tokens?: {
-                          token?: string;
-                          index?: number;
-                          score?: number;
-                        }[];
-                    }[];
-                  implicit_hate?: {
-                      success: boolean;
-                      score: number;
-                      flagged: boolean;
-                      position: {
-                        start: number;
-                        end: number;
-                      };
-                      tokens?: {
-                          token?: string;
-                          index?: number;
-                          score?: number;
-                        }[];
-                    }[];
-                }[];
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-  };
-  "/v2/text/generation/output": {
-    post: {
-      parameters: {
-        query: {
-          version: "2023-11-22";
-        };
-      };
-      requestBody?: {
-        content: {
-          "application/json": {
-            model_id?: string;
-            prompt_id?: string;
-            input?: string;
-            data?: {
-              example_file_ids?: string[];
-              [key: string]: unknown;
-            };
-            parameters?: ({
-              beam_width?: number | null;
-              /** @enum {string|null} */
-              decoding_method?: "greedy" | "sample" | null;
-              max_new_tokens?: number | null;
-              min_new_tokens?: number | null;
-              random_seed?: number | null;
-              stop_sequences?: string[] | null;
-              temperature?: number | null;
-              time_limit?: number | null;
-              top_k?: number | null;
-              top_p?: number | null;
-              typical_p?: number | null;
-              repetition_penalty?: number | null;
-              truncate_input_tokens?: number | null;
-              include_stop_sequence?: boolean;
-              return_options?: ({
-                generated_tokens?: boolean | null;
-                input_text?: boolean | null;
-                input_tokens?: boolean | null;
-                input_parameters?: boolean | null;
-                token_logprobs?: boolean | null;
-                token_ranks?: boolean | null;
-                top_n_tokens?: number | null;
-              }) | null;
-              length_penalty?: ({
-                decay_factor?: number | null;
-                start_index?: number | null;
-              }) | null;
-            }) | null;
-            moderations?: {
-              hap?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-              stigma?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-              implicit_hate?: boolean | {
-                input?: boolean;
-                output?: boolean;
-                threshold?: number;
-                send_tokens?: boolean;
-              };
-            };
-            use_default?: boolean | null;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              results: string[];
             };
           };
         };
@@ -4444,196 +5468,6 @@ export interface paths {
       };
     };
   };
-  "/v2/text/generation/comparison": {
-    post: {
-      parameters: {
-        query: {
-          version: "2023-11-22";
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            request: {
-              model_id?: string;
-              prompt_id?: string;
-              input: string;
-              data?: {
-                example_file_ids?: string[];
-                [key: string]: unknown;
-              };
-              parameters?: ({
-                beam_width?: number | null;
-                /** @enum {string|null} */
-                decoding_method?: "greedy" | "sample" | null;
-                max_new_tokens?: number | null;
-                min_new_tokens?: number | null;
-                random_seed?: number | null;
-                stop_sequences?: string[] | null;
-                temperature?: number | null;
-                time_limit?: number | null;
-                top_k?: number | null;
-                top_p?: number | null;
-                typical_p?: number | null;
-                repetition_penalty?: number | null;
-                truncate_input_tokens?: number | null;
-                include_stop_sequence?: boolean;
-                return_options?: ({
-                  generated_tokens?: boolean | null;
-                  input_text?: boolean | null;
-                  input_tokens?: boolean | null;
-                  input_parameters?: boolean | null;
-                  token_logprobs?: boolean | null;
-                  token_ranks?: boolean | null;
-                  top_n_tokens?: number | null;
-                }) | null;
-                length_penalty?: ({
-                  decay_factor?: number | null;
-                  start_index?: number | null;
-                }) | null;
-              }) | null;
-              moderations?: {
-                hap?: boolean | {
-                  input?: boolean;
-                  output?: boolean;
-                  threshold?: number;
-                  send_tokens?: boolean;
-                };
-                stigma?: boolean | {
-                  input?: boolean;
-                  output?: boolean;
-                  threshold?: number;
-                  send_tokens?: boolean;
-                };
-                implicit_hate?: boolean | {
-                  input?: boolean;
-                  output?: boolean;
-                  threshold?: number;
-                  send_tokens?: boolean;
-                };
-              };
-              use_default?: boolean | null;
-            };
-            name?: string;
-            compare_parameters: {
-              model_id?: string[];
-              temperature?: number[];
-              top_k?: number[];
-              top_p?: number[];
-              typical_p?: number[];
-              repetition_penalty?: number[];
-              length_penalty?: Record<string, never>[];
-            };
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              results: ({
-                  parameters: {
-                    model_id?: string;
-                    temperature?: number;
-                    top_k?: number;
-                    top_p?: number;
-                    typical_p?: number;
-                    repetition_penalty?: number;
-                    length_penalty?: Record<string, never>;
-                  };
-                  error?: (({
-                    status_code: number;
-                    message?: string;
-                    extensions?: {
-                      code?: string;
-                      reason?: string;
-                    };
-                  } | null) | ({
-                    status_code: number;
-                    extensions?: {
-                      code?: string;
-                      reason?: string;
-                    };
-                  } | null)) | null;
-                  result?: ({
-                    id: string | null;
-                    model_id: string;
-                    /** Format: date-time */
-                    created_at: string;
-                    input_parameters?: {
-                      [key: string]: unknown;
-                    } | null;
-                    results: ({
-                        input_text?: string | null;
-                        generated_text: string;
-                        generated_token_count: number;
-                        input_token_count?: number | null;
-                        /** @enum {string} */
-                        stop_reason: "not_finished" | "max_tokens" | "eos_token" | "cancelled" | "time_limit" | "stop_sequence" | "token_limit" | "error";
-                        stop_sequence?: string | null;
-                        generated_tokens?: (({
-                            text?: string | null;
-                            logprob?: (number | null) | (string | null);
-                            rank?: number | null;
-                            top_tokens?: (({
-                                text?: string | null;
-                                logprob?: (number | null) | (string | null);
-                              })[]) | null;
-                          })[]) | null;
-                        input_tokens?: (({
-                            text?: string | null;
-                            logprob?: (number | null) | (string | null);
-                            rank?: number | null;
-                            top_tokens?: (({
-                                text?: string | null;
-                                logprob?: (number | null) | (string | null);
-                              })[]) | null;
-                          })[]) | null;
-                        seed?: number | null;
-                        moderation?: {
-                          [key: string]: unknown;
-                        } | null;
-                        [key: string]: unknown;
-                      })[];
-                  }) | null;
-                })[];
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-  };
   "/v2/text/extraction/limits": {
     get: {
       parameters: {
@@ -4700,66 +5534,6 @@ export interface paths {
         401: {
           content: {
             "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-  };
-  "/v2/text/embeddings": {
-    post: {
-      parameters: {
-        query: {
-          version: "2023-11-22";
-        };
-      };
-      requestBody: {
-        content: {
-          "application/json": {
-            model_id: string;
-            input: string | string[];
-            parameters?: ({
-              truncate_input_tokens?: boolean | null;
-            }) | null;
-          };
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              results: number[][];
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
           };
         };
         /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
@@ -5259,6 +6033,7 @@ export interface paths {
                 api_request: string;
                 /** @enum {string|null} */
                 vote?: "up" | "down" | null;
+                contact_consent: boolean;
               };
             };
           };
@@ -5310,13 +6085,15 @@ export interface paths {
           id: string;
         };
       };
-      requestBody?: {
+      requestBody: {
         content: {
           "application/json": {
             comment?: string;
             categories?: ("inaccurate" | "not_relevant" | "offensive_harmful" | "knowledge_gap" | "other_content" | "too_long" | "too_short" | "wrong_tone" | "wrong_format" | "other_style" | "correct_content" | "correct_style")[];
             /** @enum {string} */
             vote?: "up" | "down";
+            /** @default false */
+            contact_consent: boolean;
           };
         };
       };
@@ -5336,6 +6113,7 @@ export interface paths {
                 api_request: string;
                 /** @enum {string|null} */
                 vote?: "up" | "down" | null;
+                contact_consent: boolean;
               };
             };
           };
@@ -5387,13 +6165,15 @@ export interface paths {
           id: string;
         };
       };
-      requestBody?: {
+      requestBody: {
         content: {
           "application/json": {
             comment?: string;
             categories?: ("inaccurate" | "not_relevant" | "offensive_harmful" | "knowledge_gap" | "other_content" | "too_long" | "too_short" | "wrong_tone" | "wrong_format" | "other_style" | "correct_content" | "correct_style")[];
             /** @enum {string} */
             vote?: "up" | "down";
+            /** @default false */
+            contact_consent: boolean;
           };
         };
       };
@@ -5413,6 +6193,7 @@ export interface paths {
                 api_request: string;
                 /** @enum {string|null} */
                 vote?: "up" | "down" | null;
+                contact_consent: boolean;
               };
             };
           };
@@ -5464,238 +6245,6 @@ export interface paths {
         };
         path: {
           id: string;
-        };
-      };
-      responses: {
-        /** @description Success */
-        204: {
-          content: never;
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-  };
-  "/v2/requests/chat/{conversation_id}": {
-    get: {
-      parameters: {
-        query: {
-          version: "2023-11-22";
-        };
-        path: {
-          conversation_id: string;
-        };
-      };
-      responses: {
-        /** @description Default Response */
-        200: {
-          content: {
-            "application/json": {
-              results: ({
-                  id: string;
-                  duration: number;
-                  /** Format: date-time */
-                  created_at: string;
-                  request: {
-                    model_id?: string;
-                    prompt_template_id?: string | null;
-                    moderations?: {
-                      hap?: boolean | {
-                        input?: boolean;
-                        output?: boolean;
-                        threshold?: number;
-                        send_tokens?: boolean;
-                      };
-                      stigma?: boolean | {
-                        input?: boolean;
-                        output?: boolean;
-                        threshold?: number;
-                        send_tokens?: boolean;
-                      };
-                      implicit_hate?: boolean | {
-                        input?: boolean;
-                        output?: boolean;
-                        threshold?: number;
-                        send_tokens?: boolean;
-                      };
-                    };
-                    messages?: ({
-                        /** @enum {string} */
-                        role: "user" | "system" | "assistant";
-                        content: string;
-                        file_ids?: string[];
-                      })[];
-                    conversation_id?: string | null;
-                    parent_id?: string | null;
-                    prompt_id?: string;
-                    /** @enum {string} */
-                    trim_method?: "floating_window" | "none";
-                    use_conversation_parameters?: boolean;
-                    parameters?: ({
-                      beam_width?: number | null;
-                      /** @enum {string|null} */
-                      decoding_method?: "greedy" | "sample" | null;
-                      max_new_tokens?: number | null;
-                      min_new_tokens?: number | null;
-                      random_seed?: number | null;
-                      stop_sequences?: string[] | null;
-                      temperature?: number | null;
-                      time_limit?: number | null;
-                      top_k?: number | null;
-                      top_p?: number | null;
-                      typical_p?: number | null;
-                      repetition_penalty?: number | null;
-                      truncate_input_tokens?: number | null;
-                      include_stop_sequence?: boolean;
-                      return_options?: ({
-                        generated_tokens?: boolean | null;
-                        input_text?: boolean | null;
-                        input_tokens?: boolean | null;
-                        input_parameters?: boolean | null;
-                        token_logprobs?: boolean | null;
-                        token_ranks?: boolean | null;
-                        top_n_tokens?: number | null;
-                      }) | null;
-                      length_penalty?: ({
-                        decay_factor?: number | null;
-                        start_index?: number | null;
-                      }) | null;
-                    }) | null;
-                  };
-                  /** @enum {string} */
-                  status: "success" | "error";
-                  response: {
-                    id?: string | null;
-                    model_id?: string;
-                    /** Format: date-time */
-                    created_at?: string;
-                    input_parameters?: {
-                      [key: string]: unknown;
-                    } | null;
-                    results: ({
-                        input_text?: string | null;
-                        generated_text: string;
-                        generated_token_count: number;
-                        input_token_count?: number | null;
-                        /** @enum {string} */
-                        stop_reason: "not_finished" | "max_tokens" | "eos_token" | "cancelled" | "time_limit" | "stop_sequence" | "token_limit" | "error";
-                        stop_sequence?: string | null;
-                        generated_tokens?: (({
-                            text?: string | null;
-                            logprob?: (number | null) | (string | null);
-                            rank?: number | null;
-                            top_tokens?: (({
-                                text?: string | null;
-                                logprob?: (number | null) | (string | null);
-                              })[]) | null;
-                          })[]) | null;
-                        input_tokens?: (({
-                            text?: string | null;
-                            logprob?: (number | null) | (string | null);
-                            rank?: number | null;
-                            top_tokens?: (({
-                                text?: string | null;
-                                logprob?: (number | null) | (string | null);
-                              })[]) | null;
-                          })[]) | null;
-                        seed?: number | null;
-                        moderation?: {
-                          [key: string]: unknown;
-                        } | null;
-                        [key: string]: unknown;
-                      })[];
-                    conversation_id: string;
-                  };
-                  version?: ({
-                    api?: string | null;
-                    /** Format: date */
-                    date?: string | null;
-                  }) | null;
-                  parent_id?: string | null;
-                  [key: string]: unknown;
-                })[];
-            };
-          };
-        };
-        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
-        400: {
-          content: {
-            "application/json": components["schemas"]["BadRequestResponse"];
-          };
-        };
-        /** @description Unauthorized route access. */
-        401: {
-          content: {
-            "application/json": components["schemas"]["UnauthorizedResponse"];
-          };
-        };
-        /** @description The server can not find requested resource. */
-        404: {
-          content: {
-            "application/json": components["schemas"]["NotFoundResponse"];
-          };
-        };
-        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
-        429: {
-          content: {
-            "application/json": components["schemas"]["TooManyRequestsResponse"];
-          };
-        };
-        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
-        500: {
-          content: {
-            "application/json": components["schemas"]["InternalServerErrorResponse"];
-          };
-        };
-        /** @description The remote server is not ready to handle the request. */
-        503: {
-          content: {
-            "application/json": components["schemas"]["UnavailableResponse"];
-          };
-        };
-      };
-    };
-    delete: {
-      parameters: {
-        query: {
-          version: "2023-11-22";
-        };
-        path: {
-          conversation_id: string;
         };
       };
       responses: {
@@ -6072,6 +6621,432 @@ export interface paths {
       };
     };
   };
+  "/v2/deployments/{id}": {
+    get: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                tune_id?: string | null;
+                /** Format: date-time */
+                created_at: string;
+                /** Format: date-time */
+                updated_at: string;
+                /** Format: date-time */
+                deployed_at?: string;
+                /** @enum {string} */
+                status: "queued" | "initializing" | "ready" | "failed" | "expired";
+                /** Format: date-time */
+                expires_at?: string;
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        204: {
+          content: never;
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/deployments": {
+    get: {
+      parameters: {
+        query: {
+          id?: string[] | string;
+          limit?: number;
+          offset?: number;
+          version: "2023-11-22";
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              results: ({
+                  id: string;
+                  tune_id?: string | null;
+                  /** Format: date-time */
+                  created_at: string;
+                  /** Format: date-time */
+                  updated_at: string;
+                  /** Format: date-time */
+                  deployed_at?: string;
+                  /** @enum {string} */
+                  status: "queued" | "initializing" | "ready" | "failed" | "expired";
+                  /** Format: date-time */
+                  expires_at?: string;
+                })[];
+              total_count: number;
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+    post: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            tune_id: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        201: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                tune_id?: string | null;
+                /** Format: date-time */
+                created_at: string;
+                /** Format: date-time */
+                updated_at: string;
+                /** Format: date-time */
+                deployed_at?: string;
+                /** @enum {string} */
+                status: "queued" | "initializing" | "ready" | "failed" | "expired";
+                /** Format: date-time */
+                expires_at?: string;
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/beta/time_series/limits": {
+    get: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                concurrency: {
+                  limit: number;
+                  remaining: number;
+                };
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/beta/time_series/forecasting": {
+    post: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            model_id: string;
+            /**
+             * Data
+             * Format: byte
+             * @description Base64 encoded string of data.
+             */
+            data: string;
+            /**
+             * Timestamp Column
+             * @description A valid column in the data that should be treated as the timestamp.
+             */
+            timestamp_column: string;
+            /**
+             * Id Columns
+             * @description Columns that define a unique key for time series.
+             */
+            id_columns?: string[];
+            /**
+             * Target Columns
+             * @description An array of column headings which constitute the target variables.
+             */
+            target_columns?: string[];
+            /**
+             * Observable Columns
+             * @description An optional array of column headings which constitute the observable variables.
+             */
+            observable_columns?: string[];
+            /**
+             * Control Columns
+             * @description An optional array of column headings which constitute the control variables.
+             */
+            control_columns?: string[];
+            /**
+             * Conditional Columns
+             * @description An optional array of column headings which constitute the conditional variables.
+             */
+            conditional_columns?: string[];
+            /**
+             * Static Categorical Columns
+             * @description An optional array of column headings which constitute the static categorical variables.
+             */
+            static_categorical_columns?: string[];
+            /**
+             * Future Data
+             * Format: byte
+             * @description Base64 encoded string of data for future supporting features.
+             */
+            future_data?: string;
+            /**
+             * Prediction Length
+             * @description The prediction length for the forecast.
+             */
+            prediction_length?: number;
+            /**
+             * Context Length
+             * @description Context length of the forecast.
+             */
+            context_length?: number;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                /** Format: byte */
+                predictions: string;
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
   "/v2/beta/text/sentence-similarity": {
     post: {
       parameters: {
@@ -6239,6 +7214,1100 @@ export interface paths {
                 classification_type: "multi_class" | "multi_label" | "binary";
                 model_input: string;
                 model_output: string;
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/beta/evaluations/{id}/instance_results": {
+    get: {
+      parameters: {
+        query: {
+          limit?: number;
+          offset?: number;
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              results: ({
+                  score: {
+                    [key: string]: unknown;
+                  };
+                  /** Generation Info */
+                  generation_info?: Record<string, never> | null;
+                })[];
+              total_count: number;
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/beta/evaluations/{id}": {
+    get: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                name: string;
+                description?: string;
+                experiment_id: string | null;
+                model_id: string | null;
+                /** @enum {string} */
+                status: "pending" | "queued" | "running" | "completed" | "failed";
+                status_message?: string | null;
+                parameters?: Record<string, never>;
+                prompt: {
+                  id: string;
+                  name: string;
+                  input?: string;
+                  metadata?: {
+                    [key: string]: unknown;
+                  };
+                };
+                template_id: string;
+                template_name: string;
+                task_id: string | null;
+                /** Format: date-time */
+                created_at: string;
+                /** Format: date-time */
+                started_at?: string | null;
+                /** Format: date-time */
+                finished_at?: string | null;
+                result: {
+                  [key: string]: unknown;
+                } | null;
+                file: {
+                  id: string;
+                  file_name: string;
+                  /** Format: date-time */
+                  created_at: string;
+                  bytes: number;
+                  metadata?: {
+                    stats: {
+                      columns: string[];
+                      records_count: number;
+                    };
+                  };
+                } | null;
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        204: {
+          content: never;
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/beta/evaluations/templates/{id}": {
+    get: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                task?: {
+                  id: string;
+                  name: string;
+                  parent_task?: {
+                    id: string;
+                    name: string;
+                  };
+                };
+                default_prompt_ids?: string[];
+                name: string;
+                metrics: Record<string, never>[];
+                postprocessors: string[];
+                dataset_fields: {
+                  [key: string]: unknown;
+                };
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/beta/evaluations/templates": {
+    get: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              results: {
+                  id: string;
+                  task?: {
+                    id: string;
+                    name: string;
+                    parent_task?: {
+                      id: string;
+                      name: string;
+                    };
+                  };
+                  default_prompt_ids?: string[];
+                  name: string;
+                  metrics: Record<string, never>[];
+                  postprocessors: string[];
+                  dataset_fields: {
+                    [key: string]: unknown;
+                  };
+                }[];
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/beta/evaluations/preview": {
+    post: {
+      parameters: {
+        query: {
+          limit?: number;
+          version: "2023-11-22";
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            description?: string;
+            experiment_id?: string;
+            template_id: string;
+            prompt_id: string;
+            model_id?: string;
+            parameters?: ({
+              beam_width?: number | null;
+              /** @enum {string|null} */
+              decoding_method?: "greedy" | "sample" | null;
+              max_new_tokens?: number | null;
+              min_new_tokens?: number | null;
+              random_seed?: number | null;
+              stop_sequences?: string[] | null;
+              temperature?: number | null;
+              time_limit?: number | null;
+              top_k?: number | null;
+              top_p?: number | null;
+              typical_p?: number | null;
+              repetition_penalty?: number | null;
+              truncate_input_tokens?: number | null;
+              include_stop_sequence?: boolean;
+              return_options?: ({
+                generated_tokens?: boolean | null;
+                input_text?: boolean | null;
+                input_tokens?: boolean | null;
+                input_parameters?: boolean | null;
+                token_logprobs?: boolean | null;
+                token_ranks?: boolean | null;
+                top_n_tokens?: number | null;
+              }) | null;
+              length_penalty?: ({
+                decay_factor?: number | null;
+                start_index?: number | null;
+              }) | null;
+            }) | null;
+            dataset_file_id: string;
+            field_operations?: ({
+                /** @enum {string} */
+                type: "rename_fields" | "add_fields" | "shuffle";
+                [key: string]: unknown;
+              })[];
+            metrics: string[];
+            postprocessors?: string[];
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              results: ({
+                  score: {
+                    [key: string]: unknown;
+                  };
+                  /** Generation Info */
+                  generation_info?: Record<string, never> | null;
+                })[];
+              total_count: number;
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/beta/evaluations/limits": {
+    get: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                concurrency: {
+                  limit: number;
+                  remaining: number;
+                };
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/beta/evaluations/experiments/{id}": {
+    get: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                name: string;
+                description?: string;
+                experiment_id: string | null;
+                model_id: string | null;
+                /** @enum {string} */
+                status: "pending" | "queued" | "running" | "completed" | "failed";
+                status_message?: string | null;
+                parameters?: Record<string, never>;
+                prompt: {
+                  id: string;
+                  name: string;
+                  input?: string;
+                  metadata?: {
+                    [key: string]: unknown;
+                  };
+                };
+                template_id: string;
+                template_name: string;
+                task_id: string | null;
+                /** Format: date-time */
+                created_at: string;
+                /** Format: date-time */
+                started_at?: string | null;
+                /** Format: date-time */
+                finished_at?: string | null;
+                result: {
+                  [key: string]: unknown;
+                } | null;
+                file: {
+                  id: string;
+                  file_name: string;
+                  /** Format: date-time */
+                  created_at: string;
+                  bytes: number;
+                  metadata?: {
+                    stats: {
+                      columns: string[];
+                      records_count: number;
+                    };
+                  };
+                } | null;
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+    delete: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+        path: {
+          id: string;
+        };
+      };
+      responses: {
+        /** @description Success */
+        204: {
+          content: never;
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/beta/evaluations/experiments": {
+    get: {
+      parameters: {
+        query: {
+          limit?: number;
+          offset?: number;
+          sort_by?: "name" | "id" | "template";
+          direction?: "asc" | "desc";
+          version: "2023-11-22";
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              results: ({
+                  id: string;
+                  name: string;
+                  description?: string;
+                  template_id: string;
+                  /** Format: date-time */
+                  created_at: string;
+                  evaluations_count: number;
+                  file?: {
+                    id: string;
+                    file_name: string;
+                    /** Format: date-time */
+                    created_at: string;
+                    bytes: number;
+                    metadata?: {
+                      stats: {
+                        columns: string[];
+                        records_count: number;
+                      };
+                    };
+                  } | null;
+                  task: {
+                    id: string;
+                    name: string;
+                    parent_task?: {
+                      id: string;
+                      name: string;
+                    };
+                  };
+                })[];
+              total_count: number;
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+    post: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            description?: string;
+            template_id: string;
+            dataset_file_id: string;
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                name: string;
+                description?: string;
+                template_id: string;
+                /** Format: date-time */
+                created_at: string;
+                evaluations_count: number;
+                file?: {
+                  id: string;
+                  file_name: string;
+                  /** Format: date-time */
+                  created_at: string;
+                  bytes: number;
+                  metadata?: {
+                    stats: {
+                      columns: string[];
+                      records_count: number;
+                    };
+                  };
+                } | null;
+                task: {
+                  id: string;
+                  name: string;
+                  parent_task?: {
+                    id: string;
+                    name: string;
+                  };
+                };
+              };
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The server can not find requested resource. */
+        404: {
+          content: {
+            "application/json": components["schemas"]["NotFoundResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+  };
+  "/v2/beta/evaluations": {
+    get: {
+      parameters: {
+        query: {
+          limit?: number;
+          offset?: number;
+          sort_by?: "name" | "id" | "template";
+          direction?: "asc" | "desc";
+          experiment_id?: string;
+          version: "2023-11-22";
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              results: ({
+                  id: string;
+                  name: string;
+                  description?: string;
+                  experiment_id: string | null;
+                  model_id: string | null;
+                  /** @enum {string} */
+                  status: "pending" | "queued" | "running" | "completed" | "failed";
+                  status_message?: string | null;
+                  parameters?: Record<string, never>;
+                  prompt: {
+                    id: string;
+                    name: string;
+                    input?: string;
+                    metadata?: {
+                      [key: string]: unknown;
+                    };
+                  };
+                  template_id: string;
+                  template_name: string;
+                  task_id: string | null;
+                  /** Format: date-time */
+                  created_at: string;
+                  /** Format: date-time */
+                  started_at?: string | null;
+                  /** Format: date-time */
+                  finished_at?: string | null;
+                  result: {
+                    [key: string]: unknown;
+                  } | null;
+                  file: {
+                    id: string;
+                    file_name: string;
+                    /** Format: date-time */
+                    created_at: string;
+                    bytes: number;
+                    metadata?: {
+                      stats: {
+                        columns: string[];
+                        records_count: number;
+                      };
+                    };
+                  } | null;
+                })[];
+              total_count: number;
+            };
+          };
+        };
+        /** @description Server could not understand the request due to invalid syntax. In most cases relates with the schema validation. */
+        400: {
+          content: {
+            "application/json": components["schemas"]["BadRequestResponse"];
+          };
+        };
+        /** @description Unauthorized route access. */
+        401: {
+          content: {
+            "application/json": components["schemas"]["UnauthorizedResponse"];
+          };
+        };
+        /** @description The user has sent too many requests in a given amount of time ("rate limiting").. */
+        429: {
+          content: {
+            "application/json": components["schemas"]["TooManyRequestsResponse"];
+          };
+        };
+        /** @description The server encountered an unexpected condition that prevented it from fulfilling the request. */
+        500: {
+          content: {
+            "application/json": components["schemas"]["InternalServerErrorResponse"];
+          };
+        };
+        /** @description The remote server is not ready to handle the request. */
+        503: {
+          content: {
+            "application/json": components["schemas"]["UnavailableResponse"];
+          };
+        };
+      };
+    };
+    post: {
+      parameters: {
+        query: {
+          version: "2023-11-22";
+        };
+      };
+      requestBody: {
+        content: {
+          "application/json": {
+            name: string;
+            description?: string;
+            experiment_id?: string;
+            template_id: string;
+            prompt_id: string;
+            model_id?: string;
+            parameters?: ({
+              beam_width?: number | null;
+              /** @enum {string|null} */
+              decoding_method?: "greedy" | "sample" | null;
+              max_new_tokens?: number | null;
+              min_new_tokens?: number | null;
+              random_seed?: number | null;
+              stop_sequences?: string[] | null;
+              temperature?: number | null;
+              time_limit?: number | null;
+              top_k?: number | null;
+              top_p?: number | null;
+              typical_p?: number | null;
+              repetition_penalty?: number | null;
+              truncate_input_tokens?: number | null;
+              include_stop_sequence?: boolean;
+              return_options?: ({
+                generated_tokens?: boolean | null;
+                input_text?: boolean | null;
+                input_tokens?: boolean | null;
+                input_parameters?: boolean | null;
+                token_logprobs?: boolean | null;
+                token_ranks?: boolean | null;
+                top_n_tokens?: number | null;
+              }) | null;
+              length_penalty?: ({
+                decay_factor?: number | null;
+                start_index?: number | null;
+              }) | null;
+            }) | null;
+            dataset_file_id: string;
+            field_operations?: ({
+                /** @enum {string} */
+                type: "rename_fields" | "add_fields" | "shuffle";
+                [key: string]: unknown;
+              })[];
+            metrics: string[];
+            postprocessors?: string[];
+          };
+        };
+      };
+      responses: {
+        /** @description Default Response */
+        200: {
+          content: {
+            "application/json": {
+              result: {
+                id: string;
+                name: string;
+                description?: string;
+                experiment_id: string | null;
+                model_id: string | null;
+                /** @enum {string} */
+                status: "pending" | "queued" | "running" | "completed" | "failed";
+                status_message?: string | null;
+                parameters?: Record<string, never>;
+                prompt: {
+                  id: string;
+                  name: string;
+                  input?: string;
+                  metadata?: {
+                    [key: string]: unknown;
+                  };
+                };
+                template_id: string;
+                template_name: string;
+                task_id: string | null;
+                /** Format: date-time */
+                created_at: string;
+                /** Format: date-time */
+                started_at?: string | null;
+                /** Format: date-time */
+                finished_at?: string | null;
+                result: {
+                  [key: string]: unknown;
+                } | null;
+                file: {
+                  id: string;
+                  file_name: string;
+                  /** Format: date-time */
+                  created_at: string;
+                  bytes: number;
+                  metadata?: {
+                    stats: {
+                      columns: string[];
+                      records_count: number;
+                    };
+                  };
+                } | null;
               };
             };
           };

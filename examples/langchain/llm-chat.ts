@@ -5,7 +5,7 @@ import { Client } from '../../src/index.js';
 
 const makeClient = () =>
   new GenAIChatModel({
-    model_id: 'meta-llama/llama-2-70b-chat',
+    model_id: 'meta-llama/llama-3-70b-instruct',
     client: new Client({
       endpoint: process.env.ENDPOINT,
       apiKey: process.env.API_KEY,

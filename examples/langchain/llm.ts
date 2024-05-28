@@ -15,7 +15,16 @@ const makeClient = () =>
       repetition_penalty: 1.5,
     },
     moderations: {
-      hap: true,
+      hap: {
+        input: {
+          enabled: true,
+          threshold: 0.75,
+        },
+        output: {
+          enabled: true,
+          threshold: 0.75,
+        },
+      },
     },
   });
 

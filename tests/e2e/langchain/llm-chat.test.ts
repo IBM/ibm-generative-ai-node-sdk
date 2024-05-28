@@ -6,7 +6,7 @@ import { GenAIChatModel } from '../../../src/langchain/index.js';
 describe('LangChain Chat', () => {
   const makeModel = (conversation_id?: string) =>
     new GenAIChatModel({
-      model_id: 'meta-llama/llama-2-70b-chat',
+      model_id: 'meta-llama/llama-3-70b-instruct',
       conversation_id,
       configuration: {
         endpoint: process.env.ENDPOINT,

@@ -134,7 +134,7 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
           await _runManager?.handleText(result.generated_text);
         }
       }
-      if (output.moderation) {
+      if (output.moderations) {
         yield new ChatGenerationChunk({
           message: new AIMessageChunk({
             content: '',
@@ -142,7 +142,7 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
           text: '',
           generationInfo: {
             conversationId: output.conversation_id,
-            moderation: output.moderation,
+            moderation: output.moderations,
           },
         });
         await _runManager?.handleText('');

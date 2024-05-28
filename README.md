@@ -203,7 +203,7 @@ import { GenAIChatModel } from '@ibm-generative-ai/node-sdk/langchain';
 import { SystemMessage, HumanMessage } from '@langchain/core/messages';
 
 const client = new GenAIChatModel({
-  model_id: 'meta-llama/llama-2-70b-chat',
+  model_id: 'meta-llama/llama-3-70b-instruct',
   client: new Client({
     endpoint: process.env.ENDPOINT,
     apiKey: process.env.API_KEY,

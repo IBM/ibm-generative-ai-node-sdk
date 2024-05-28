@@ -122,11 +122,11 @@ export class GenAIModel extends BaseLLM<GenAIModelOptions> {
           void runManager?.handleText(generated_text);
         }
       }
-      if (response.moderation) {
+      if (response.moderations) {
         yield new GenerationChunk({
           text: '',
           generationInfo: {
-            moderation: response.moderation,
+            moderations: response.moderations,
           },
         });
         void runManager?.handleText('');
@@ -160,6 +160,7 @@ export class GenAIModel extends BaseLLM<GenAIModelOptions> {
       },
       { input },
     );
+    console.info(rest);
     return {
       ...(prompt_id ? { prompt_id } : { model_id }),
       ...rest,

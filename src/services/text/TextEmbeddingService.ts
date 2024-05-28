@@ -27,7 +27,7 @@ export class TextEmbeddingService extends BaseService {
         clientErrorWrapper(
           this._client.POST('/v2/text/embeddings', {
             ...opts,
-            params: { query: { version: '2023-11-22' } },
+            params: { query: { version: '2024-04-15' } },
             body: input,
           }),
         ),

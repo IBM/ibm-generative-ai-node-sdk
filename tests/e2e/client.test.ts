@@ -55,7 +55,7 @@ describe('client', () => {
           expect(result.input_token_count).not.toBeNegative();
           expect(result.stop_reason).toSatisfy(isNumberOrNull);
         });
-        expect(chunk.moderation).toBeOneOf([
+        expect(chunk.moderations).toBeOneOf([
           undefined,
           expect.objectContaining({ hap: expect.any(Array) }),
         ]);
@@ -76,7 +76,7 @@ describe('client', () => {
 
         for await (const chunk of stream) {
           validateStreamChunk(chunk);
-          if (chunk.moderation) {
+          if (chunk.moderations) {
             return;
           }
         }

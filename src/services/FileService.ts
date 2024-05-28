@@ -32,7 +32,7 @@ export class FileService extends BaseService {
         },
         params: {
           query: {
-            version: '2024-04-09',
+            version: '2024-05-13',
           },
         },
       }),
@@ -49,7 +49,7 @@ export class FileService extends BaseService {
         params: {
           path: input,
           query: {
-            version: '2024-04-09',
+            version: '2024-05-13',
           },
         },
       }),
@@ -101,7 +101,7 @@ export class FileService extends BaseService {
         params: {
           query: {
             ...input,
-            version: '2024-04-09',
+            version: '2024-05-13',
           },
         },
       }),

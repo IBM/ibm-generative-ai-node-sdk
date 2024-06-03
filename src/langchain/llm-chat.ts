@@ -11,6 +11,8 @@ import { CallbackManagerForLLMRun } from '@langchain/core/callbacks/manager';
 import { ChatGenerationChunk, ChatResult } from '@langchain/core/outputs';
 import { BaseLanguageModelCallOptions as BaseChatModelCallOptions } from '@langchain/core/language_models/base';
 import merge from 'lodash/merge.js';
+import { load } from '@langchain/core/load';
+import type { Serialized } from '@langchain/core/load/serializable';
 
 import { Client, Configuration } from '../client.js';
 import { TextChatCreateInput, TextChatCreateStreamInput } from '../schema.js';
@@ -29,7 +31,7 @@ export type GenAIChatModelOptions = BaseChatModelCallOptions &
   Partial<Omit<GenAIChatModelParams, 'client' | 'configuration'>>;
 
 export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
-  protected readonly client: Client;
+  public readonly client: Client;
 
   public readonly modelId: GenAIChatModelParams['model_id'];
   public readonly promptId: GenAIChatModelParams['prompt_id'];
@@ -218,11 +220,48 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
     });
   }
 
-  _llmType(): string {
-    return 'GenAIChat';
+  lc_serializable = true;
+  lc_namespace = ['@ibm-generative-ai/node-sdk', 'langchain', 'llm-chat'];
+
+  get lc_id(): string[] {
+    return [...this.lc_namespace, 'GenAIChatModel'];
+  }
+
+  lc_kwargs = {
+    modelId: undefined,
+    promptId: undefined,
+    conversationId: undefined,
+    parameters: undefined,
+    moderations: undefined,
+    useConversationParameters: undefined,
+    parentId: undefined,
+    trimMethod: undefined,
+    client: undefined,
+  };
+
+  get lc_secrets() {
+    return { ...super.lc_secrets, client: 'client' };
+  }
+
+  static async fromJSON(value: string | Serialized, client?: Client) {
+    const input = typeof value !== 'string' ? JSON.stringify(value) : value;
+    return await load(input, {
+      optionalImportsMap: {
+        '@ibm-generative-ai/node-sdk/langchain/llm-chat': {
+          GenAIModel: GenAIChatModel,
+        },
+      },
+      secretsMap: {
+        client,
+      },
+    });
   }
 
   _modelType(): string {
     return this.modelId;
+  }
+
+  _llmType(): string {
+    return 'GenAIChatModel';
   }
 }

@@ -7,6 +7,8 @@ import { CallbackManagerForLLMRun } from '@langchain/core/callbacks/manager';
 import type { LLMResult } from '@langchain/core/outputs';
 import { GenerationChunk } from '@langchain/core/outputs';
 import merge from 'lodash/merge.js';
+import { load } from '@langchain/core/load';
+import type { Serialized } from '@langchain/core/load/serializable';
 
 import { Client, Configuration } from '../client.js';
 import { concatUnique, isNullish } from '../helpers/common.js';
@@ -32,7 +34,7 @@ export type GenAIModelOptions = BaseLLMCallOptions &
   Partial<Omit<GenAIModelParams, 'client' | 'configuration'>>;
 
 export class GenAIModel extends BaseLLM<GenAIModelOptions> {
-  protected readonly client: Client;
+  public readonly client: Client;
 
   public readonly modelId: GenAIModelParams['model_id'];
   public readonly promptId: GenAIModelParams['prompt_id'];
@@ -183,11 +185,44 @@ export class GenAIModel extends BaseLLM<GenAIModelOptions> {
     return result.results.at(0)?.token_count ?? 0;
   }
 
+  static async fromJSON(value: string | Serialized, client?: Client) {
+    const input = typeof value === 'string' ? value : JSON.stringify(value);
+    return await load(input, {
+      optionalImportsMap: {
+        '@ibm-generative-ai/node-sdk/langchain/llm': {
+          GenAIModel: GenAIModel,
+        },
+      },
+      secretsMap: {
+        client,
+      },
+    });
+  }
+
   _modelType(): string {
     return this.modelId;
   }
 
   _llmType(): string {
-    return 'GenAI';
+    return 'GenAIModel';
+  }
+
+  lc_serializable = true;
+  lc_namespace = ['@ibm-generative-ai/node-sdk', 'langchain', 'llm'];
+
+  get lc_id(): string[] {
+    return [...this.lc_namespace, 'GenAIModel'];
+  }
+
+  lc_kwargs = {
+    modelId: undefined,
+    promptId: undefined,
+    parameters: undefined,
+    moderations: undefined,
+    client: undefined,
+  };
+
+  get lc_secrets() {
+    return { ...super.lc_secrets, client: 'client' };
   }
 }

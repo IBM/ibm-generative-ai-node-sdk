@@ -8,5 +8,6 @@ export default defineConfig({
       exclude: ['**/__mocks__/**'],
     },
     exclude: [...defaultExclude],
+    testTimeout: 120 * 1000,
   },
 });

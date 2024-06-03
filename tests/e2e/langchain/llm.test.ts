@@ -5,7 +5,7 @@ import { GenAIModel } from '../../../src/langchain/llm.js';
 import { Client } from '../../../src/client.js';
 
 describe('Langchain', () => {
-  const makeClient = (modelId: string) =>
+  const makeModel = (modelId: string) =>
     new GenAIModel({
       model_id: modelId,
       client: new Client({
@@ -26,7 +26,7 @@ describe('Langchain', () => {
 
   describe('tokenization', () => {
     it('should correctly calculate tokens', async () => {
-      const client = makeClient('google/flan-ul2');
+      const client = makeModel('google/flan-ul2');
       const tokensCount = await client.getNumTokens(
         'What is the biggest building on this planet?',
       );
@@ -34,24 +34,31 @@ describe('Langchain', () => {
     });
   });
 
+  it('Serializes', async () => {
+    const model = makeModel('google/flan-ul2');
+    const serialized = model.toJSON();
+    const deserialized = await GenAIModel.fromJSON(serialized, model.client);
+    expect(deserialized).toBeInstanceOf(GenAIModel);
+  });
+
   describe('generate', () => {
     // TODO: enable once we will set default model for the test account
     test.skip('should handle empty modelId', async () => {
-      const client = makeClient('google/flan-ul2');
+      const client = makeModel('google/flan-ul2');
 
       const data = await client.invoke('Who are you?');
       expectIsString(data);
     }, 15_000);
 
     test('should return correct response for a single input', async () => {
-      const client = makeClient('google/flan-ul2');
+      const client = makeModel('google/flan-ul2');
 
       const data = await client.invoke('Hello, World');
       expectIsString(data);
     }, 15_000);
 
     test('should return correct response for each input', async () => {
-      const client = makeClient('google/flan-ul2');
+      const client = makeModel('google/flan-ul2');
 
       const inputs = ['Hello, World', 'Hello again'];
 
@@ -74,7 +81,7 @@ describe('Langchain', () => {
     }, 20_000);
 
     test('should reject with ERR_CANCELED when aborted', async () => {
-      const model = makeClient('google/flan-ul2');
+      const model = makeModel('google/flan-ul2');
 
       const controller = new AbortController();
       const generatePromise = model.generate(['Hello, World'], {
@@ -92,7 +99,7 @@ describe('Langchain', () => {
     });
 
     test('should reject with ETIMEDOUT when timed out', async () => {
-      const model = makeClient('google/flan-ul2');
+      const model = makeModel('google/flan-ul2');
 
       await expect(
         model.invoke('Hello, World', { timeout: 10 }),
@@ -100,7 +107,7 @@ describe('Langchain', () => {
     });
 
     test('streaming', async () => {
-      const client = makeClient('google/flan-t5-xl');
+      const client = makeModel('google/flan-t5-xl');
 
       const tokens: string[] = [];
       const handleText = vi.fn((token: string) => {
@@ -125,7 +132,7 @@ describe('Langchain', () => {
   });
 
   describe('chaining', () => {
-    const model = makeClient('google/flan-t5-xl');
+    const model = makeModel('google/flan-t5-xl');
 
     test('chaining', async () => {
       const prompt = new PromptTemplate({

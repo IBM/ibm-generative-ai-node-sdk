@@ -126,7 +126,10 @@ describe('LangChain Chat', () => {
   it('Serializes', async () => {
     const model = makeModel();
     const serialized = model.toJSON();
-    const deserialized = await GenAIChatModel.fromJSON(serialized);
+    const deserialized = await GenAIChatModel.fromJSON(
+      serialized,
+      model.client,
+    );
     expect(deserialized).toBeInstanceOf(GenAIChatModel);
   });
 });

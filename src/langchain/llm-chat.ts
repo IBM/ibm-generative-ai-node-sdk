@@ -31,7 +31,7 @@ export type GenAIChatModelOptions = BaseChatModelCallOptions &
   Partial<Omit<GenAIChatModelParams, 'client' | 'configuration'>>;
 
 export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
-  protected readonly client: Client;
+  public readonly client: Client;
 
   public readonly modelId: GenAIChatModelParams['model_id'];
   public readonly promptId: GenAIChatModelParams['prompt_id'];
@@ -236,15 +236,23 @@ export class GenAIChatModel extends BaseChatModel<GenAIChatModelOptions> {
     useConversationParameters: undefined,
     parentId: undefined,
     trimMethod: undefined,
+    client: undefined,
   };
 
-  static async fromJSON(value: string | Serialized) {
-    const input = typeof value === 'string' ? value : JSON.stringify(value);
+  get lc_secrets() {
+    return { ...super.lc_secrets, client: 'client' };
+  }
+
+  static async fromJSON(value: string | Serialized, client?: Client) {
+    const input = typeof value !== 'string' ? JSON.stringify(value) : value;
     return await load(input, {
       optionalImportsMap: {
         '@ibm-generative-ai/node-sdk/langchain/llm-chat': {
           GenAIModel: GenAIChatModel,
         },
+      },
+      secretsMap: {
+        client,
       },
     });
   }

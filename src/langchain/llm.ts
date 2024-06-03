@@ -34,7 +34,7 @@ export type GenAIModelOptions = BaseLLMCallOptions &
   Partial<Omit<GenAIModelParams, 'client' | 'configuration'>>;
 
 export class GenAIModel extends BaseLLM<GenAIModelOptions> {
-  protected readonly client: Client;
+  public readonly client: Client;
 
   public readonly modelId: GenAIModelParams['model_id'];
   public readonly promptId: GenAIModelParams['prompt_id'];
@@ -185,13 +185,16 @@ export class GenAIModel extends BaseLLM<GenAIModelOptions> {
     return result.results.at(0)?.token_count ?? 0;
   }
 
-  static async fromJSON(value: string | Serialized) {
+  static async fromJSON(value: string | Serialized, client?: Client) {
     const input = typeof value === 'string' ? value : JSON.stringify(value);
     return await load(input, {
       optionalImportsMap: {
         '@ibm-generative-ai/node-sdk/langchain/llm': {
           GenAIModel: GenAIModel,
         },
+      },
+      secretsMap: {
+        client,
       },
     });
   }
@@ -216,5 +219,10 @@ export class GenAIModel extends BaseLLM<GenAIModelOptions> {
     promptId: undefined,
     parameters: undefined,
     moderations: undefined,
+    client: undefined,
   };
+
+  get lc_secrets() {
+    return { ...super.lc_secrets, client: 'client' };
+  }
 }

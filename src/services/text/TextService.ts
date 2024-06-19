@@ -8,12 +8,16 @@ import { TextGenerationService } from './TextGenerationService.js';
 import { TextTokenizationService } from './TextTokenizationService.js';
 import { TextEmbeddingService } from './TextEmbeddingService.js';
 import { TextChatService } from './TextChatService.js';
+import { TextSentenceSimilarityService } from './TextSentenceSimilarityService.js';
 
 export class TextService extends BaseService {
   public readonly generation: TextGenerationService;
   public readonly tokenization: TextTokenizationService;
   public readonly embedding: TextEmbeddingService;
   public readonly chat: TextChatService;
+  public readonly experimental: {
+    sentenceSimilarity: TextSentenceSimilarityService;
+  };
 
   constructor(client: ApiClient, streamingClient: SteamingApiClient) {
     super(client, streamingClient);
@@ -51,5 +55,12 @@ export class TextService extends BaseService {
       embeddingLimiter,
     );
     this.chat = new TextChatService(client, streamingClient, generationLimiter);
+    this.experimental = {
+      sentenceSimilarity: new TextSentenceSimilarityService(
+        client,
+        streamingClient,
+        embeddingLimiter,
+      ),
+    };
   }
 }

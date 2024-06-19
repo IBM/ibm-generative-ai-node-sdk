@@ -55,6 +55,15 @@ export type TextEmbeddingCreateOutput = OutputWrapper<
   ApiClientResponse<'POST', '/v2/text/embeddings'>['data']
 >;
 
+// TextSentenceSimilarityService
+
+export type TextSentenceSimilarityCreateInput = InputBodyWrapper<
+  ApiClientOptions<'POST', '/v2/beta/text/sentence-similarity'>['body']
+>;
+export type TextSentenceSimilarityCreateOutput = OutputWrapper<
+  ApiClientResponse<'POST', '/v2/beta/text/sentence-similarity'>['data']
+>;
+
 // ModelService
 
 export type ModelServiceListInput = InputQueryWrapper<

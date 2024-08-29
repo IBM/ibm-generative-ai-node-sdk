@@ -1,7 +1,7 @@
 import range from 'lodash/range.js';
 
 import { Client } from '../../src/client.js';
-import { HttpError } from '../../src/errors.js';
+import { HttpError, AbortError } from '../../src/errors.js';
 import {
   TextChatCreateStreamOutput,
   TextGenerationCreateStreamOutput,
@@ -186,10 +186,7 @@ describe('client', () => {
         controller.abort();
       }, 50);
 
-      await expect(generatePromise).rejects.toHaveProperty(
-        'name',
-        'AbortError',
-      );
+      await expect(generatePromise).rejects.toBeInstanceOf(AbortError);
     });
 
     test('should reject with ABORT_ERR when aborted (stream)', async () => {
@@ -210,7 +207,7 @@ describe('client', () => {
           stream.once('finish', resolve);
           stream.once('error', reject);
         });
-      }).rejects.toHaveProperty('name', 'AbortError');
+      }).rejects.toBeInstanceOf(AbortError);
     });
   });
 

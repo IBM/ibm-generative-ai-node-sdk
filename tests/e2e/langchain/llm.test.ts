@@ -1,6 +1,7 @@
 import { PromptTemplate } from '@langchain/core/prompts';
 import { StringOutputParser } from '@langchain/core/output_parsers';
 
+import { AbortError } from '../../../src/errors.js';
 import { GenAIModel } from '../../../src/langchain/llm.js';
 import { Client } from '../../../src/client.js';
 
@@ -92,10 +93,7 @@ describe('Langchain', () => {
         controller.abort();
       }, 50);
 
-      await expect(generatePromise).rejects.toHaveProperty(
-        'name',
-        'AbortError',
-      );
+      await expect(generatePromise).rejects.toBeInstanceOf(AbortError);
     });
 
     test('should reject with ETIMEDOUT when timed out', async () => {

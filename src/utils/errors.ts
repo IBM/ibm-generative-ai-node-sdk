@@ -11,7 +11,9 @@ export function isAbortError(err: unknown): err is DOMException {
   return Boolean(
     err &&
       err instanceof Error &&
-      (err.name === 'AbortError' || err instanceof AbortError),
+      (err.name === 'AbortError' ||
+        err instanceof AbortError ||
+        (err as any).code === 'ABORT_ERR'),
   );
 }
 

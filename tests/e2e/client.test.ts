@@ -1,11 +1,13 @@
 import range from 'lodash/range.js';
+import { AbortError } from 'p-queue-compat';
 
 import { Client } from '../../src/client.js';
-import { HttpError, AbortError } from '../../src/errors.js';
+import { HttpError } from '../../src/errors.js';
 import {
   TextChatCreateStreamOutput,
   TextGenerationCreateStreamOutput,
 } from '../../src/schema.js';
+import { isAbortError } from '../../src/utils/errors.js';
 
 describe('client', () => {
   let client: Client;
@@ -207,7 +209,7 @@ describe('client', () => {
           stream.once('finish', resolve);
           stream.once('error', reject);
         });
-      }).rejects.toBeInstanceOf(AbortError);
+      }).rejects.toSatisfy(isAbortError);
     });
   });
 

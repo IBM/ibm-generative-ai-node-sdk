@@ -1,11 +1,18 @@
 import { FetchResponse } from 'openapi-fetch';
-import { AbortError } from 'p-queue-compat';
-AbortError.prototype.name = 'AbortError';
 
-import { HttpError, InternalError, NetworkError } from '../errors.js';
+import {
+  HttpError,
+  InternalError,
+  NetworkError,
+  AbortError,
+} from '../errors.js';
 
-function isAbortError(err: unknown): err is DOMException {
-  return Boolean(err && err instanceof Error && err.name === 'AbortError');
+export function isAbortError(err: unknown): err is DOMException {
+  return Boolean(
+    err &&
+      err instanceof Error &&
+      (err.name === 'AbortError' || err instanceof AbortError),
+  );
 }
 
 const ServiceUnavailableErrorCodes = new Set([

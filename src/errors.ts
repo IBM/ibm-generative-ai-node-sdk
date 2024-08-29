@@ -1,4 +1,6 @@
-import { ApiError } from './api/client.js';
+import { AbortError as _AbortError } from 'p-queue-compat';
+
+import type { ApiError } from './api/client.js';
 
 export class BaseError extends Error {}
 
@@ -22,3 +24,8 @@ export class HttpError extends RequestError implements ApiError {
     this.extensions = error.extensions;
   }
 }
+
+// cjs compilation bug
+export const AbortError: typeof _AbortError = _AbortError
+  ? _AbortError
+  : class AbortError extends Error {};

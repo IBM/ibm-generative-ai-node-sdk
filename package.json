@@ -73,6 +73,11 @@
   "peerDependencies": {
     "@langchain/core": ">=0.1.0"
   },
+  "peerDependenciesMeta": {
+    "@langchain/core": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@commitlint/cli": "^18.0.0",
     "@commitlint/config-conventional": "^18.0.0",

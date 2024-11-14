@@ -705,6 +705,9 @@ __metadata:
     yaml: ^2.3.3
   peerDependencies:
     "@langchain/core": ">=0.1.0"
+  peerDependenciesMeta:
+    "@langchain/core":
+      optional: true
   languageName: unknown
   linkType: soft
 

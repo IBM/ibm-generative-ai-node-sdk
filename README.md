@@ -1,5 +1,9 @@
 # IBM Generative AI Node.js SDK (Tech Preview)
 
+> [!TIP]
+>
+> Are you interested in AI Agents? Check out [bee-agent-framework](https://github.com/i-am-bee/bee-agent-framework) from IBM Research.
+
 This is not the [watsonx.ai](https://www.ibm.com/products/watsonx-ai) Node.js SDK. This is the Node.js SDK for the Tech Preview program for IBM Foundation Models Studio. This SDK brings IBM Generative AI (GenAI) into Node.js programs and provides useful operations and types.
 
 You can start a trial version or request a demo via https://www.ibm.com/products/watsonx-ai.
